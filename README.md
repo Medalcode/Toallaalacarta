@@ -18,6 +18,16 @@
 
   <a href="https://github.com/zeon-studio/storeplate/graphs/contributors">
     <img src="https://img.shields.io/github/contributors/zeon-studio/storeplate" alt="contributors"></a>
+
+  <a href="https://github.com/Medalcode/Toallaalacarta/releases/tag/v1.0.0">
+    <img src="https://img.shields.io/badge/release-v1.0.0-blue" alt="release v1.0.0"/>
+  </a>
+  <a href="https://github.com/Medalcode/Toallaalacarta/actions/workflows/ci.yml">
+    <img src="https://img.shields.io/github/actions/workflow/status/Medalcode/Toallaalacarta/ci.yml?label=CI" alt="CI"/>
+  </a>
+  <a href="https://github.com/Medalcode/Toallaalacarta">
+    <img src="https://img.shields.io/badge/tests-58%20passing-success" alt="tests"/>
+  </a>
 </p>
 
 ## 📌 Características principales
