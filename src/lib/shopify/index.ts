@@ -31,6 +31,7 @@ import {
   getProductsQuery,
 } from "./queries/product";
 import { getVendorsQuery } from "./queries/vendor";
+import { mockProducts, mockCollections } from "./mockData";
 import type {
   Cart,
   Collection,
@@ -68,6 +69,13 @@ const domain = import.meta.env.PUBLIC_SHOPIFY_STORE_DOMAIN
   : "";
 const endpoint = `${domain}${SHOPIFY_GRAPHQL_API_ENDPOINT}`;
 const key = import.meta.env.PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN!;
+
+// Enable mock mode if Shopify credentials are not configured
+const MOCK_MODE = !domain || !key;
+
+if (MOCK_MODE) {
+  console.warn('🎭 Running in MOCK MODE - Using demo data. Configure Shopify credentials to use real data.');
+}
 
 type ExtractVariables<T> = T extends { variables: object }
   ? T["variables"]
@@ -231,6 +239,21 @@ const reshapeProducts = (products: ShopifyProduct[]) => {
 };
 
 export async function createCart(): Promise<Cart> {
+  // Return mock cart if in mock mode
+  if (MOCK_MODE) {
+    return {
+      id: 'mock-cart-' + Date.now(),
+      checkoutUrl: '#',
+      cost: {
+        subtotalAmount: { amount: '0', currencyCode: 'CLP' },
+        totalAmount: { amount: '0', currencyCode: 'CLP' },
+        totalTaxAmount: { amount: '0', currencyCode: 'CLP' },
+      },
+      lines: [],
+      totalQuantity: 0,
+    };
+  }
+
   const res = await shopifyFetch<ShopifyCreateCartOperation>({
     query: createCartMutation,
   });
@@ -242,6 +265,45 @@ export async function addToCart(
   cartId: string,
   lines: { merchandiseId: string; quantity: number }[],
 ): Promise<Cart> {
+  // Return mock cart in mock mode
+  if (MOCK_MODE) {
+    // Find the product for the merchandise
+    const cartItems = lines.map(line => {
+      const productId = line.merchandiseId.split('/').pop()?.split('Variant')[0];
+      const product = mockProducts.find(p => p.id.includes(productId || ''));
+      
+      return {
+        id: 'mock-line-' + Date.now() + Math.random(),
+        quantity: line.quantity,
+        cost: {
+          totalAmount: product?.priceRange.minVariantPrice || { amount: '0', currencyCode: 'CLP' },
+        },
+        merchandise: {
+          id: line.merchandiseId,
+          title: product?.variants.edges[0]?.node.title || 'Producto',
+          selectedOptions: product?.variants.edges[0]?.node.selectedOptions || [],
+          product: product ? reshapeProduct(product, false)! : {} as any,
+        },
+      };
+    });
+
+    const subtotal = cartItems.reduce((sum, item) => 
+      sum + parseFloat(item.cost.totalAmount.amount) * item.quantity, 0
+    );
+
+    return {
+      id: cartId,
+      checkoutUrl: '#',
+      cost: {
+        subtotalAmount: { amount: subtotal.toString(), currencyCode: 'CLP' },
+        totalAmount: { amount: subtotal.toString(), currencyCode: 'CLP' },
+        totalTaxAmount: { amount: '0', currencyCode: 'CLP' },
+      },
+      lines: cartItems,
+      totalQuantity: cartItems.reduce((sum, item) => sum + item.quantity, 0),
+    };
+  }
+
   const res = await shopifyFetch<ShopifyAddToCartOperation>({
     query: addToCartMutation,
     variables: {
@@ -257,6 +319,21 @@ export async function removeFromCart(
   cartId: string,
   lineIds: string[],
 ): Promise<Cart> {
+  // Return empty mock cart in mock mode
+  if (MOCK_MODE) {
+    return {
+      id: cartId,
+      checkoutUrl: '#',
+      cost: {
+        subtotalAmount: { amount: '0', currencyCode: 'CLP' },
+        totalAmount: { amount: '0', currencyCode: 'CLP' },
+        totalTaxAmount: { amount: '0', currencyCode: 'CLP' },
+      },
+      lines: [],
+      totalQuantity: 0,
+    };
+  }
+
   const res = await shopifyFetch<ShopifyRemoveFromCartOperation>({
     query: removeFromCartMutation,
     variables: {
@@ -273,6 +350,21 @@ export async function updateCart(
   cartId: string,
   lines: { id: string; merchandiseId: string; quantity: number }[],
 ): Promise<Cart> {
+  // Return updated mock cart in mock mode
+  if (MOCK_MODE) {
+    return {
+      id: cartId,
+      checkoutUrl: '#',
+      cost: {
+        subtotalAmount: { amount: '0', currencyCode: 'CLP' },
+        totalAmount: { amount: '0', currencyCode: 'CLP' },
+        totalTaxAmount: { amount: '0', currencyCode: 'CLP' },
+      },
+      lines: [],
+      totalQuantity: 0,
+    };
+  }
+
   const res = await shopifyFetch<ShopifyUpdateCartOperation>({
     query: editCartItemsMutation,
     variables: {
@@ -286,6 +378,11 @@ export async function updateCart(
 }
 
 export async function getCart(cartId: string): Promise<Cart | undefined> {
+  // Return undefined in mock mode (cart is session-based)
+  if (MOCK_MODE) {
+    return undefined;
+  }
+
   const res = await shopifyFetch<ShopifyCartOperation>({
     query: getCartQuery,
     variables: { cartId },
@@ -326,6 +423,19 @@ export async function getCollectionProducts({
   sortKey?: string;
   filterCategoryProduct?: any[]; // Update the type based on your GraphQL schema
 }): Promise<{ pageInfo: PageInfo | null; products: Product[] }> {
+  // Return mock data if in mock mode
+  if (MOCK_MODE) {
+    const products = reshapeProducts(mockProducts);
+    return {
+      pageInfo: {
+        hasNextPage: false,
+        hasPreviousPage: false,
+        endCursor: '',
+      },
+      products,
+    };
+  }
+
   const res = await shopifyFetch<ShopifyCollectionProductsOperation>({
     query: getCollectionProductsQuery,
     tags: [TAGS.collections, TAGS.products],
@@ -404,6 +514,11 @@ export async function getUserDetails(accessToken: string): Promise<user> {
 }
 
 export async function getCollections(): Promise<Collection[]> {
+  // Return mock data if in mock mode
+  if (MOCK_MODE) {
+    return mockCollections;
+  }
+
   const res = await shopifyFetch<ShopifyCollectionsOperation>({
     query: getCollectionsQuery,
     tags: [TAGS.collections],
@@ -456,6 +571,12 @@ export async function getPages(): Promise<Page[]> {
 }
 
 export async function getProduct(handle: string): Promise<Product | undefined> {
+  // Return mock data if in mock mode
+  if (MOCK_MODE) {
+    const product = mockProducts.find(p => p.handle === handle);
+    return product ? reshapeProduct(product, false) : undefined;
+  }
+
   const res = await shopifyFetch<ShopifyProductOperation>({
     query: getProductQuery,
     tags: [TAGS.products],
@@ -470,6 +591,15 @@ export async function getProduct(handle: string): Promise<Product | undefined> {
 export async function getProductRecommendations(
   productId: string,
 ): Promise<Product[]> {
+  // Return mock data if in mock mode
+  if (MOCK_MODE) {
+    // Return random 3 products as recommendations
+    const randomProducts = mockProducts
+      .filter(p => p.id !== productId)
+      .slice(0, 3);
+    return reshapeProducts(randomProducts);
+  }
+
   const res = await shopifyFetch<ShopifyProductRecommendationsOperation>({
     query: getProductRecommendationsQuery,
     tags: [TAGS.products],
@@ -490,6 +620,11 @@ export async function getVendors({
   reverse?: boolean;
   sortKey?: string;
 }): Promise<{ vendor: string; productCount: number }[]> {
+  // Return mock data if in mock mode
+  if (MOCK_MODE) {
+    return [{ vendor: 'Toalla a la Carta', productCount: mockProducts.length }];
+  }
+
   const res = await shopifyFetch<ShopifyProductsOperation>({
     query: getVendorsQuery,
     tags: [TAGS.products],
@@ -536,6 +671,11 @@ export async function getTags({
   reverse?: boolean;
   sortKey?: string;
 }): Promise<Product[]> {
+  // Return mock data if in mock mode
+  if (MOCK_MODE) {
+    return reshapeProducts(mockProducts);
+  }
+
   const res = await shopifyFetch<ShopifyProductsOperation>({
     query: getProductsQuery,
     tags: [TAGS.products],
@@ -560,6 +700,19 @@ export async function getProducts({
   sortKey?: string;
   cursor?: string;
 }): Promise<{ pageInfo: PageInfo; products: Product[] }> {
+  // Return mock data if in mock mode
+  if (MOCK_MODE) {
+    const products = reshapeProducts(mockProducts);
+    return {
+      pageInfo: {
+        hasNextPage: false,
+        hasPreviousPage: false,
+        endCursor: '',
+      },
+      products,
+    };
+  }
+
   const res = await shopifyFetch<ShopifyProductsOperation>({
     query: getProductsQuery,
     tags: [TAGS.products],
@@ -583,6 +736,11 @@ export async function getHighestProductPrice(): Promise<{
   amount: string;
   currencyCode: string;
 } | null> {
+  // Return mock data if in mock mode
+  if (MOCK_MODE) {
+    return { amount: '120000', currencyCode: 'CLP' };
+  }
+
   try {
     const res = await shopifyFetch<any>({
       query: getHighestProductPriceQuery,

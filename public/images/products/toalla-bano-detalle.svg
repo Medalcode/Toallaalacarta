@@ -1,0 +1,13 @@
+<svg width="800" height="800" xmlns="http://www.w3.org/2000/svg">
+  <rect width="800" height="800" fill="#edf7f0"/>
+  <text x="400" y="350" font-family="Arial, sans-serif" font-size="28" fill="#4a5568" text-anchor="middle" font-weight="bold">
+    Detalle del Bordado
+  </text>
+  <text x="400" y="420" font-family="Arial, sans-serif" font-size="24" fill="#718096" text-anchor="middle">
+    Trabajo Personalizado
+  </text>
+  <circle cx="400" cy="500" r="80" fill="none" stroke="#48bb78" stroke-width="3"/>
+  <text x="400" cy="510" font-family="Arial, sans-serif" font-size="48" fill="#48bb78" text-anchor="middle">
+    TaC
+  </text>
+</svg>
