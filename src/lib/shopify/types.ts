@@ -224,6 +224,10 @@ export type ShopifyAddToCartOperation = {
     lines: {
       merchandiseId: string;
       quantity: number;
+      attributes?: {
+        key: string;
+        value: string;
+      }[];
     }[];
   };
 };

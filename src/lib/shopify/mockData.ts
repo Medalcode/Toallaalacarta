@@ -57,27 +57,27 @@ export const mockProducts: ShopifyProduct[] = [
       ]
     },
     featuredImage: {
-      url: '/images/products/toalla-bano-premium.svg',
+      url: '/images/products/toalla-bano-premium.jpg',
       altText: 'Toalla de Baño Premium Personalizada',
-      width: 800,
-      height: 800
+      width: 1024,
+      height: 1024
     },
     images: {
       edges: [
         {
           node: {
-            url: '/images/products/toalla-bano-premium.svg',
+            url: '/images/products/toalla-bano-premium.jpg',
             altText: 'Toalla de Baño Premium Personalizada',
-            width: 800,
-            height: 800
+            width: 1024,
+            height: 1024
           }
         },
         {
           node: {
-            url: '/images/products/toalla-bano-detalle.svg',
+            url: '/images/products/toalla-detail-monogram.jpg',
             altText: 'Detalle del bordado personalizado',
-            width: 800,
-            height: 800
+            width: 1024,
+            height: 1024
           }
         }
       ]
@@ -329,19 +329,19 @@ export const mockProducts: ShopifyProduct[] = [
       ]
     },
     featuredImage: {
-      url: '/images/products/bata-personalizada.svg',
+      url: '/images/products/bata-personalizada.jpg',
       altText: 'Bata de Casa Personalizada',
-      width: 800,
-      height: 800
+      width: 1024,
+      height: 1024
     },
     images: {
       edges: [
         {
           node: {
-            url: '/images/products/bata-personalizada.svg',
+            url: '/images/products/bata-personalizada.jpg',
             altText: 'Bata de Casa Personalizada',
-            width: 800,
-            height: 800
+            width: 1024,
+            height: 1024
           }
         }
       ]

@@ -19,7 +19,7 @@ const HeroSlider = ({ products }: { products: Product[] }) => {
         {products?.map((item: Product) => (
           <SwiperSlide key={item.id}>
             <div className="row items-center px-7 xl:px-16">
-              <div className="sm:col-12 lg:col-6 order-2 lg:order-0">
+              <div className="sm:col-12 lg:col-6 order-2 lg:order-0 animate-fade-in-up">
                 <div className="text-center py-10 lg:py-0">
                   {item?.description && (
                     <p className="mb-2 lg:mb-3 text-text-light dark:text-darkmode-text-light font-medium md:text-xl">
@@ -33,7 +33,7 @@ const HeroSlider = ({ products }: { products: Product[] }) => {
                   </div>
                   {item.handle && (
                     <a
-                      className="btn btn-sm md:btn-lg btn-primary font-medium"
+                      className="btn btn-sm md:btn-lg btn-primary font-medium shadow-lg hover:shadow-xl transition-shadow"
                       href={`products/${item.handle}`}
                     >
                       Shop Now
@@ -42,11 +42,11 @@ const HeroSlider = ({ products }: { products: Product[] }) => {
                 </div>
               </div>
 
-              <div className="sm:col-12 lg:col-6">
+              <div className="sm:col-12 lg:col-6 animate-fade-in-right">
                 {item.featuredImage && (
                   <img
                     src={item.featuredImage.url}
-                    className="mx-auto w-[388px] lg:w-full"
+                    className="mx-auto w-[388px] lg:w-full drop-shadow-2xl"
                     width={"507"}
                     height={"385"}
                     alt="banner image"

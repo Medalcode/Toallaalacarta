@@ -26,9 +26,9 @@ const isParentActive = (children: any[]) => {
 
 <header
   class:list={[
-    "header z-30",
+    "header z-30 backdrop-blur-md bg-white/90 dark:bg-darkmode-body/90 border-b border-transparent dark:border-white/10",
     settings.sticky_header && "sticky top-0",
-    "transition-shadow duration-300",
+    "transition-all duration-300",
   ]}
 >
   <nav class="navbar flex-wrap container">

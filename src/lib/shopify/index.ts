@@ -263,7 +263,7 @@ export async function createCart(): Promise<Cart> {
 
 export async function addToCart(
   cartId: string,
-  lines: { merchandiseId: string; quantity: number }[],
+  lines: { merchandiseId: string; quantity: number; attributes?: { key: string; value: string }[] }[],
 ): Promise<Cart> {
   // Return mock cart in mock mode
   if (MOCK_MODE) {

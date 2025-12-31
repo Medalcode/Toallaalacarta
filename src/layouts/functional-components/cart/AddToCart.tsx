@@ -85,6 +85,8 @@ export function AddToCart({
   const [message, setMessage] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   const [selectedVariantId, setSelectedVariantId] = useState<string | undefined>(defaultVariantId);
+  const [embroideryText, setEmbroideryText] = useState("");
+  const [embroideryColor, setEmbroideryColor] = useState("#000000");
   const lastUrl = useRef(window.location.href);
 
   // Function to update selectedVariantId based on URL
@@ -162,7 +164,13 @@ export function AddToCart({
 
     setPending(true);
     try {
-      const result = await addItemToCart(selectedVariantId);
+      const attributes = embroideryText 
+        ? [
+            { key: "Embroidery Text", value: embroideryText },
+            { key: "Embroidery Color", value: embroideryColor }
+          ]
+        : [];
+      const result = await addItemToCart(selectedVariantId, attributes);
       setMessage(result);
     } catch (error: any) {
       setMessage(error.message);
@@ -172,7 +180,41 @@ export function AddToCart({
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className="w-full">
+      <div className="mb-6 p-4 bg-light/50 dark:bg-darkmode-light/50 rounded-lg border border-border">
+        <h3 className="text-lg font-medium mb-4">Personalization</h3>
+        
+        <div className="mb-4">
+          <label htmlFor="embroidery-text" className="block text-sm font-medium mb-2">Border Text (Optional)</label>
+          <input
+            id="embroidery-text"
+            type="text"
+            className="w-full px-4 py-2 rounded-md border border-border bg-white dark:bg-darkmode-body focus:ring-primary focus:border-primary"
+            placeholder="Name or Initials"
+            value={embroideryText}
+            onChange={(e) => setEmbroideryText(e.target.value)}
+            maxLength={12}
+          />
+          <p className="text-xs text-text-light mt-1">Max 12 characters</p>
+        </div>
+
+        {embroideryText && (
+          <div className="mb-2">
+            <label htmlFor="embroidery-color" className="block text-sm font-medium mb-2">Thread Color</label>
+            <div className="flex items-center gap-3">
+              <input
+                id="embroidery-color"
+                type="color"
+                className="h-10 w-10 p-1 rounded cursor-pointer"
+                value={embroideryColor}
+                onChange={(e) => setEmbroideryColor(e.target.value)}
+              />
+              <span className="text-sm">{embroideryColor}</span>
+            </div>
+          </div>
+        )}
+      </div>
+
       <SubmitButton
         availableForSale={availableForSale}
         selectedVariantId={selectedVariantId}

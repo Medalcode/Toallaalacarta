@@ -7,7 +7,7 @@ import {
   updateCart,
 } from "@/lib/shopify";
 
-export async function addItem(selectedVariantId: string | undefined) {
+export async function addItem(selectedVariantId: string | undefined, attributes?: { key: string; value: string }[]) {
   let cartId = Cookies.get("cartId");
   let cart;
 
@@ -27,7 +27,7 @@ export async function addItem(selectedVariantId: string | undefined) {
 
   try {
     await addToCart(cartId, [
-      { merchandiseId: selectedVariantId, quantity: 1 },
+      { merchandiseId: selectedVariantId, quantity: 1, attributes },
     ]);
     // return (window.location.href = "/");
   } catch (e) {

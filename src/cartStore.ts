@@ -37,9 +37,9 @@ export async function refreshCartState() {
 }
 
 // Add item to the cart and update state
-export async function addItemToCart(selectedVariantId: string) {
+export async function addItemToCart(selectedVariantId: string, attributes?: { key: string; value: string }[]) {
   try {
-    await addItem(selectedVariantId);
+    await addItem(selectedVariantId, attributes);
     await refreshCartState();
     return "Added to cart";
   } catch (error: any) {

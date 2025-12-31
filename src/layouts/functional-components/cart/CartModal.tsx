@@ -147,6 +147,15 @@ const CartModal: React.FC = () => {
                           {item.merchandise.title !== DEFAULT_OPTION && (
                             <p className="text-sm text-neutral-500">{item.merchandise.title}</p>
                           )}
+                          {item.attributes && item.attributes.length > 0 && (
+                            <div className="mt-1">
+                              {item.attributes.map((attr: { key: string; value: string }) => (
+                                <p key={attr.key} className="text-xs text-neutral-500">
+                                  <span className="font-medium">{attr.key}:</span> {attr.value}
+                                </p>
+                              ))}
+                            </div>
+                          )}
                         </div>
                       </a>
                       <div className="flex h-16 flex-col justify-between ml-1">

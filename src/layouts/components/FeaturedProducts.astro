@@ -20,20 +20,36 @@ const { currencySymbol } = config.shopify;
         featuredImage,
         priceRange,
         variants,
+        images,
         compareAtPriceRange,
       } = product;
 
       const defaultVariantId = variants.length > 0 ? variants[0].id : undefined;
+      const secondaryImage = images && images.length > 1 ? images[1].url : null;
+
       return (
         <div class="text-center col-6 md:col-4 lg:col-3 mb-8 md:mb-14 group relative">
-          <div class="relative overflow-hidden">
-            <img
-              src={featuredImage.url || "/images/product-placeholder.jpg"}
-              width={312}
-              height={269}
-              alt={featuredImage.altText || "fallback image"}
-              class="w-[312px] h-[150px] md:h-[269px] object-cover border border-border rounded-md"
-            />
+          <div class="relative overflow-hidden rounded-lg shadow-sm border border-border group-hover:shadow-md transition-shadow duration-300">
+            <div class="relative w-full h-[180px] md:h-[300px] bg-light/50 dark:bg-darkmode-light/50">
+              <a href={`/products/${handle}`} class="block w-full h-full">
+                <img
+                  src={featuredImage.url || "/images/product-placeholder.jpg"}
+                  width={312}
+                  height={269}
+                  alt={featuredImage.altText || title}
+                  class={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ease-in-out ${secondaryImage ? "group-hover:opacity-0" : ""}`}
+                />
+                {secondaryImage && (
+                  <img
+                    src={secondaryImage}
+                    width={312}
+                    height={269}
+                    alt={title}
+                    class="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-700 ease-in-out group-hover:opacity-100"
+                  />
+                )}
+              </a>
+            </div>
 
             <AddToCart
               client:only="react"
@@ -41,7 +57,7 @@ const { currencySymbol } = config.shopify;
               availableForSale={product.availableForSale}
               handle={handle}
               defaultVariantId={defaultVariantId}
-              stylesClass="btn btn-primary max-md:btn-sm z-10 absolute bottom-12 md:bottom-0 left-1/2 transform -translate-x-1/2 translate-y-full md:group-hover:-translate-y-6 duration-300 ease-in-out whitespace-nowrap drop-shadow-md"
+              stylesClass="btn btn-primary max-md:btn-sm z-10 absolute bottom-4 left-1/2 transform -translate-x-1/2 translate-y-[150%] group-hover:translate-y-0 duration-500 ease-out whitespace-nowrap shadow-lg rounded-full px-6"
             />
           </div>
           <div class="py-2 md:py-4 text-center z-20">
