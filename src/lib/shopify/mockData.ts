@@ -134,19 +134,19 @@ export const mockProducts: ShopifyProduct[] = [
       ]
     },
     featuredImage: {
-      url: '/images/products/albornoz-personalizado.svg',
+      url: '/images/products/albornoz-personalizado.png',
       altText: 'Albornoz Personalizado con Bordado',
-      width: 800,
-      height: 800
+      width: 1024,
+      height: 1024
     },
     images: {
       edges: [
         {
           node: {
-            url: '/images/products/albornoz-personalizado.svg',
+            url: '/images/products/albornoz-personalizado.png',
             altText: 'Albornoz Personalizado',
-            width: 800,
-            height: 800
+            width: 1024,
+            height: 1024
           }
         }
       ]
@@ -197,19 +197,19 @@ export const mockProducts: ShopifyProduct[] = [
       ]
     },
     featuredImage: {
-      url: '/images/products/toalla-mano-bordada.jpg',
+      url: '/images/products/toalla-mano-bordada.png',
       altText: 'Toalla de Mano Bordada',
-      width: 800,
-      height: 800
+      width: 1024,
+      height: 1024
     },
     images: {
       edges: [
         {
           node: {
-            url: '/images/products/toalla-mano-bordada.jpg',
+            url: '/images/products/toalla-mano-bordada.png',
             altText: 'Toalla de Mano Bordada',
-            width: 800,
-            height: 800
+            width: 1024,
+            height: 1024
           }
         }
       ]
@@ -260,19 +260,19 @@ export const mockProducts: ShopifyProduct[] = [
       ]
     },
     featuredImage: {
-      url: '/images/products/set-toallas-familiares.jpg',
+      url: '/images/products/set-toallas-familiares.png',
       altText: 'Set de Toallas Familiares Personalizadas',
-      width: 800,
-      height: 800
+      width: 1024,
+      height: 1024
     },
     images: {
       edges: [
         {
           node: {
-            url: '/images/products/set-toallas-familiares.jpg',
+            url: '/images/products/set-toallas-familiares.png',
             altText: 'Set de Toallas Familiares',
-            width: 800,
-            height: 800
+            width: 1024,
+            height: 1024
           }
         }
       ]
@@ -392,19 +392,19 @@ export const mockProducts: ShopifyProduct[] = [
       ]
     },
     featuredImage: {
-      url: '/images/products/toalla-playa-personalizada.jpg',
+      url: '/images/products/toalla-playa-personalizada.png',
       altText: 'Toalla de Playa Personalizada XXL',
-      width: 800,
-      height: 800
+      width: 1024,
+      height: 1024
     },
     images: {
       edges: [
         {
           node: {
-            url: '/images/products/toalla-playa-personalizada.jpg',
+            url: '/images/products/toalla-playa-personalizada.png',
             altText: 'Toalla de Playa Personalizada',
-            width: 800,
-            height: 800
+            width: 1024,
+            height: 1024
           }
         }
       ]

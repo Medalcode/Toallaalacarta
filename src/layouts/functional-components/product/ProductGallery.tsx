@@ -32,6 +32,11 @@ interface CustomZoomImageProps {
   height: number;
 }
 
+import { embroideryColor, embroideryText } from "@/personalizationStore";
+import { useStore } from "@nanostores/react";
+
+// ... existing imports
+
 const CustomZoomImage = ({ src, alt, width, height }: CustomZoomImageProps): JSX.Element => {
   const [isZoomed, setIsZoomed] = useState(false);
   const [position, setPosition] = useState<Position>({ x: 0.5, y: 0.5 });
@@ -40,6 +45,10 @@ const CustomZoomImage = ({ src, alt, width, height }: CustomZoomImageProps): JSX
   const [touchStartPosition, setTouchStartPosition] = useState<Position | null>(null);
   const [touchMoveCount, setTouchMoveCount] = useState(0);
   const imageRef = useRef<HTMLDivElement | null>(null);
+
+  // Subscribe to embroidery state
+  const $embroideryText = useStore(embroideryText);
+  const $embroideryColor = useStore(embroideryColor);
 
   useEffect(() => {
     setIsTouchDevice('ontouchstart' in window || navigator.maxTouchPoints > 0);
@@ -108,6 +117,25 @@ const CustomZoomImage = ({ src, alt, width, height }: CustomZoomImageProps): JSX
         className="w-full h-full object-contain"
         draggable={false}
       />
+
+      {/* Embroidery Live Preview Overlay */}
+      {$embroideryText && !isZoomed && (
+        <div 
+          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none z-10"
+          style={{ width: '80%', textAlign: 'center' }}
+        >
+          <span 
+            className="text-3xl md:text-4xl font-serif italic font-bold"
+            style={{ 
+              color: $embroideryColor,
+              textShadow: '1px 1px 2px rgba(0,0,0,0.3)',
+              filter: 'drop-shadow(0px 1px 1px rgba(0,0,0,0.1))'
+            }}
+          >
+            {$embroideryText}
+          </span>
+        </div>
+      )}
 
       {showMagnifier && !isZoomed && (
         <div
