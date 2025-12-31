@@ -1,5 +1,5 @@
 import mdx from "@astrojs/mdx";
-import netlify from "@astrojs/netlify";
+import node from "@astrojs/node";
 import react from "@astrojs/react";
 import sitemap from "@astrojs/sitemap";
 import tailwindcss from "@tailwindcss/vite";
@@ -17,8 +17,8 @@ export default defineConfig({
   trailingSlash: config.site.trailing_slash ? "always" : "never",
   image: { service: sharp() },
   output: "server",
-  adapter: netlify({
-    edgeMiddleware: true,
+  adapter: node({
+    mode: "standalone",
   }),
   vite: { plugins: [tailwindcss()] },
   integrations: [

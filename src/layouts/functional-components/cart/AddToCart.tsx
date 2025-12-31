@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import type { ProductVariant } from "@/lib/shopify/types";
 import { BiLoaderAlt } from "react-icons/bi";
 import { addItemToCart } from "@/cartStore";
-import { embroideryColor, embroideryText } from "@/personalizationStore";
+import { embroideryColor, embroideryText, embroideryFont } from "@/personalizationStore";
 import { useStore } from "@nanostores/react";
 
 interface SubmitButtonProps {
@@ -93,6 +93,7 @@ export function AddToCart({
   // Use global store for personalization
   const $embroideryText = useStore(embroideryText);
   const $embroideryColor = useStore(embroideryColor);
+  const $embroideryFont = useStore(embroideryFont);
   
   const lastUrl = useRef(window.location.href);
 
@@ -174,7 +175,8 @@ export function AddToCart({
       const attributes = $embroideryText 
         ? [
             { key: "Embroidery Text", value: $embroideryText },
-            { key: "Embroidery Color", value: $embroideryColor }
+            { key: "Embroidery Color", value: $embroideryColor },
+            { key: "Font Style", value: $embroideryFont }
           ]
         : [];
       const result = await addItemToCart(selectedVariantId, attributes);
@@ -183,6 +185,7 @@ export function AddToCart({
       // Reset personalization after adding to cart
       embroideryText.set("");
       embroideryColor.set("#000000");
+      embroideryFont.set("Dancing Script");
     } catch (error: any) {
       setMessage(error.message);
     } finally {
@@ -193,8 +196,7 @@ export function AddToCart({
   return (
     <form onSubmit={handleSubmit} className="w-full">
       <div className="mb-6 p-4 bg-light/50 dark:bg-darkmode-light/50 rounded-lg border border-border">
-        <h3 className="text-lg font-medium mb-4">Personalization (DEBUG ACTIVE)</h3>
-        <div className="bg-red-100 p-2 mb-2 text-red-800">System Status: Active</div>
+        <h3 className="text-lg font-medium mb-4">Personalization</h3>
         
         <div className="mb-4">
           <label htmlFor="embroidery-text" className="block text-sm font-medium mb-2">Border Text (Optional)</label>
@@ -211,7 +213,34 @@ export function AddToCart({
         </div>
 
         {$embroideryText && (
-          <div className="mb-2">
+          <div className="space-y-6">
+            {/* Font Selection */}
+            <div>
+              <label className="block text-sm font-medium mb-3">Font Style</label>
+              <div className="flex gap-2">
+                {[
+                  { name: 'Cursive', font: 'Dancing Script', class: 'font-secondary' },
+                  { name: 'Modern', font: 'Outfit', class: 'font-primary' },
+                  { name: 'Classic', font: 'Serif', class: 'font-serif' }
+                ].map((font) => (
+                  <button
+                    key={font.name}
+                    type="button"
+                    onClick={() => embroideryFont.set(font.font)}
+                    className={`px-4 py-2 rounded-md border text-sm transition-all duration-200 ${
+                      $embroideryFont === font.font
+                        ? "border-primary bg-primary text-white shadow-md transform scale-105"
+                        : "border-border bg-white dark:bg-darkmode-card hover:border-primary/50 text-text dark:text-darkmode-text"
+                    } ${font.class}`}
+                  >
+                    {font.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Color Selection */}
+            <div>
             <label className="block text-sm font-medium mb-3">Thread Color</label>
             <div className="flex flex-wrap gap-3">
               {[
@@ -239,6 +268,7 @@ export function AddToCart({
               ))}
             </div>
             <p className="text-sm mt-2 text-text-light">Selected: <span className="font-medium text-text-dark dark:text-darkmode-text-dark">{$embroideryColor}</span></p>
+          </div>
           </div>
         )}
       </div>

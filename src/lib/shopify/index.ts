@@ -241,7 +241,11 @@ const reshapeProducts = (products: ShopifyProduct[]) => {
 export async function createCart(): Promise<Cart> {
   // Return mock cart if in mock mode
   if (MOCK_MODE) {
-    return {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('mockCart');
+      if (stored) return JSON.parse(stored);
+    }
+    const newCart = {
       id: 'mock-cart-' + Date.now(),
       checkoutUrl: '#',
       cost: {
@@ -252,6 +256,10 @@ export async function createCart(): Promise<Cart> {
       lines: [],
       totalQuantity: 0,
     };
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('mockCart', JSON.stringify(newCart));
+    }
+    return newCart;
   }
 
   const res = await shopifyFetch<ShopifyCreateCartOperation>({
@@ -267,8 +275,18 @@ export async function addToCart(
 ): Promise<Cart> {
   // Return mock cart in mock mode
   if (MOCK_MODE) {
+    let currentCart: Cart | null = null;
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('mockCart');
+      if (stored) currentCart = JSON.parse(stored);
+    }
+
+    if (!currentCart) {
+      currentCart = await createCart();
+    }
+
     // Find the product for the merchandise
-    const cartItems = lines.map(line => {
+    const newCartItems = lines.map(line => {
       const productId = line.merchandiseId.split('/').pop()?.split('Variant')[0];
       const product = mockProducts.find(p => p.id.includes(productId || ''));
       
@@ -284,24 +302,33 @@ export async function addToCart(
           selectedOptions: product?.variants.edges[0]?.node.selectedOptions || [],
           product: product ? reshapeProduct(product, false)! : {} as any,
         },
+        attributes: line.attributes || [],
       };
     });
 
-    const subtotal = cartItems.reduce((sum, item) => 
+    // Merge with existing lines
+    const updatedLines = [...currentCart.lines, ...newCartItems];
+
+    const subtotal = updatedLines.reduce((sum, item) => 
       sum + parseFloat(item.cost.totalAmount.amount) * item.quantity, 0
     );
 
-    return {
-      id: cartId,
-      checkoutUrl: '#',
+    const updatedCart = {
+      ...currentCart,
       cost: {
+        ...currentCart.cost,
         subtotalAmount: { amount: subtotal.toString(), currencyCode: 'CLP' },
         totalAmount: { amount: subtotal.toString(), currencyCode: 'CLP' },
-        totalTaxAmount: { amount: '0', currencyCode: 'CLP' },
       },
-      lines: cartItems,
-      totalQuantity: cartItems.reduce((sum, item) => sum + item.quantity, 0),
+      lines: updatedLines,
+      totalQuantity: updatedLines.reduce((sum, item) => sum + item.quantity, 0),
     };
+
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('mockCart', JSON.stringify(updatedCart));
+    }
+
+    return updatedCart;
   }
 
   const res = await shopifyFetch<ShopifyAddToCartOperation>({
@@ -321,6 +348,31 @@ export async function removeFromCart(
 ): Promise<Cart> {
   // Return empty mock cart in mock mode
   if (MOCK_MODE) {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('mockCart');
+      if (stored) {
+        const currentCart = JSON.parse(stored) as Cart;
+        const updatedLines = currentCart.lines.filter(line => !lineIds.includes(line.id));
+        
+        const subtotal = updatedLines.reduce((sum, item) => 
+          sum + parseFloat(item.cost.totalAmount.amount) * item.quantity, 0
+        );
+
+        const updatedCart = {
+          ...currentCart,
+          cost: {
+            ...currentCart.cost,
+            subtotalAmount: { amount: subtotal.toString(), currencyCode: 'CLP' },
+            totalAmount: { amount: subtotal.toString(), currencyCode: 'CLP' },
+          },
+          lines: updatedLines,
+          totalQuantity: updatedLines.reduce((sum, item) => sum + item.quantity, 0),
+        };
+
+        localStorage.setItem('mockCart', JSON.stringify(updatedCart));
+        return updatedCart;
+      }
+    }
     return {
       id: cartId,
       checkoutUrl: '#',
@@ -352,6 +404,38 @@ export async function updateCart(
 ): Promise<Cart> {
   // Return updated mock cart in mock mode
   if (MOCK_MODE) {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('mockCart');
+      if (stored) {
+        const currentCart = JSON.parse(stored) as Cart;
+        // Update quantities
+        const updatedLines = currentCart.lines.map(line => {
+          const update = lines.find(u => u.id === line.id);
+          if (update) {
+            return { ...line, quantity: update.quantity };
+          }
+          return line;
+        });
+
+        const subtotal = updatedLines.reduce((sum, item) => 
+          sum + parseFloat(item.cost.totalAmount.amount) * item.quantity, 0
+        );
+
+        const updatedCart = {
+          ...currentCart,
+          cost: {
+            ...currentCart.cost,
+            subtotalAmount: { amount: subtotal.toString(), currencyCode: 'CLP' },
+            totalAmount: { amount: subtotal.toString(), currencyCode: 'CLP' },
+          },
+          lines: updatedLines,
+          totalQuantity: updatedLines.reduce((sum, item) => sum + item.quantity, 0),
+        };
+
+        localStorage.setItem('mockCart', JSON.stringify(updatedCart));
+        return updatedCart;
+      }
+    }
     return {
       id: cartId,
       checkoutUrl: '#',
@@ -380,6 +464,10 @@ export async function updateCart(
 export async function getCart(cartId: string): Promise<Cart | undefined> {
   // Return undefined in mock mode (cart is session-based)
   if (MOCK_MODE) {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('mockCart');
+      if (stored) return JSON.parse(stored);
+    }
     return undefined;
   }
 

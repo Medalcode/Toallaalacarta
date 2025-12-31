@@ -33,8 +33,8 @@
     "font_family": {
       "primary": "Outfit:wght@300;400;500;700",
       "primary_type": "sans-serif",
-      "secondary": "",
-      "secondary_type": ""
+      "secondary": "Dancing Script:wght@400;700",
+      "secondary_type": "cursive"
     },
     "font_size": {
       "base": "16",

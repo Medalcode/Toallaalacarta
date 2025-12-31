@@ -32,7 +32,7 @@ interface CustomZoomImageProps {
   height: number;
 }
 
-import { embroideryColor, embroideryText } from "@/personalizationStore";
+import { embroideryColor, embroideryText, embroideryFont } from "@/personalizationStore";
 import { useStore } from "@nanostores/react";
 
 // ... existing imports
@@ -49,6 +49,7 @@ const CustomZoomImage = ({ src, alt, width, height }: CustomZoomImageProps): JSX
   // Subscribe to embroidery state
   const $embroideryText = useStore(embroideryText);
   const $embroideryColor = useStore(embroideryColor);
+  const $embroideryFont = useStore(embroideryFont);
 
   useEffect(() => {
     setIsTouchDevice('ontouchstart' in window || navigator.maxTouchPoints > 0);
@@ -125,9 +126,16 @@ const CustomZoomImage = ({ src, alt, width, height }: CustomZoomImageProps): JSX
           style={{ width: '80%', textAlign: 'center' }}
         >
           <span 
-            className="text-3xl md:text-4xl font-serif italic font-bold"
+            className={`text-3xl md:text-4xl font-bold ${
+              $embroideryFont === 'Dancing Script' ? '' : // Handle via style or class if available
+              $embroideryFont === 'Outfit' ? 'font-sans' :
+              'font-serif'
+            } ${$embroideryFont !== 'Outfit' ? 'italic' : ''}`}
             style={{ 
               color: $embroideryColor,
+              fontFamily: $embroideryFont === 'Dancing Script' ? '"Dancing Script", cursive' : 
+                          $embroideryFont === 'Outfit' ? '"Outfit", sans-serif' : 
+                          'serif',
               textShadow: '1px 1px 2px rgba(0,0,0,0.3)',
               filter: 'drop-shadow(0px 1px 1px rgba(0,0,0,0.1))'
             }}
