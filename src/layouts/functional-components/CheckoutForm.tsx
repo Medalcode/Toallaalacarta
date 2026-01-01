@@ -1,6 +1,4 @@
-import { useState } from 'react';
-import { databases, APPWRITE_CONFIG } from '@/lib/appwrite';
-import { ID } from 'appwrite';
+import React, { useState } from 'react';
 import Cookies from 'js-cookie';
 
 export default function CheckoutForm({ cartId }: { cartId: string }) {
@@ -25,37 +23,32 @@ export default function CheckoutForm({ cartId }: { cartId: string }) {
     setError('');
 
     try {
-      // 1. Get Cart Content (We do this client-side or we could trust props, but fetching ensures freshness)
-      // For simplicity, we assume the cart logic on the page is correct, but ideally we verify.
-      // We will just create the Order directly.
-      
-      // In a real flow, you fetch the cart lines again here to calculate total securely backend-side.
-      // But since we are mocking/building custom, we will do a basic "Create Order".
-      
-      const order = await databases.createDocument(
-        APPWRITE_CONFIG.DATABASE_ID,
-        APPWRITE_CONFIG.COLLECTION_ORDERS,
-        ID.unique(),
-        {
-          customer_email: formData.email,
-          total_price: 0.0, // Should be calculated from cart lines! Fallback for now.
-          status: 'pending',
-          shipping_address_json: JSON.stringify(formData),
-          line_items_json: JSON.stringify({ cartId: cartId }) // We link to the cart for now to save "what was bought"
-        }
-      );
+      const response = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...formData,
+          cartId
+        }),
+      });
 
-      // 2. Clear Cart (Delete it or mark as inactive)
-      // Since our getCart logic is "list lines", we should delete the lines.
-      // But for now, we just remove the cookie so the user gets a fresh cart.
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.detail || data.message || 'Error en el servidor');
+      }
+
+      // 2. Clear Cart (Client side cookie removal)
       Cookies.remove('cartId');
 
       // 3. Redirect to Success Page
-      window.location.href = `/checkout/success?orderId=${order.$id}`;
+      window.location.href = `/checkout/success?orderId=${data.orderId}`;
 
     } catch (err: any) {
       console.error(err);
-      setError('Hubo un error al procesar tu pedido. Por favor intenta nuevamente.');
+      setError(err.message || 'Hubo un error al procesar tu pedido. Por favor intenta nuevamente.');
     } finally {
       setLoading(false);
     }

@@ -56,6 +56,17 @@ Para que el backend funcione, necesitas crear la siguiente estructura en tu cons
   - `price` (Float)
   - `image_url` (String, size 1000)
 
+### Colección: Orders
+
+- **ID:** `orders`
+- **Permisos:** Role: `any` -> Crear.
+- **Atributos:**
+  - `customer_email` (String, size 255, required)
+  - `total_price` (Float, required)
+  - `status` (String, size 64) - (Pending, Paid, Shipped)
+  - `shipping_address_json` (String, size 5000)
+  - `line_items_json` (String, size 5000)
+
 ## 3. Variables de Entorno
 
 Crea o actualiza el archivo `.env` en la raíz del proyecto con:

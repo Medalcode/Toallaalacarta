@@ -90,9 +90,18 @@ const NavUser = ({ pathname }: { pathname: string }) => {
       )}
 
       {dropdownOpen && (
-        <div className="z-20 text-center absolute w-full bg-white shadow-md rounded mt-2">
-          <button onClick={handleLogout} className="btn btn-primary max-md:btn-sm mt-2">
-            Logout
+        <div className="z-20 absolute right-0 w-48 bg-white dark:bg-darkmode-body shadow-md rounded-md mt-2 py-2 border dark:border-white/10">
+          <a 
+            href="/account"
+            className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-white/5 text-left"
+          >
+            Mi Cuenta
+          </a>
+          <button 
+            onClick={handleLogout} 
+            className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-white/5"
+          >
+            Cerrar Sesión
           </button>
         </div>
       )}

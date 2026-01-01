@@ -1,0 +1,42 @@
+---
+import Base from "@/layouts/Base.astro";
+import { user } from "@/lib/shopify/types";
+import { getOrders } from "@/lib/appwrite_utils"; // We will create this
+// import { account } from "@/lib/appwrite"; // We might need client-side logic too
+import AccountTabs from "@/layouts/functional-components/AccountTabs"; // React component for tabs
+
+import { getCustomerAccessToken, getUserDetails } from "@/lib/shopify";
+
+// Server-side check for user
+const token = Astro.cookies.get("token")?.value;
+
+let currentUser = null;
+
+if (!token) {
+  return Astro.redirect("/login");
+}
+
+try {
+  const userDetails = await getUserDetails(token);
+  currentUser = userDetails.customer;
+} catch (e) {
+  return Astro.redirect("/login");
+}
+
+---
+
+<Base title="Mi Cuenta - Toalla a la Carta">
+  <section class="section pt-10">
+    <div class="container">
+      <h1 class="h2 mb-8 text-center">Mi Cuenta</h1>
+      
+      <div class="row">
+         <div class="col-12 md:col-10 lg:col-8 mx-auto">
+            <div class="bg-white dark:bg-darkmode-theme-light rounded-lg shadow p-6">
+                <AccountTabs client:load user={currentUser} />
+            </div>
+         </div>
+      </div>
+    </div>
+  </section>
+</Base>

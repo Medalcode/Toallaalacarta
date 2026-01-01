@@ -1,10 +1,10 @@
 ---
 import { getCart } from "@/lib/shopify";
 import CheckoutForm from "@/layouts/functional-components/CheckoutForm";
-import Cookies from "js-cookie";
 import Base from "@/layouts/Base.astro";
 
-const cartId = Cookies.get("cartId");
+// Get cartId from server-side cookies
+const cartId = Astro.cookies.get("cartId")?.value;
 let cart;
 
 if (cartId) {
@@ -22,7 +22,7 @@ if (cartId) {
           <div class="col-12 lg:col-7">
             <div class="box bg-white p-8 shadow-sm rounded-lg">
               <h3 class="h4 mb-6 border-b pb-4">Detalles de Envío</h3>
-              <CheckoutForm client:load cartId={cartId} />
+              <CheckoutForm client:load cartId={cartId || ''} />
             </div>
           </div>
           
@@ -31,7 +31,7 @@ if (cartId) {
               <h3 class="h4 mb-6 border-b pb-4">Resumen del Pedido</h3>
               
               <div class="flex flex-col gap-4 mb-6 max-h-96 overflow-y-auto pr-2">
-                {cart.lines.map((item) => (
+                {cart.lines.map((item: any) => (
                   <div class="flex gap-4 items-center">
                     <div class="w-16 h-16 rounded overflow-hidden relative border bg-white flex-shrink-0">
                       <img 
