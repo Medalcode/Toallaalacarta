@@ -205,7 +205,7 @@ const CartModal: React.FC = () => {
             </div>
 
             <a
-              href={currentCart.checkoutUrl}
+              href="/checkout"
               className="block w-full rounded-md bg-dark dark:bg-light p-3 text-center text-sm font-medium text-white dark:text-text-dark opacity-100 hover:opacity-90"
             >
               Proceed to Checkout

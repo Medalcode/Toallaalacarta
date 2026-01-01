@@ -351,42 +351,39 @@ export async function removeFromCart(
 ): Promise<Cart> {
   // Return empty mock cart in mock mode
   if (MOCK_MODE) {
-    if (typeof window !== 'undefined') {
-      const stored = localStorage.getItem('mockCart');
-      if (stored) {
-        const currentCart = JSON.parse(stored) as Cart;
-        const updatedLines = currentCart.lines.filter(line => !lineIds.includes(line.id));
-        
-        const subtotal = updatedLines.reduce((sum, item) => 
-          sum + parseFloat(item.cost.totalAmount.amount) * item.quantity, 0
+    try {
+      // lineIds contains the Appwrite document IDs of the lines to remove
+      for (const id of lineIds) {
+        await databases.deleteDocument(
+          APPWRITE_CONFIG.DATABASE_ID,
+          APPWRITE_CONFIG.COLLECTION_CART_LINES,
+          id
         );
-
-        const updatedCart = {
-          ...currentCart,
-          cost: {
-            ...currentCart.cost,
-            subtotalAmount: { amount: subtotal.toString(), currencyCode: 'CLP' },
-            totalAmount: { amount: subtotal.toString(), currencyCode: 'CLP' },
-          },
-          lines: updatedLines,
-          totalQuantity: updatedLines.reduce((sum, item) => sum + item.quantity, 0),
-        };
-
-        localStorage.setItem('mockCart', JSON.stringify(updatedCart));
-        return updatedCart;
       }
+      
+      return await getCart(cartId) || {
+        id: cartId,
+        checkoutUrl: '#',
+        cost: {
+            subtotalAmount: { amount: '0', currencyCode: 'CLP' },
+            totalAmount: { amount: '0', currencyCode: 'CLP' },
+            totalTaxAmount: { amount: '0', currencyCode: 'CLP' }
+        },
+        lines: [],
+        totalQuantity: 0
+      };
+
+    } catch (e) {
+      console.error("Appwrite removeFromCart error:", e);
+      // Fallback
+      return await getCart(cartId) || {
+          id: cartId,
+          checkoutUrl: '#',
+          cost: { subtotalAmount: {amount:'0', currencyCode:'CLP'}, totalAmount: {amount:'0', currencyCode:'CLP'}, totalTaxAmount: {amount:'0', currencyCode:'CLP'} },
+          lines: [],
+          totalQuantity: 0
+      };
     }
-    return {
-      id: cartId,
-      checkoutUrl: '#',
-      cost: {
-        subtotalAmount: { amount: '0', currencyCode: 'CLP' },
-        totalAmount: { amount: '0', currencyCode: 'CLP' },
-        totalTaxAmount: { amount: '0', currencyCode: 'CLP' },
-      },
-      lines: [],
-      totalQuantity: 0,
-    };
   }
 
   const res = await shopifyFetch<ShopifyRemoveFromCartOperation>({
@@ -407,49 +404,39 @@ export async function updateCart(
 ): Promise<Cart> {
   // Return updated mock cart in mock mode
   if (MOCK_MODE) {
-    if (typeof window !== 'undefined') {
-      const stored = localStorage.getItem('mockCart');
-      if (stored) {
-        const currentCart = JSON.parse(stored) as Cart;
-        // Update quantities
-        const updatedLines = currentCart.lines.map(line => {
-          const update = lines.find(u => u.id === line.id);
-          if (update) {
-            return { ...line, quantity: update.quantity };
+    try {
+      for (const line of lines) {
+        await databases.updateDocument(
+          APPWRITE_CONFIG.DATABASE_ID,
+          APPWRITE_CONFIG.COLLECTION_CART_LINES,
+          line.id,
+          {
+            quantity: line.quantity
           }
-          return line;
-        });
-
-        const subtotal = updatedLines.reduce((sum, item) => 
-          sum + parseFloat(item.cost.totalAmount.amount) * item.quantity, 0
         );
-
-        const updatedCart = {
-          ...currentCart,
-          cost: {
-            ...currentCart.cost,
-            subtotalAmount: { amount: subtotal.toString(), currencyCode: 'CLP' },
-            totalAmount: { amount: subtotal.toString(), currencyCode: 'CLP' },
-          },
-          lines: updatedLines,
-          totalQuantity: updatedLines.reduce((sum, item) => sum + item.quantity, 0),
-        };
-
-        localStorage.setItem('mockCart', JSON.stringify(updatedCart));
-        return updatedCart;
       }
+      
+      return await getCart(cartId) || {
+        id: cartId,
+        checkoutUrl: '#',
+        cost: {
+            subtotalAmount: { amount: '0', currencyCode: 'CLP' },
+            totalAmount: { amount: '0', currencyCode: 'CLP' },
+            totalTaxAmount: { amount: '0', currencyCode: 'CLP' }
+        },
+        lines: [],
+        totalQuantity: 0
+      };
+    } catch (e) {
+      console.error("Appwrite updateCart error:", e);
+      return await getCart(cartId) || {
+          id: cartId,
+          checkoutUrl: '#',
+          cost: { subtotalAmount: {amount:'0', currencyCode:'CLP'}, totalAmount: {amount:'0', currencyCode:'CLP'}, totalTaxAmount: {amount:'0', currencyCode:'CLP'} },
+          lines: [],
+          totalQuantity: 0
+      };
     }
-    return {
-      id: cartId,
-      checkoutUrl: '#',
-      cost: {
-        subtotalAmount: { amount: '0', currencyCode: 'CLP' },
-        totalAmount: { amount: '0', currencyCode: 'CLP' },
-        totalTaxAmount: { amount: '0', currencyCode: 'CLP' },
-      },
-      lines: [],
-      totalQuantity: 0,
-    };
   }
 
   const res = await shopifyFetch<ShopifyUpdateCartOperation>({

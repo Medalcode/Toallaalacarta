@@ -1,0 +1,32 @@
+---
+import Base from "@/layouts/Base.astro";
+
+const { searchParams } = Astro.url;
+const orderId = searchParams.get('orderId');
+---
+
+<Base title="Pedido Exitoso - Toalla a la Carta">
+  <section class="section py-20">
+    <div class="container text-center">
+      <div class="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+        </svg>
+      </div>
+      
+      <h1 class="h2 mb-4">¡Gracias por tu compra!</h1>
+      <p class="text-lg text-gray-600 mb-8">
+        Tu pedido ha sido recibido y está siendo procesado.
+      </p>
+      
+      <div class="inline-block bg-gray-50 border rounded-lg p-6 mb-10">
+        <span class="block text-gray-500 text-sm mb-1">Número de Orden</span>
+        <span class="font-mono font-bold text-xl text-primary">{orderId}</span>
+      </div>
+      
+      <div>
+        <a href="/" class="btn btn-primary">Volver al Inicio</a>
+      </div>
+    </div>
+  </section>
+</Base>
