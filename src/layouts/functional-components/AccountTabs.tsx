@@ -3,23 +3,50 @@ import { databases, APPWRITE_CONFIG, account } from '@/lib/appwrite';
 import { Query } from 'appwrite';
 import { BiUser, BiShoppingBag } from "react-icons/bi";
 
-export default function AccountTabs({ user }: { user: any }) {
+export default function AccountTabs({ user: initialUser }: { user: any }) {
+  const [user, setUser] = useState<any>(initialUser);
   const [activeTab, setActiveTab] = useState<'profile' | 'orders'>('profile');
   const [orders, setOrders] = useState<any[]>([]);
   const [loadingOrders, setLoadingOrders] = useState(false);
   
   // Profile State
   const [formData, setFormData] = useState({
-    name: user?.firstName || '',
-    phone: user?.phone || '',
-    email: user?.email || '',
+    name: '',
+    phone: '',
+    email: '',
     password: ''
   });
   const [profileMsg, setProfileMsg] = useState('');
 
+  // 1. Fetch Real User Data on Mount (Client Side)
+  useEffect(() => {
+    const getRealUser = async () => {
+        try {
+            const realUser = await account.get();
+            setUser({
+                firstName: realUser.name,
+                email: realUser.email,
+                phone: realUser.phone,
+                id: realUser.$id
+            });
+            // Update form data with real values
+            setFormData(prev => ({
+                ...prev,
+                name: realUser.name,
+                email: realUser.email,
+                phone: realUser.phone
+            }));
+        } catch (e) {
+            console.error("Could not fetch auth user", e);
+        }
+    };
+    getRealUser();
+  }, []);
+
   // Fetch Orders
   useEffect(() => {
-    if (activeTab === 'orders' && user?.email) {
+    // Only fetch if tab is active AND we have a valid real email
+    if (activeTab === 'orders' && user?.email && user.email !== 'user@example.com') {
       setLoadingOrders(true);
       const fetchOrders = async () => {
          try {
@@ -50,17 +77,14 @@ export default function AccountTabs({ user }: { user: any }) {
     try {
         if(formData.name !== user.firstName) {
             await account.updateName(formData.name);
+             // Update local state to reflect change immediately
+            setUser((prev: any) => ({ ...prev, firstName: formData.name }));
         }
         if(formData.phone !== user.phone && formData.phone) {
-             // Appwrite phone needs strict formatting, let's assume valid or catch error
              await account.updatePhone(formData.phone, formData.password); 
-             // Note: updatePhone often requires password for security if used
-             // Actually currently updatePhone might not need password if prompt, but here usually does.
-             // For simplicity let's stick to Name updates or just simple fields if password not provided.
         }
-        // Email update usually requires verification flow, skipping for now.
         
-        setProfileMsg('Perfil actualizado correctamente (Recarga la página para ver cambios)');
+        setProfileMsg('Perfil actualizado correctamente.');
     } catch (err: any) {
         setProfileMsg('Error: ' + err.message);
     }
@@ -124,9 +148,7 @@ export default function AccountTabs({ user }: { user: any }) {
       {/* Orders Content */}
       {activeTab === 'orders' && (
         <div className="space-y-4">
-           {loadingOrders ? (
-             <p>Cargando pedidos...</p>
-           ) : orders.length === 0 ? (
+           {orders.length === 0 ? (
              <p className="text-gray-500">No tienes pedidos registrados aún.</p>
            ) : (
              <div className="overflow-x-auto">
@@ -137,15 +159,14 @@ export default function AccountTabs({ user }: { user: any }) {
                         <th className="px-4 py-3">Fecha</th>
                         <th className="px-4 py-3">Total</th>
                         <th className="px-4 py-3">Estado</th>
-                        {/* <th className="px-4 py-3">Acción</th> */}
                     </tr>
                  </thead>
                  <tbody className="divide-y">
-                    {orders.map(order => (
+                    {orders.map((order: any) => (
                         <tr key={order.$id}>
                             <td className="px-4 py-3 font-medium text-gray-900">{order.$id}</td>
                             <td className="px-4 py-3">{new Date(order.$createdAt).toLocaleDateString()}</td>
-                            <td className="px-4 py-3">${order.total_price.toLocaleString('es-CL')}</td>
+                            <td className="px-4 py-3">${order.total_price ? order.total_price.toLocaleString('es-CL') : '0'}</td>
                             <td className="px-4 py-3">
                                 <span className={`px-2 py-1 rounded text-xs font-semibold ${
                                     order.status === 'paid' ? 'bg-green-100 text-green-800' : 
@@ -154,11 +175,6 @@ export default function AccountTabs({ user }: { user: any }) {
                                     {order.status || 'Pendiente'}
                                 </span>
                             </td>
-                            {/* 
-                            <td className="px-4 py-3">
-                                <button className="text-primary hover:underline">Ver Detalle</button>
-                            </td>
-                            */}
                         </tr>
                     ))}
                  </tbody>
