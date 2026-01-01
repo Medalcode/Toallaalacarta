@@ -430,7 +430,13 @@ export const mockCollections: Collection[] = [
       description: 'Descubre nuestros productos más vendidos con bordados personalizados de alta calidad'
     },
     updatedAt: new Date().toISOString(),
-    path: '/products'
+    path: '/products',
+    image: {
+      url: '/images/products/set-toallas-familiares.png',
+      altText: 'Productos Destacados',
+      width: 1024,
+      height: 1024
+    }
   },
   {
     handle: 'toallas',
@@ -441,7 +447,13 @@ export const mockCollections: Collection[] = [
       description: 'Toallas de alta calidad con bordado personalizado. Baño, mano y playa.'
     },
     updatedAt: new Date().toISOString(),
-    path: '/products'
+    path: '/products',
+    image: {
+      url: '/images/products/toalla-bano-premium.jpg',
+      altText: 'Toallas Personalizadas',
+      width: 1024,
+      height: 1024
+    }
   },
   {
     handle: 'albornoces',
@@ -452,7 +464,13 @@ export const mockCollections: Collection[] = [
       description: 'Albornoces de spa y batas de casa con bordado personalizado de alta calidad'
     },
     updatedAt: new Date().toISOString(),
-    path: '/products'
+    path: '/products',
+    image: {
+      url: '/images/products/albornoz-personalizado.png',
+      altText: 'Albornoces y Batas',
+      width: 1024,
+      height: 1024
+    }
   },
   {
     handle: 'regalos',
@@ -463,6 +481,12 @@ export const mockCollections: Collection[] = [
       description: 'Sets de toallas personalizadas perfectos para regalar en cualquier ocasión'
     },
     updatedAt: new Date().toISOString(),
-    path: '/products'
+    path: '/products',
+    image: {
+      url: '/images/products/set-toallas-familiares.png',
+      altText: 'Sets de Regalo',
+      width: 1024,
+      height: 1024
+    }
   }
 ];

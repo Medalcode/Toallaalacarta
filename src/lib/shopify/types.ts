@@ -170,6 +170,7 @@ export type ShopifyCollection = {
   seo: SEO;
   updatedAt: string;
   path?: string;
+  image?: Image;
   products?: {
     edges: Array<ShopifyProduct>;
   };
