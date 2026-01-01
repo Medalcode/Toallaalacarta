@@ -106,15 +106,15 @@ const ProductList = ({
     }
   }, [pageInfo?.endCursor, currentSortKey, currentReverse, sortChanged]);
 
-  const resultsText = products.length > 1 ? "results" : "result";
+  const resultsText = products.length > 1 ? "resultados" : "resultado";
 
   return (
     <div className="row mx-auto px-4">
       {searchValue ? (
         <p className="mb-4">
           {products.length === 0
-            ? "There are no products that match "
-            : `Showing ${products.length} ${resultsText} for `}
+            ? "No hay productos que coincidan con "
+            : `Mostrando ${products.length} ${resultsText} para `}
           <span className="font-bold text-dark dark:text-darkmode-text-dark">&quot;{searchValue}&quot;</span>
         </p>
       ) : null}
@@ -128,9 +128,9 @@ const ProductList = ({
             width={211}
             height={184}
           />
-          <h1 className="h2 mb-4">No Product Found!</h1>
+          <h1 className="h2 mb-4">¡No se encontraron productos!</h1>
           <p>
-            We couldn&apos;t find what you filtered for. Try filtering again.
+            No encontramos lo que buscabas. Intenta filtrar de nuevo.
           </p>
         </div>
       )}
@@ -209,7 +209,7 @@ const ProductList = ({
 
       {pageInfo?.hasNextPage && (
         <div ref={loaderRef} className="text-center pt-10 pb-4 w-full">
-          {loading ? <BiLoaderAlt className={`animate-spin mx-auto`} size={30} /> : 'Scroll for more'}
+          {loading ? <BiLoaderAlt className={`animate-spin mx-auto`} size={30} /> : 'Desliza para ver más'}
         </div>
       )}
     </div>

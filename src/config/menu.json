@@ -1,58 +1,43 @@
 {
   "main": [
     {
-      "name": "Home",
+      "name": "Inicio",
       "url": "/"
     },
     {
-      "name": "Products",
+      "name": "Productos",
       "url": "/products"
     },
     {
-      "name": "Pages",
-      "url": "",
-      "hasChildren": true,
-      "children": [
-        {
-          "name": "About",
-          "url": "/about"
-        },
-        {
-          "name": "Contact",
-          "url": "/contact"
-        },
-        {
-          "name": "404 Page",
-          "url": "/404"
-        }
-      ]
+      "name": "Nosotros",
+      "url": "/about"
     },
     {
-      "name": "Contact",
+      "name": "Contacto",
       "url": "/contact"
     }
   ],
   "footer": [
     {
-      "name": "About",
+      "name": "Nosotros",
       "url": "/about"
     },
     {
-      "name": "Products",
+      "name": "Productos",
       "url": "/products"
     },
     {
-      "name": "Contact",
+      "name": "Contacto",
       "url": "/contact"
     }
   ],
   "footerCopyright": [
     {
-      "name": "Privacy & Policy",
+      "name": "Política de Privacidad",
       "url": "/privacy-policy"
     },
     {
-      "name": "Terms of Service",
+      "name": "Términos de Servicio",
       "url": "/terms-services"
     }
   ]

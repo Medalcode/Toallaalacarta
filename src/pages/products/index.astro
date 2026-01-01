@@ -87,9 +87,9 @@ if (searchValue || brand || minPrice || maxPrice || category || tag) {
     ...new Set(
       ((productsData?.products as Product[]) || []).flatMap(
         (product: Product) =>
-          product.collections.nodes.map(
+          product.collections?.nodes?.map(
             (collectionNode: any) => collectionNode.title || ""
-          )
+          ) || []
       )
     ),
   ];
@@ -104,7 +104,7 @@ if (searchValue || brand || minPrice || maxPrice || category || tag) {
   categoriesWithCounts = uniqueCategories.map((category: string) => {
     const productCount = ((productsData?.products as Product[]) || []).filter(
       (product: Product) =>
-        product.collections.nodes.some(
+        product.collections?.nodes?.some(
           (collectionNode: any) => collectionNode.title === category
         )
     ).length;

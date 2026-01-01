@@ -64,8 +64,8 @@ const CartModal: React.FC = () => {
         >
           <div className="h-fit flex flex-col border-l border-b drop-shadow-lg rounded-bl-md border-neutral-200 bg-body p-6 text-black dark:border-neutral-700 dark:bg-darkmode-body dark:text-white">
             <div className="flex items-center justify-between">
-              <p className="text-lg font-semibold">Your Cart</p>
-              <button aria-label="Close cart" onClick={closeCart}>
+              <p className="text-lg font-semibold">Tu Carrito</p>
+              <button aria-label="Cerrar carrito" onClick={closeCart}>
                 <CloseCart />
               </button>
             </div>
@@ -77,9 +77,9 @@ const CartModal: React.FC = () => {
               <div className="md:mt-16">
                 <FaShoppingCart size={76} />
               </div>
-              <p>Oops. Your Bag Is Empty.</p>
+              <p>Ups. Tu bolsa está vacía.</p>
               <a href="/products" className="btn btn-primary w-full">
-                Don't Miss Out: Add Product
+                No te lo pierdas: Agrega productos
               </a>
             </div>
           </div>
@@ -90,7 +90,7 @@ const CartModal: React.FC = () => {
 
   return (
     <>
-      <div className="cursor-pointer" aria-label="Open cart" onClick={openCart}>
+      <div className="cursor-pointer" aria-label="Abrir carrito" onClick={openCart}>
         <OpenCart quantity={quantity} />
       </div>
 
@@ -106,8 +106,8 @@ const CartModal: React.FC = () => {
       >
         <div className="h-fit flex flex-col border-l border-b drop-shadow-lg rounded-bl-md border-neutral-200 bg-body p-6 text-black dark:border-neutral-700 dark:bg-darkmode-body dark:text-white">
           <div className="flex items-center justify-between">
-            <p className="text-lg font-semibold">Your Cart</p>
-            <button aria-label="Close cart" onClick={closeCart}>
+            <p className="text-lg font-semibold">Tu Carrito</p>
+            <button aria-label="Cerrar carrito" onClick={closeCart}>
               <CloseCart />
             </button>
           </div>
@@ -177,7 +177,7 @@ const CartModal: React.FC = () => {
 
             <div className="py-4 text-sm text-neutral-500 dark:text-neutral-400">
               <div className="mb-3 flex items-center justify-between border-b border-neutral-200 pb-1 dark:border-neutral-700">
-                <p>Taxes</p>
+                <p>Impuestos</p>
                 <Price
                   className="text-right text-base text-black dark:text-white"
                   amount={currentCart.cost.totalTaxAmount.amount}
@@ -185,8 +185,8 @@ const CartModal: React.FC = () => {
                 />
               </div>
               <div className="mb-3 flex items-center justify-between border-b border-neutral-200 pb-1 pt-1 dark:border-neutral-700">
-                <p>Shipping</p>
-                <p className="text-right">Calculated at checkout</p>
+                <p>Envío</p>
+                <p className="text-right">Calculado al pagar</p>
               </div>
               <div className="mb-3 flex items-center justify-between border-b border-neutral-200 pb-1 pt-1 dark:border-neutral-700">
                 <p>Total</p>
@@ -208,7 +208,7 @@ const CartModal: React.FC = () => {
               href="/checkout"
               className="block w-full rounded-md bg-dark dark:bg-light p-3 text-center text-sm font-medium text-white dark:text-text-dark opacity-100 hover:opacity-90"
             >
-              Proceed to Checkout
+              Ir a Pagar
             </a>
           </div>
         </div>

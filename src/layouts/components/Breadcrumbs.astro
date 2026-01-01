@@ -6,17 +6,26 @@ const { className }: { className?: string } = Astro.props;
 const paths = Astro.url.pathname.split("/").filter((x) => x);
 let parts = [
   {
-    label: "Home",
+    label: "Inicio",
     href: "/",
     "aria-label": Astro.url.pathname === "/" ? "page" : undefined,
   },
 ];
 
+const labelMapping: Record<string, string> = {
+  "contact": "Contacto",
+  "about": "Nosotros",
+  "products": "Productos",
+  "checkout": "Pagar",
+  "cart": "Carrito",
+  "categories": "Colecciones"
+};
+
 paths.forEach((label: string, i: number) => {
   const href = `/${paths.slice(0, i + 1).join("/")}`;
   label !== "page" &&
     parts.push({
-      label: humanize(label.replace(".html", "").replace(/[-_]/g, " ")) || "",
+      label: labelMapping[label] || humanize(label.replace(".html", "").replace(/[-_]/g, " ")) || "",
       href,
       "aria-label": Astro.url.pathname === href ? "page" : undefined,
     });

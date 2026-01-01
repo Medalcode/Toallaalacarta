@@ -1,12 +1,11 @@
 ---
 enable: true
-title: "Curved Collection for Your
-Bedroom Get 25% Off"
-sub_title: "Deal of the Week"
+title: "Colección Premium para tu <br/> Baño: 25% de Descuento"
+sub_title: "Oferta de la Semana"
 image: "/images/call-to-action.png"
-description: "Subscribe our Newsletter and get all latest information and offers"
+description: "Suscríbete a nuestro boletín para recibir las últimas novedades y ofertas"
 button:
   enable: true
-  label: "Shop Now"
+  label: "Comprar Ahora"
   link: "/products"
 ---

@@ -1,66 +1,51 @@
 ---
-title: "About Us"
-meta_title: "About"
+title: "Sobre Nosotros"
+meta_title: "Sobre Nosotros"
 description: ""
 image: ""
 draft: false
 
 #About Us
 about_us:
-  - title: "Our Company"
+  - title: "Nuestra Empresa"
     image: "/images/aboutUs.png"
-    content: "Welcome to **Storeplate** where brilliance meets innovation. We take pride in being your ultimate destination for exquisite lighting solutions that illuminate spaces and lives alike. With a passion for creating luminous experiences, we curate a diverse range of cutting-edge light fixtures designed to elevate any environment. Our commitment to quality craftsmanship and a keen eye for aesthetic appeal ensures that each product we offer is not just a source of light,<br/><br/> but a work of art in its own right. Whether you're seeking ambient elegance for your home or functional brilliance for a commercial space, [Your Company Name] is dedicated to bringing your vision to light. Explore our collection and let your surroundings shine with a touch of our radiant expertise. Elevate your space, embrace the light, only with **Storeplate**."
+    content: "Bienvenido a **Toalla a la Carta**, donde la calidad se encuentra con la personalización. Nos enorgullece ser tu destino definitivo para toallas y textiles de baño bordados que elevan tus espacios y momentos. Con una pasión por los detalles, curamos una gama diversa de productos diseñados para brindar confort y exclusividad. Nuestro compromiso con la artesanía de calidad y un ojo agudo para el diseño asegura que cada producto que ofrecemos no sea solo una toalla,<br/><br/> sino una pieza única. Ya sea que busques elegancia para tu hogar o un regalo memorable, **Toalla a la Carta** está dedicada a bordar tu visión. Explora nuestra colección y deja que tus textiles hablen por ti."
 
-  - title: "Who We Are ?"
+  - title: "¿Quiénes Somos?"
     image: "/images/aboutUs.png"
-    content: "At **Storeplate** we illuminate your world with a curated collection of exceptional lighting solutions. Established with a passion for transforming spaces and creating ambiance, we stand as a beacon of quality and style in the realm of lighting. With a keen eye for design and a commitment to sourcing the finest materials, we pride ourselves on offering a diverse range of work that not only brighten spaces but also elevate aesthetics. <br/><br/> Committed to delivering excellence, we prioritize customer satisfaction and provide expert guidance to help you find the perfect lighting solution for any setting. Welcome to **Storeplate** where light meets inspiration. Illuminate your world today!"
+    content: "En **Toalla a la Carta** iluminamos tu baño con una colección curada de textiles excepcionales. Establecidos con la pasión por transformar lo cotidiano, nos destacamos por la calidad y el estilo. <br/><br/> Comprometidos con la excelencia, priorizamos la satisfacción del cliente y ofrecemos guía experta para ayudarte a encontrar el bordado perfecto para cualquier ocasión. ¡Bienvenido a **Toalla a la Carta**, donde el hilo encuentra la inspiración!"
 
 # Frequently Asked Questions
-faq_section_title: "Frequently Asked Questions"
-faq_section_subtitle: "Our expertly crafted FAQ guide provides valuable insights on selecting the perfect table lamp to complement your decor and meet your specific lighting needs."
+faq_section_title: "Preguntas Frecuentes"
+faq_section_subtitle: "Nuestra guía de preguntas frecuentes te ayuda a resolver dudas sobre personalización, envíos y cuidados de tus toallas."
 button:
   enable: true
-  label: "Contact Us"
+  label: "Contáctanos"
   link: "/contact"
 faqs:
-  - title: "Can I customize lamps for client projects?"
-    content: "Yes, our platform allows customization for client projects, ensuring unique and tailored solutions. Yes, our platform allows customization for client projects, ensuring unique and tailored solutions."
+  - title: "¿Puedo personalizar mis toallas?"
+    content: "¡Sí! Nuestra especialidad es el bordado personalizado. Puedes elegir texto, fuente y color de hilo directamente en la página del producto."
 
-  - title: "Where are your lamps crafted?"
-    content: "Our lamps are meticulously crafted, combining quality materials and skilled workmanship to deliver exceptional products. Our lamps are meticulously crafted, combining quality materials and skilled workmanship to deliver exceptional products."
+  - title: "¿Dónde se fabrican sus productos?"
+    content: "Nuestras toallas son importadas de proveedores de alta calidad (ej. algodón egipcio) y bordadas localmente en Chile con la máxima atención al detalle."
 
-  - title: "What's included in the 'free updates' policy?"
-    content: "Free updates encompass enhancements to lamp designs and features, ensuring your collection stays current and appealing. Free updates encompass enhancements to lamp designs and features, ensuring your collection stays current and appealing"
+  - title: "¿Qué cuidados debo tener?"
+    content: "Recomendamos lavar a máquina con agua tibia y evitar el uso excesivo de suavizantes para mantener la absorción. Secar a temperatura media."
 
-  - title: "Can I use your lamps for open source projects?"
-    content: "Certainly! Our lamps are open for integration into various projects, fostering creativity and innovation. Certainly! Our lamps are open for integration into various projects, fostering creativity and innovation."
+  - title: "¿Hacen envíos a todo Chile?"
+    content: "¡Por supuesto! Enviamos a todas las regiones de Chile a través de couriers confiables."
 
-  - title: "Can I retail themes featuring your lamps?"
-    content: "Absolutely! You can sell themes created with our lamps, providing stylish solutions for diverse design needs. Absolutely! You can sell themes created with our lamps, providing stylish solutions for diverse design needs."
+  - title: "¿Ofrecen venta al por mayor?"
+    content: "Sí, ofrecemos precios especiales para hoteles, spas y compras corporativas. Contáctanos para más detalles."
 
 # Testimonials
 testimonials_section_enable: true
-testimonials_section_title: "What Our Client Says"
+testimonials_section_title: "Lo que dicen nuestros clientes"
 testimonials:
-  - name: "Ava Sinclair"
-    designation: "Lead Frontend Architect"
+  - name: "Ana Silva"
+    designation: "Cliente Feliz"
     avatar: "/images/avatar-sm.png"
-    content: "Storeplate has been a game-changer for our e-commerce setup. This Astro-Shopify boilerplate blends the speed and flexibility of Astro with the powerful e-commerce capabilities of Shopify, giving us the perfect foundation for a high-performance, modern storefront. Setup was smooth, and it’s optimized for seamless integration with Shopify’s API, so we were able to get our site up and running quickly without compromising on customizations or functionality. Storeplate’s clean codebase and scalability make it an ideal solution for any team looking to leverage Astro’s benefits in an e-commerce context. Highly recommended for anyone looking to streamline their Shopify store with the speed of Astro!"
-
-  - name: "Jordan Patel"
-    designation: "E-commerce Solutions Strategist"
-    avatar: "/images/avatar-sm.png"
-    content: "Storeplate has been a game-changer for our e-commerce setup. This Astro-Shopify boilerplate blends the speed and flexibility of Astro with the powerful e-commerce capabilities of Shopify, giving us the perfect foundation for a high-performance, modern storefront. Setup was smooth, and it’s optimized for seamless integration with Shopify’s API, so we were able to get our site up and running quickly without compromising on customizations or functionality. Storeplate’s clean codebase and scalability make it an ideal solution for any team looking to leverage Astro’s benefits in an e-commerce context. Highly recommended for anyone looking to streamline their Shopify store with the speed of Astro!"
-
-  - name: "Lena Brooks"
-    designation: "Digital Experience Specialist"
-    avatar: "/images/avatar-sm.png"
-    content: "Storeplate has been a game-changer for our e-commerce setup. This Astro-Shopify boilerplate blends the speed and flexibility of Astro with the powerful e-commerce capabilities of Shopify, giving us the perfect foundation for a high-performance, modern storefront. Setup was smooth, and it’s optimized for seamless integration with Shopify’s API, so we were able to get our site up and running quickly without compromising on customizations or functionality. Storeplate’s clean codebase and scalability make it an ideal solution for any team looking to leverage Astro’s benefits in an e-commerce context. Highly recommended for anyone looking to streamline their Shopify store with the speed of Astro!"
-
-  - name: "Marvin McKinney"
-    designation: "Web Designer"
-    avatar: "/images/avatar-sm.png"
-    content: "Storeplate has been a game-changer for our e-commerce setup. This Astro-Shopify boilerplate blends the speed and flexibility of Astro with the powerful e-commerce capabilities of Shopify, giving us the perfect foundation for a high-performance, modern storefront. Setup was smooth, and it’s optimized for seamless integration with Shopify’s API, so we were able to get our site up and running quickly without compromising on customizations or functionality. Storeplate’s clean codebase and scalability make it an ideal solution for any team looking to leverage Astro’s benefits in an e-commerce context. Highly recommended for anyone looking to streamline their Shopify store with the speed of Astro!"
+    content: "La calidad de las toallas es increíble, super suaves y absorbentes. El bordado quedó precioso, tal como lo imaginé. ¡Definitivamente compraré más para regalar!"
 
 # Our Staff
 staff_section_enable: true

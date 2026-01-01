@@ -32,9 +32,9 @@ function SubmitButton({
       <button
         disabled
         aria-disabled
-        className={`${buttonClasses} ${disabledClasses}`}
+          className={`${buttonClasses} ${disabledClasses}`}
       >
-        Out Of Stock
+        Agotado
       </button>
     );
   }
@@ -43,11 +43,11 @@ function SubmitButton({
     return (
       <DynamicTag
         href={`/products/${handle}`}
-        aria-label="Please select an option"
+        aria-label="Por favor selecciona una opción"
         aria-disabled
         className={`${buttonClasses} ${DynamicTag === "button" ? disabledClasses : ""}`}
       >
-        Select Variant
+        Seleccionar Variante
       </DynamicTag>
     );
   }
@@ -55,7 +55,7 @@ function SubmitButton({
   return (
     <button
       onClick={onClick}
-      aria-label="Add to cart"
+      aria-label="Agregar al carrito"
       aria-disabled={pending ? "true" : "false"}
       className={`${buttonClasses}`}
     >
@@ -65,7 +65,7 @@ function SubmitButton({
           size={26}
         />
       ) : (
-        "Add To Cart"
+        "Agregar al Carrito"
       )}
     </button>
   );
@@ -196,32 +196,32 @@ export function AddToCart({
   return (
     <form onSubmit={handleSubmit} className="w-full">
       <div className="mb-6 p-4 bg-light/50 dark:bg-darkmode-light/50 rounded-lg border border-border">
-        <h3 className="text-lg font-medium mb-4">Personalization</h3>
+        <h3 className="text-lg font-medium mb-4">Personalización</h3>
         
         <div className="mb-4">
-          <label htmlFor="embroidery-text" className="block text-sm font-medium mb-2">Border Text (Optional)</label>
+          <label htmlFor="embroidery-text" className="block text-sm font-medium mb-2">Bordado (Opcional)</label>
           <input
             id="embroidery-text"
             type="text"
             className="w-full px-4 py-2 rounded-md border border-border bg-white dark:bg-darkmode-body focus:ring-primary focus:border-primary"
-            placeholder="Name or Initials"
+            placeholder="Nombre o Iniciales"
             value={$embroideryText}
             onChange={(e) => embroideryText.set(e.target.value)}
             maxLength={12}
           />
-          <p className="text-xs text-text-light mt-1">Max 12 characters</p>
+          <p className="text-xs text-text-light mt-1">Máx 12 caracteres</p>
         </div>
 
         {$embroideryText && (
           <div className="space-y-6">
             {/* Font Selection */}
             <div>
-              <label className="block text-sm font-medium mb-3">Font Style</label>
+              <label className="block text-sm font-medium mb-3">Estilo de Fuente</label>
               <div className="flex gap-2">
                 {[
-                  { name: 'Cursive', font: 'Dancing Script', class: 'font-secondary' },
-                  { name: 'Modern', font: 'Outfit', class: 'font-primary' },
-                  { name: 'Classic', font: 'Serif', class: 'font-serif' }
+                  { name: 'Cursiva', font: 'Dancing Script', class: 'font-secondary' },
+                  { name: 'Moderna', font: 'Outfit', class: 'font-primary' },
+                  { name: 'Clásica', font: 'Serif', class: 'font-serif' }
                 ].map((font) => (
                   <button
                     key={font.name}
@@ -241,7 +241,7 @@ export function AddToCart({
 
             {/* Color Selection */}
             <div>
-            <label className="block text-sm font-medium mb-3">Thread Color</label>
+            <label className="block text-sm font-medium mb-3">Color del Hilo</label>
             <div className="flex flex-wrap gap-3">
               {[
                 { name: 'Gold', hex: '#D4AF37' },
@@ -267,7 +267,7 @@ export function AddToCart({
                 />
               ))}
             </div>
-            <p className="text-sm mt-2 text-text-light">Selected: <span className="font-medium text-text-dark dark:text-darkmode-text-dark">{$embroideryColor}</span></p>
+            <p className="text-sm mt-2 text-text-light">Seleccionado: <span className="font-medium text-text-dark dark:text-darkmode-text-dark">{$embroideryColor}</span></p>
           </div>
           </div>
         )}

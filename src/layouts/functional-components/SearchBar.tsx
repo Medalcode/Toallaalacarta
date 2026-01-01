@@ -50,7 +50,7 @@ const SearchBar = () => {
       <input
         type="text"
         name="search"
-        placeholder="Search for products"
+        placeholder="Buscar productos"
         autoComplete="off"
         value={inputValue}
         onChange={handleChange}
