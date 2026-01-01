@@ -11,6 +11,8 @@ import {
   editCartItemsMutation,
   removeFromCartMutation,
 } from "./mutations/cart";
+import { ID, Query } from "appwrite";
+import { databases, APPWRITE_CONFIG } from "@/lib/appwrite";
 import {
   createCustomerMutation,
   getCustomerAccessTokenMutation,
@@ -239,27 +241,40 @@ const reshapeProducts = (products: ShopifyProduct[]) => {
 };
 
 export async function createCart(): Promise<Cart> {
-  // Return mock cart if in mock mode
+  // Use Appwrite for backend if in MOCK_MODE (Database Mode)
   if (MOCK_MODE) {
-    if (typeof window !== 'undefined') {
-      const stored = localStorage.getItem('mockCart');
-      if (stored) return JSON.parse(stored);
+    try {
+      const doc = await databases.createDocument(
+        APPWRITE_CONFIG.DATABASE_ID,
+        APPWRITE_CONFIG.COLLECTION_CARTS,
+        ID.unique(),
+        {
+          created_at: new Date().toISOString(),
+        }
+      );
+      
+      return {
+        id: doc.$id,
+        checkoutUrl: '#checkout-disabled-in-demo',
+        cost: {
+          subtotalAmount: { amount: '0', currencyCode: 'CLP' },
+          totalAmount: { amount: '0', currencyCode: 'CLP' },
+          totalTaxAmount: { amount: '0', currencyCode: 'CLP' },
+        },
+        lines: [],
+        totalQuantity: 0,
+      };
+    } catch (e) {
+      console.error("Appwrite createCart error:", e);
+      // Fallback to local
+      return {
+         id: 'offline-' + Date.now(),
+         checkoutUrl: '#',
+         cost: { subtotalAmount: {amount:'0', currencyCode:'CLP'}, totalAmount: {amount:'0', currencyCode:'CLP'}, totalTaxAmount: {amount:'0', currencyCode:'CLP'} },
+         lines: [],
+         totalQuantity: 0
+      };
     }
-    const newCart = {
-      id: 'mock-cart-' + Date.now(),
-      checkoutUrl: '#',
-      cost: {
-        subtotalAmount: { amount: '0', currencyCode: 'CLP' },
-        totalAmount: { amount: '0', currencyCode: 'CLP' },
-        totalTaxAmount: { amount: '0', currencyCode: 'CLP' },
-      },
-      lines: [],
-      totalQuantity: 0,
-    };
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('mockCart', JSON.stringify(newCart));
-    }
-    return newCart;
   }
 
   const res = await shopifyFetch<ShopifyCreateCartOperation>({
@@ -273,62 +288,50 @@ export async function addToCart(
   cartId: string,
   lines: { merchandiseId: string; quantity: number; attributes?: { key: string; value: string }[] }[],
 ): Promise<Cart> {
-  // Return mock cart in mock mode
+  // Return Appwrite cart in mock mode
   if (MOCK_MODE) {
-    let currentCart: Cart | null = null;
-    if (typeof window !== 'undefined') {
-      const stored = localStorage.getItem('mockCart');
-      if (stored) currentCart = JSON.parse(stored);
-    }
-
-    if (!currentCart) {
-      currentCart = await createCart();
-    }
-
-    // Find the product for the merchandise
-    const newCartItems = lines.map(line => {
-      const productId = line.merchandiseId.split('/').pop()?.split('Variant')[0];
+    try {
+      const newLine = lines[0]; // Assuming one line addition at a time usually
+      const productId = newLine.merchandiseId.split('/').pop()?.split('Variant')[0];
       const product = mockProducts.find(p => p.id.includes(productId || ''));
-      
-      return {
-        id: 'mock-line-' + Date.now() + Math.random(),
-        quantity: line.quantity,
-        cost: {
-          totalAmount: product?.priceRange.minVariantPrice || { amount: '0', currencyCode: 'CLP' },
-        },
-        merchandise: {
-          id: line.merchandiseId,
-          title: product?.variants.edges[0]?.node.title || 'Producto',
-          selectedOptions: product?.variants.edges[0]?.node.selectedOptions || [],
-          product: product ? reshapeProduct(product, false)! : {} as any,
-        },
-        attributes: line.attributes || [],
+      const variant = product?.variants.edges.find(e => e.node.id === newLine.merchandiseId)?.node;
+
+      await databases.createDocument(
+        APPWRITE_CONFIG.DATABASE_ID,
+        APPWRITE_CONFIG.COLLECTION_CART_LINES,
+        ID.unique(),
+        {
+          cart_id: cartId,
+          merchandise_id: newLine.merchandiseId,
+          quantity: newLine.quantity,
+          attributes_json: JSON.stringify(newLine.attributes || []),
+          product_title: product?.title || 'Unknown Product',
+          variant_title: variant?.title || 'Default Title',
+          price_amount: parseFloat(variant?.price.amount || '0'),
+          image_url: product?.images.edges[0]?.node.url || ''
+        }
+      );
+
+      // Fetch updated cart
+      return await getCart(cartId) || {
+          id: cartId,
+          checkoutUrl: '#',
+          cost: { subtotalAmount: {amount:'0', currencyCode:'CLP'}, totalAmount: {amount:'0', currencyCode:'CLP'}, totalTaxAmount: {amount:'0', currencyCode:'CLP'} },
+          lines: [],
+          totalQuantity: 0
       };
-    });
 
-    // Merge with existing lines
-    const updatedLines = [...currentCart.lines, ...newCartItems];
-
-    const subtotal = updatedLines.reduce((sum, item) => 
-      sum + parseFloat(item.cost.totalAmount.amount) * item.quantity, 0
-    );
-
-    const updatedCart = {
-      ...currentCart,
-      cost: {
-        ...currentCart.cost,
-        subtotalAmount: { amount: subtotal.toString(), currencyCode: 'CLP' },
-        totalAmount: { amount: subtotal.toString(), currencyCode: 'CLP' },
-      },
-      lines: updatedLines,
-      totalQuantity: updatedLines.reduce((sum, item) => sum + item.quantity, 0),
-    };
-
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('mockCart', JSON.stringify(updatedCart));
+    } catch (e) {
+      console.error("Appwrite addToCart error:", e);
+      // Fallback
+      return {
+          id: cartId,
+          checkoutUrl: '#',
+          cost: { subtotalAmount: {amount:'0', currencyCode:'CLP'}, totalAmount: {amount:'0', currencyCode:'CLP'}, totalTaxAmount: {amount:'0', currencyCode:'CLP'} },
+          lines: [],
+          totalQuantity: 0
+      };
     }
-
-    return updatedCart;
   }
 
   const res = await shopifyFetch<ShopifyAddToCartOperation>({
@@ -462,13 +465,59 @@ export async function updateCart(
 }
 
 export async function getCart(cartId: string): Promise<Cart | undefined> {
-  // Return undefined in mock mode (cart is session-based)
+  // Use Appwrite for backend if in MOCK_MODE
   if (MOCK_MODE) {
-    if (typeof window !== 'undefined') {
-      const stored = localStorage.getItem('mockCart');
-      if (stored) return JSON.parse(stored);
+    try {
+        // Fetch cart lines
+        const linesResponse = await databases.listDocuments(
+            APPWRITE_CONFIG.DATABASE_ID,
+            APPWRITE_CONFIG.COLLECTION_CART_LINES,
+            [Query.equal('cart_id', cartId), Query.limit(100)]
+        );
+
+        const lines = linesResponse.documents.map(doc => {
+            return {
+                id: doc.$id,
+                quantity: doc.quantity,
+                cost: {
+                    totalAmount: { 
+                        amount: String(doc.price_amount * doc.quantity), 
+                        currencyCode: 'CLP' 
+                    }
+                },
+                merchandise: {
+                    id: doc.merchandise_id,
+                    title: doc.variant_title || 'Variant',
+                    selectedOptions: [{name: 'Title', value: doc.variant_title}], 
+                    product: {
+                        title: doc.product_title || 'Product',
+                        handle: 'toalla-bano-premium-personalizada', // hardcoded fallback for url
+                        featuredImage: { url: doc.image_url || '' },
+                        images: { edges: [{ node: { url: doc.image_url || '', altText: '' } }] }
+                    }
+                },
+                attributes: doc.attributes_json ? JSON.parse(doc.attributes_json) : []
+            };
+        });
+
+        const subtotal = lines.reduce((sum: number, line: any) => sum + parseFloat(line.cost.totalAmount.amount), 0);
+        
+        return {
+            id: cartId,
+            checkoutUrl: '#',
+            cost: {
+                subtotalAmount: { amount: subtotal.toString(), currencyCode: 'CLP' },
+                totalAmount: { amount: subtotal.toString(), currencyCode: 'CLP' },
+                totalTaxAmount: { amount: '0', currencyCode: 'CLP' }
+            },
+            lines: lines as any[],
+            totalQuantity: lines.reduce((sum: number, line: any) => sum + line.quantity, 0)
+        };
+
+    } catch (e) {
+        console.error("Error getting Appwrite cart:", e);
+        return undefined;
     }
-    return undefined;
   }
 
   const res = await shopifyFetch<ShopifyCartOperation>({
