@@ -34,7 +34,22 @@ export const POST: APIRoute = async ({ request }) => {
     });
 
     if (customerCreateErrors && customerCreateErrors.length > 0) {
-      return new Response(JSON.stringify({ errors: customerCreateErrors }), {
+      // Check for duplicate user errors and provide user-friendly messages
+      const errorMessage = customerCreateErrors[0]?.message || "";
+      let userFriendlyMessage = errorMessage;
+      
+      if (errorMessage.includes("same id") || errorMessage.includes("already exists")) {
+        userFriendlyMessage = "Este RUT ya está registrado. Si ya tienes una cuenta, inicia sesión.";
+      } else if (errorMessage.includes("email")) {
+        userFriendlyMessage = "Este correo electrónico ya está registrado.";
+      }
+      
+      return new Response(JSON.stringify({ 
+        errors: [{ 
+          code: "REGISTRATION_ERROR",
+          message: userFriendlyMessage 
+        }] 
+      }), {
         status: 400,
         headers: { "Content-Type": "application/json" },
       });
@@ -54,17 +69,28 @@ export const POST: APIRoute = async ({ request }) => {
     return response;
   } catch (error: any) {
     console.error("Error in API:", error);
+    
+    // Check for duplicate user error (RUT already exists)
+    const errorMessage = error.message || "";
+    let userFriendlyMessage = "Ocurrió un error al crear la cuenta";
+    
+    if (errorMessage.includes("same id") || errorMessage.includes("already exists")) {
+      userFriendlyMessage = "Este RUT ya está registrado. Si ya tienes una cuenta, inicia sesión.";
+    } else if (errorMessage.includes("email")) {
+      userFriendlyMessage = "Este correo electrónico ya está registrado.";
+    }
+    
     return new Response(
       JSON.stringify({
         errors: [
           {
-            code: "INTERNAL_ERROR",
-            message: error.message || "An unknown error occurred",
+            code: "REGISTRATION_ERROR",
+            message: userFriendlyMessage,
           },
         ],
       }),
       {
-        status: 500,
+        status: 400,
         headers: { "Content-Type": "application/json" },
       },
     );

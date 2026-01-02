@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { BiLoaderAlt } from "react-icons/bi";
+import { FiCheck, FiX } from "react-icons/fi";
 import { validateRut, formatRut } from "@/lib/rut";
 
 export interface FormData {
@@ -19,6 +20,7 @@ const SignUpForm = () => {
 
   const [loading, setLoading] = useState(false);
   const [errorMessages, setErrorMessages] = useState<string[]>([]);
+  const [rutValid, setRutValid] = useState<boolean | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let value = e.target.value;
@@ -26,6 +28,12 @@ const SignUpForm = () => {
     // Auto-format RUT
     if (e.target.name === "rut") {
         value = formatRut(value);
+        // Validate RUT in real-time
+        if (value.length >= 8) {
+          setRutValid(validateRut(value));
+        } else {
+          setRutValid(null);
+        }
     }
 
     setFormData({
@@ -107,15 +115,38 @@ const SignUpForm = () => {
 
                <div className="mt-8">
                 <label className="form-label">RUT</label>
-                <input
-                  name="rut"
-                  className="form-input"
-                  placeholder="12.345.678-9"
-                  type="text"
-                  onChange={handleChange}
-                  value={formData.rut}
-                  required
-                />
+                <div className="relative">
+                  <input
+                    name="rut"
+                    className={`form-input pr-10 ${
+                      rutValid === true
+                        ? "border-green-500 focus:border-green-500"
+                        : rutValid === false
+                        ? "border-red-500 focus:border-red-500"
+                        : ""
+                    }`}
+                    placeholder="12.345.678-9"
+                    type="text"
+                    onChange={handleChange}
+                    value={formData.rut}
+                    required
+                  />
+                  {rutValid === true && (
+                    <FiCheck
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-green-500"
+                      size={20}
+                    />
+                  )}
+                  {rutValid === false && (
+                    <FiX
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-red-500"
+                      size={20}
+                    />
+                  )}
+                </div>
+                {rutValid === false && formData.rut.length >= 8 && (
+                  <p className="text-sm text-red-500 mt-1">El RUT ingresado no es válido</p>
+                )}
               </div>
 
               <div>

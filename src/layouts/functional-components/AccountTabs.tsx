@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { databases, APPWRITE_CONFIG, account } from '@/lib/appwrite';
 import { Query } from 'appwrite';
 import { BiUser, BiShoppingBag } from "react-icons/bi";
+import { formatRut } from '@/lib/rut';
 
 export default function AccountTabs({ user: initialUser }: { user: any }) {
   const [user, setUser] = useState<any>(initialUser);
@@ -139,6 +140,17 @@ export default function AccountTabs({ user: initialUser }: { user: any }) {
       {/* Profile Content */}
       {activeTab === 'profile' && (
         <form onSubmit={handleProfileUpdate} className="space-y-4 max-w-lg">
+           <div>
+             <label className="block text-sm font-medium mb-1">RUT</label>
+             <input 
+               type="text" 
+               value={user?.id ? formatRut(user.id) : ''} 
+               disabled 
+               className="w-full bg-gray-100 border border-gray-300 rounded px-3 py-2 cursor-not-allowed" 
+             />
+             <p className="text-xs text-gray-500 mt-1">Tu RUT es tu identificador único y no se puede cambiar.</p>
+           </div>
+           
            <div>
              <label className="block text-sm font-medium mb-1">Email</label>
              <input type="email" value={formData.email} disabled className="w-full bg-gray-100 border border-gray-300 rounded px-3 py-2 cursor-not-allowed" />
