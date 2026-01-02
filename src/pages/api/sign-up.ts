@@ -1,6 +1,7 @@
 import { createCustomer, getCustomerAccessToken } from "@/lib/shopify";
 import type { APIRoute } from "astro";
 import { validateRut } from "@/lib/rut";
+import { sendWelcomeEmail } from "@/lib/email";
 
 export const POST: APIRoute = async ({ request }) => {
   try {
@@ -57,6 +58,17 @@ export const POST: APIRoute = async ({ request }) => {
 
     // Generate token
     const { token } = await getCustomerAccessToken({ email, password });
+
+    // Send welcome email (non-blocking)
+    try {
+      await sendWelcomeEmail({
+        to: email,
+        name: firstName,
+      });
+    } catch (emailError) {
+      // Log error but don't fail the registration
+      console.error('⚠️  Failed to send welcome email:', emailError);
+    }
 
     const response = new Response(JSON.stringify({ customer, token }), {
       status: 200,

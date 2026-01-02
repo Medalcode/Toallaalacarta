@@ -1,0 +1,32 @@
+---
+import Base from "@/layouts/Base.astro";
+import { isAdmin } from "@/lib/admin-utils";
+import AdminDashboard from "@/layouts/functional-components/admin/AdminDashboard";
+
+// Check authentication
+const token = Astro.cookies.get("token")?.value;
+
+if (!token) {
+  return Astro.redirect("/login?redirect=/admin");
+}
+
+// Check if user is admin
+const userIsAdmin = await isAdmin(token);
+
+if (!userIsAdmin) {
+  return Astro.redirect("/?error=unauthorized");
+}
+---
+
+<Base title="Panel de Administración - Toalla a la Carta">
+  <section class="section py-10">
+    <div class="container">
+      <div class="mb-8">
+        <h1 class="h2 mb-2">Panel de Administración</h1>
+        <p class="text-gray-600">Gestiona pedidos, clientes y estadísticas</p>
+      </div>
+      
+      <AdminDashboard client:load token={token} />
+    </div>
+  </section>
+</Base>

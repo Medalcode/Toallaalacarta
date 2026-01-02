@@ -3,30 +3,100 @@ import Base from "@/layouts/Base.astro";
 
 const { searchParams } = Astro.url;
 const orderId = searchParams.get('orderId');
+const orderNumber = searchParams.get('orderNumber');
 ---
 
 <Base title="Pedido Exitoso - Toalla a la Carta">
   <section class="section py-20">
-    <div class="container text-center">
-      <div class="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-        </svg>
+    <div class="container max-w-3xl mx-auto">
+      <div class="text-center mb-12">
+        <div class="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+          </svg>
+        </div>
+        
+        <h1 class="h2 mb-4">¡Gracias por tu compra!</h1>
+        <p class="text-lg text-gray-600 mb-2">
+          Tu pedido ha sido recibido y está siendo procesado.
+        </p>
+        <p class="text-sm text-gray-500">
+          Recibirás un correo de confirmación con los detalles de tu pedido.
+        </p>
       </div>
       
-      <h1 class="h2 mb-4">¡Gracias por tu compra!</h1>
-      <p class="text-lg text-gray-600 mb-8">
-        Tu pedido ha sido recibido y está siendo procesado.
-      </p>
+      {orderNumber && (
+        <div class="bg-gradient-to-r from-primary/10 to-primary/5 border-2 border-primary/20 rounded-lg p-8 mb-8 text-center">
+          <span class="block text-gray-600 text-sm font-medium mb-2">Número de Orden</span>
+          <span class="font-mono font-bold text-3xl text-primary">{orderNumber}</span>
+          <p class="text-xs text-gray-500 mt-2">Guarda este número para hacer seguimiento de tu pedido</p>
+        </div>
+      )}
       
-      <div class="inline-block bg-gray-50 border rounded-lg p-6 mb-10">
-        <span class="block text-gray-500 text-sm mb-1">Número de Orden</span>
-        <span class="font-mono font-bold text-xl text-primary">{orderId}</span>
+      <div class="bg-white border rounded-lg p-6 mb-8">
+        <h2 class="text-xl font-semibold mb-4 text-gray-900">¿Qué sigue?</h2>
+        <div class="space-y-4">
+          <div class="flex items-start gap-3">
+            <div class="flex-shrink-0 w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center text-primary font-bold">
+              1
+            </div>
+            <div>
+              <h3 class="font-medium text-gray-900">Confirmación por Email</h3>
+              <p class="text-sm text-gray-600">Recibirás un correo con los detalles de tu pedido y el resumen de compra.</p>
+            </div>
+          </div>
+          
+          <div class="flex items-start gap-3">
+            <div class="flex-shrink-0 w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center text-primary font-bold">
+              2
+            </div>
+            <div>
+              <h3 class="font-medium text-gray-900">Procesamiento del Pedido</h3>
+              <p class="text-sm text-gray-600">Prepararemos tu pedido con el bordado personalizado que solicitaste.</p>
+            </div>
+          </div>
+          
+          <div class="flex items-start gap-3">
+            <div class="flex-shrink-0 w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center text-primary font-bold">
+              3
+            </div>
+            <div>
+              <h3 class="font-medium text-gray-900">Envío</h3>
+              <p class="text-sm text-gray-600">Te notificaremos cuando tu pedido sea enviado con el número de seguimiento.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-8">
+        <div class="flex items-start gap-3">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <div>
+            <h3 class="font-medium text-blue-900 mb-1">Información Importante</h3>
+            <p class="text-sm text-blue-800">
+              Los bordados personalizados pueden tomar entre 3-5 días hábiles en ser procesados antes del envío.
+              Si tienes alguna pregunta sobre tu pedido, no dudes en contactarnos.
+            </p>
+          </div>
+        </div>
       </div>
       
-      <div>
-        <a href="/" class="btn btn-primary">Volver al Inicio</a>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a href="/account" class="btn btn-outline text-center">
+          Ver Mis Pedidos
+        </a>
+        <a href="/" class="btn btn-primary text-center">
+          Volver al Inicio
+        </a>
       </div>
+
+      {orderId && (
+        <p class="text-xs text-gray-400 text-center mt-8">
+          ID de referencia: {orderId}
+        </p>
+      )}
     </div>
   </section>
 </Base>
