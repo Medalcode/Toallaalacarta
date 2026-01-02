@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import Cookies from 'js-cookie';
 
-export default function CheckoutForm({ cartId }: { cartId: string }) {
+export default function CheckoutForm({ cartId, user }: { cartId: string, user?: any }) {
   const [formData, setFormData] = useState({
-    email: '',
-    firstName: '',
-    lastName: '',
+    email: user?.email || '',
+    firstName: user?.firstName || '',
+    lastName: user?.lastName || '', // If we had it separate
     address: '',
     city: '',
-    phone: ''
+    phone: user?.phone || ''
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -29,8 +29,11 @@ export default function CheckoutForm({ cartId }: { cartId: string }) {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          ...formData,
-          cartId
+          address: formData.address,
+          city: formData.city,
+          cartId,
+          // Email, firstName, lastName, phone are NOT sent
+          // Backend will use authenticated user's data
         }),
       });
 
@@ -40,7 +43,7 @@ export default function CheckoutForm({ cartId }: { cartId: string }) {
         throw new Error(data.detail || data.message || 'Error en el servidor');
       }
 
-      // 2. Clear Cart (Client side cookie removal)
+      // 2. Clear Cart
       Cookies.remove('cartId');
 
       // 3. Redirect to Success Page
@@ -54,6 +57,8 @@ export default function CheckoutForm({ cartId }: { cartId: string }) {
     }
   };
 
+  const readOnlyClass = "bg-gray-100 cursor-not-allowed text-gray-500";
+
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-2">
@@ -62,7 +67,8 @@ export default function CheckoutForm({ cartId }: { cartId: string }) {
           type="email" 
           name="email" 
           required 
-          className="w-full px-3 py-2 border rounded-md focus:ring-primary focus:border-primary border-gray-300"
+          readOnly={!!user?.email}
+          className={`w-full px-3 py-2 border rounded-md focus:ring-primary focus:border-primary border-gray-300 ${user?.email ? readOnlyClass : ''}`}
           value={formData.email}
           onChange={handleChange}
         />
@@ -75,7 +81,8 @@ export default function CheckoutForm({ cartId }: { cartId: string }) {
             type="text" 
             name="firstName" 
             required 
-            className="w-full px-3 py-2 border rounded-md focus:ring-primary focus:border-primary border-gray-300"
+            readOnly={!!user?.firstName}
+            className={`w-full px-3 py-2 border rounded-md focus:ring-primary focus:border-primary border-gray-300 ${user?.firstName ? readOnlyClass : ''}`}
             value={formData.firstName}
             onChange={handleChange}
           />
@@ -86,7 +93,10 @@ export default function CheckoutForm({ cartId }: { cartId: string }) {
             type="text" 
             name="lastName" 
             required 
-            className="w-full px-3 py-2 border rounded-md focus:ring-primary focus:border-primary border-gray-300"
+            // We assume last name might not be in the 'firstName' field from Appwrite, or we let them edit if empty
+            // If we want to strictly lock it, we can. Let's lock it only if populated.
+             readOnly={!!user?.lastName} // Usually undefined in our current mapping
+             className={`w-full px-3 py-2 border rounded-md focus:ring-primary focus:border-primary border-gray-300 ${user?.lastName ? readOnlyClass : ''}`}
             value={formData.lastName}
             onChange={handleChange}
           />
@@ -123,7 +133,8 @@ export default function CheckoutForm({ cartId }: { cartId: string }) {
             type="tel" 
             name="phone" 
             required 
-            className="w-full px-3 py-2 border rounded-md focus:ring-primary focus:border-primary border-gray-300"
+            readOnly={!!user?.phone}
+            className={`w-full px-3 py-2 border rounded-md focus:ring-primary focus:border-primary border-gray-300 ${user?.phone ? readOnlyClass : ''}`}
             value={formData.phone}
             onChange={handleChange}
           />

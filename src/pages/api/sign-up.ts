@@ -1,5 +1,6 @@
 import { createCustomer, getCustomerAccessToken } from "@/lib/shopify";
 import type { APIRoute } from "astro";
+import { validateRut } from "@/lib/rut";
 
 export const POST: APIRoute = async ({ request }) => {
   try {
@@ -7,16 +8,29 @@ export const POST: APIRoute = async ({ request }) => {
     const firstName = formData.get("firstName")?.toString();
     const email = formData.get("email")?.toString();
     const password = formData.get("password")?.toString();
+    const rut = formData.get("rut")?.toString();
 
-    if (!email || !password || !firstName) {
-      return new Response("Email and password are required", { status: 400 });
+    if (!email || !password || !firstName || !rut) {
+      return new Response("Todos los campos son obligatorios", { status: 400 });
     }
 
-    // Create customer via Shopify API
+    if (!validateRut(rut)) {
+        return new Response(JSON.stringify({ errors: [{ message: "RUT inválido" }] }), {
+            status: 400,
+            headers: { "Content-Type": "application/json" },
+        });
+    }
+
+    // Sanitize RUT to use as User ID (remove dots and dash)
+    // Example: 12.345.678-9 -> 123456789
+    const sanitizedRut = rut.replace(/\./g, "").replace(/-/g, "").toLowerCase();
+
+    // Create customer via Shopify API (or Appwrite adapter)
     const { customer, customerCreateErrors } = await createCustomer({
       email,
       password,
       firstName,
+      id: sanitizedRut // Pass RUT as the ID
     });
 
     if (customerCreateErrors && customerCreateErrors.length > 0) {

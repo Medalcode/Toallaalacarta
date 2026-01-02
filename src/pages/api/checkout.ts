@@ -1,21 +1,51 @@
 import type { APIRoute } from "astro";
 import { getCart } from "@/lib/shopify";
-import { Client, Databases, ID } from "appwrite";
+import { Client, Databases, ID, Account } from "appwrite";
 import { APPWRITE_CONFIG } from "@/lib/appwrite";
 
 export const POST: APIRoute = async ({ request, cookies }) => {
   try {
     const formData = await request.json();
-    const { email, firstName, lastName, address, city, phone, cartId } = formData;
+    const { address, city, cartId } = formData;
 
-    // Validate required fields
-    if (!email || !address || !cartId) {
-      return new Response(JSON.stringify({ message: "Missing required fields" }), {
+    // 1. Require Authentication
+    const token = cookies.get("token")?.value;
+    
+    if (!token) {
+        return new Response(JSON.stringify({ message: "Debes iniciar sesión para realizar un pedido" }), {
+            status: 401,
+        });
+    }
+
+    // 2. Setup Appwrite Client with Session
+    const client = new Client();
+    client
+      .setEndpoint(import.meta.env.PUBLIC_APPWRITE_ENDPOINT)
+      .setProject(import.meta.env.PUBLIC_APPWRITE_PROJECT_ID)
+      .setSession(token);
+
+    const account = new Account(client);
+    const databases = new Databases(client);
+
+    // 3. Get Authenticated User Details (source of truth)
+    let user;
+    try {
+        user = await account.get();
+    } catch (authError) {
+        console.error("Authentication failed in checkout:", authError);
+        return new Response(JSON.stringify({ message: "Sesión inválida o expirada" }), {
+            status: 401,
+        });
+    }
+
+    // 4. Validate Shipping Fields (only these come from user input)
+    if (!address || !city || !cartId) {
+      return new Response(JSON.stringify({ message: "Dirección y ciudad son obligatorias" }), {
         status: 400,
       });
     }
 
-    // 1. Calculate Total Price securely from Cart
+    // 5. Calculate Total Price securely from Cart
     let totalPrice = 0;
     try {
       const cart = await getCart(cartId);
@@ -24,43 +54,22 @@ export const POST: APIRoute = async ({ request, cookies }) => {
       }
     } catch (e) {
       console.error("Error fetching cart for checkout:", e);
-      // Fallback or fail? We proceed with 0 or fail. 
-      // Proceeding might be safer for now to get the order through in this 'fix' phase.
     }
 
-    // 2. Setup Appwrite Client
-    const client = new Client();
-    client
-      .setEndpoint(import.meta.env.PUBLIC_APPWRITE_ENDPOINT)
-      .setProject(import.meta.env.PUBLIC_APPWRITE_PROJECT_ID);
-
-    // 3. Handle Authentication (Session)
-    // If the user is logged in, we want to create the order as "them".
-    // If they are guest, we validly might have issues if permissions allow only "Users".
-    // Try to retrieve the session token from cookies to act as the user.
-    const token = cookies.get("token")?.value;
-    
-    if (token) {
-        client.setSession(token);
-    }
-    
-    // Note: If 'token' is missing (Guest), this creates the document as a Guest.
-    // If 'Orders' collection requires authentication, this will fail for Guests.
-    // Ideally, we would use an API Key here to bypass permissions if we wanted to support Guest Checkout 
-    // without public write access, but standard pattern is Client-Side or Session-Based.
-    
-    const databases = new Databases(client);
-
+    // 6. Create Order using AUTHENTICATED user data
     const order = await databases.createDocument(
       APPWRITE_CONFIG.DATABASE_ID,
       APPWRITE_CONFIG.COLLECTION_ORDERS,
       ID.unique(),
       {
-        customer_email: email,
+        customer_email: user.email, // From authenticated session
         total_price: totalPrice,
-        // status: 'pending', // Removed as it is not in the schema yet
-        // shipping_address_json: JSON.stringify({ firstName, lastName, address, city, phone }), // TODO: Add to schema
-        // line_items_json: JSON.stringify({ cartId }) // TODO: Add to schema 
+        // shipping_address_json: JSON.stringify({ 
+        //   name: user.name, 
+        //   phone: user.phone, 
+        //   address, 
+        //   city 
+        // }), // TODO: Add to schema when ready
       }
     );
 
@@ -75,7 +84,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     console.error("Checkout API Error:", error);
     return new Response(
       JSON.stringify({ 
-        message: "Error processing order", 
+        message: "Error procesando el pedido", 
         detail: error.message 
       }),
       { status: 500 }

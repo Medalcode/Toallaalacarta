@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import { BiLoaderAlt } from "react-icons/bi";
+import { validateRut, formatRut } from "@/lib/rut";
 
 export interface FormData {
   firstName?: string;
   email: string;
   password: string;
+  rut: string;
 }
 
 const SignUpForm = () => {
@@ -12,20 +14,33 @@ const SignUpForm = () => {
     firstName: "",
     email: "",
     password: "",
+    rut: "",
   });
 
   const [loading, setLoading] = useState(false);
   const [errorMessages, setErrorMessages] = useState<string[]>([]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let value = e.target.value;
+    
+    // Auto-format RUT
+    if (e.target.name === "rut") {
+        value = formatRut(value);
+    }
+
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [e.target.name]: value,
     });
   };
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!validateRut(formData.rut)) {
+        setErrorMessages(["El RUT ingresado no es válido."]);
+        return;
+    }
 
     try {
       setLoading(true);
@@ -33,6 +48,7 @@ const SignUpForm = () => {
       form.append("firstName", formData.firstName || "");
       form.append("email", formData.email);
       form.append("password", formData.password);
+      form.append("rut", formData.rut);
 
       const response = await fetch("/api/sign-up", {
         method: "POST",
@@ -71,17 +87,17 @@ const SignUpForm = () => {
         <div className="row">
           <div className="col-11 sm:col-9 md:col-7 mx-auto">
             <div className="mb-14 text-center">
-              <h2 className="max-md:h1 md:mb-2">Create an account</h2>
-              <p className="md:text-lg">Create an account and start using...</p>
+              <h2 className="max-md:h1 md:mb-2">Crear una cuenta</h2>
+              <p className="md:text-lg">Regístrate para comenzar a comprar...</p>
             </div>
 
             <form onSubmit={handleSignUp}>
               <div>
-                <label className="form-label">Name</label>
+                <label className="form-label">Nombre</label>
                 <input
                   name="firstName"
                   className="form-input"
-                  placeholder="Enter your name"
+                  placeholder="Tu nombre completo"
                   type="text"
                   onChange={handleChange}
                   value={formData.firstName}
@@ -89,12 +105,25 @@ const SignUpForm = () => {
                 />
               </div>
 
+               <div className="mt-8">
+                <label className="form-label">RUT</label>
+                <input
+                  name="rut"
+                  className="form-input"
+                  placeholder="12.345.678-9"
+                  type="text"
+                  onChange={handleChange}
+                  value={formData.rut}
+                  required
+                />
+              </div>
+
               <div>
-                <label className="form-label mt-8">Email Address</label>
+                <label className="form-label mt-8">Correo Electrónico</label>
                 <input
                   name="email"
                   className="form-input"
-                  placeholder="Type your email"
+                  placeholder="ejemplo@correo.com"
                   type="email"
                   onChange={handleChange}
                   value={formData.email}
@@ -103,7 +132,7 @@ const SignUpForm = () => {
               </div>
 
               <div>
-                <label className="form-label mt-8">Password</label>
+                <label className="form-label mt-8">Contraseña</label>
                 <input
                   name="password"
                   className="form-input"
@@ -129,32 +158,20 @@ const SignUpForm = () => {
                 {loading ? (
                   <BiLoaderAlt className="animate-spin mx-auto" size={26} />
                 ) : (
-                  "Sign Up"
+                  "Registrarse"
                 )}
               </button>
             </form>
 
             <div className="flex gap-x-2 text-sm md:text-base mt-6">
               <p className="text-text-light dark:text-darkmode-text-light">
-                I have read and agree to the
-              </p>
-              <a
-                className="underline font-medium text-text-dark dark:text-darkmode-text-dark"
-                href="/terms-services"
-              >
-                Terms & Conditions
-              </a>
-            </div>
-
-            <div className="flex gap-x-2 text-sm md:text-base mt-2">
-              <p className="text-text-light dark:text-darkmode-text-light">
-                Have an account?
+                Ya tienes cuenta?
               </p>
               <a
                 className="underline font-medium text-text-dark dark:text-darkmode-text-dark"
                 href="/login"
               >
-                Login
+                Iniciar Sesión
               </a>
             </div>
           </div>

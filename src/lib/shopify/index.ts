@@ -244,10 +244,13 @@ export async function createCart(): Promise<Cart> {
   // Use Appwrite for backend if in MOCK_MODE (Database Mode)
   if (MOCK_MODE) {
     try {
+      const client = createNodeClient();
+      const databases = new NodeDatabases(client);  
+
       const doc = await databases.createDocument(
         APPWRITE_CONFIG.DATABASE_ID,
         APPWRITE_CONFIG.COLLECTION_CARTS,
-        ID.unique(),
+        NodeID.unique(),
         {
           created_at: new Date().toISOString(),
         }
@@ -291,15 +294,25 @@ export async function addToCart(
   // Return Appwrite cart in mock mode
   if (MOCK_MODE) {
     try {
+      const client = createNodeClient();
+      const databases = new NodeDatabases(client);
+
       const newLine = lines[0]; // Assuming one line addition at a time usually
-      const productId = newLine.merchandiseId.split('/').pop()?.split('Variant')[0];
-      const product = mockProducts.find(p => p.id.includes(productId || ''));
-      const variant = product?.variants.edges.find(e => e.node.id === newLine.merchandiseId)?.node;
+      
+      // Flatten all variants to find the matching one
+      const allVariants = mockProducts.flatMap(p => 
+          p.variants.edges.map(e => ({ variant: e.node, product: p }))
+      );
+      
+      const match = allVariants.find(m => m.variant.id === newLine.merchandiseId);
+      
+      const product = match?.product;
+      const variant = match?.variant;
 
       await databases.createDocument(
         APPWRITE_CONFIG.DATABASE_ID,
         APPWRITE_CONFIG.COLLECTION_CART_LINES,
-        ID.unique(),
+        NodeID.unique(),
         {
           cart_id: cartId,
           merchandise_id: newLine.merchandiseId,
@@ -455,11 +468,14 @@ export async function getCart(cartId: string): Promise<Cart | undefined> {
   // Use Appwrite for backend if in MOCK_MODE
   if (MOCK_MODE) {
     try {
+        const client = createNodeClient();
+        const databases = new NodeDatabases(client);
+
         // Fetch cart lines
         const linesResponse = await databases.listDocuments(
             APPWRITE_CONFIG.DATABASE_ID,
             APPWRITE_CONFIG.COLLECTION_CART_LINES,
-            [Query.equal('cart_id', cartId), Query.limit(100)]
+            [NodeQuery.equal('cart_id', cartId), NodeQuery.limit(100)]
         );
 
         const lines = linesResponse.documents.map(doc => {
@@ -592,11 +608,11 @@ export async function getCollectionProducts({
 }
 
 import { account as globalAccount } from "@/lib/appwrite";
-import { Client, Account } from "appwrite";
+import { Client as NodeClient, Account as NodeAccount, ID as NodeID, Databases as NodeDatabases, Query as NodeQuery } from "node-appwrite";
 
-// Helper to get a fresh client for server-side operations
-const createAppwriteClient = () => {
-    const client = new Client();
+// Helper to get a fresh client for server-side operations using Node SDK to avoid localStorage/window issues
+const createNodeClient = () => {
+    const client = new NodeClient();
     client
         .setEndpoint(import.meta.env.PUBLIC_APPWRITE_ENDPOINT)
         .setProject(import.meta.env.PUBLIC_APPWRITE_PROJECT_ID);
@@ -607,12 +623,12 @@ export async function createCustomer(input: CustomerInput): Promise<any> {
     if (MOCK_MODE) {
       try {
         // Use a fresh client to avoid session pollution
-        const tempClient = createAppwriteClient();
-        const tempAccount = new Account(tempClient);
+        const tempClient = createNodeClient();
+        const tempAccount = new NodeAccount(tempClient);
 
         // Appwrite requires email, password, and name (optional)
         const user = await tempAccount.create(
-          ID.unique(),
+          input.id ? input.id : NodeID.unique(),
           input.email,
           input.password,
           input.firstName
@@ -663,8 +679,8 @@ export async function getCustomerAccessToken({
     if (MOCK_MODE) {
       try {
         // Use a fresh client
-        const tempClient = createAppwriteClient();
-        const tempAccount = new Account(tempClient);
+        const tempClient = createNodeClient();
+        const tempAccount = new NodeAccount(tempClient);
 
         // Create session in Appwrite
         const session = await tempAccount.createEmailPasswordSession(
@@ -721,7 +737,7 @@ export async function getUserDetails(accessToken: string): Promise<user> {
          // IF we assume the environment passed the cookies (which it didn't automatically in Node).
          
          // Let's use the fresh client but we need to tell it about the session.
-         const tempClient = createAppwriteClient();
+         const tempClient = createNodeClient();
          
          // HACK: Manually setting the cookie header if we can, or just trying to proceed.
          // If we can't validate the session, we might fail here.

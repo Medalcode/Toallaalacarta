@@ -13,6 +13,7 @@ export interface CustomerInput {
   password: string;
   firstName: string;
   lastName?: string;
+  id?: string;
 }
 
 export interface CustomerAccessTokenInput {

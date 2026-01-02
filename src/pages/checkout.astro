@@ -10,6 +10,18 @@ let cart;
 if (cartId) {
   cart = await getCart(cartId);
 }
+
+const token = Astro.cookies.get("token")?.value;
+let user;
+
+if (token) {
+    try {
+        const userData = await getUserDetails(token);
+        user = userData?.customer;
+    } catch (e) {
+        console.error("Error fetching user in checkout:", e);
+    }
+}
 ---
 
 <Base title="Checkout - Toalla a la Carta">
@@ -22,7 +34,7 @@ if (cartId) {
           <div class="col-12 lg:col-7">
             <div class="box bg-white p-8 shadow-sm rounded-lg">
               <h3 class="h4 mb-6 border-b pb-4">Detalles de Envío</h3>
-              <CheckoutForm client:load cartId={cartId || ''} />
+              <CheckoutForm client:load cartId={cartId || ''} user={user} />
             </div>
           </div>
           

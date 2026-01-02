@@ -11,9 +11,9 @@ export default function AccountTabs({ user: initialUser }: { user: any }) {
   
   // Profile State
   const [formData, setFormData] = useState({
-    name: '',
-    phone: '',
-    email: '',
+    name: user?.firstName || '',
+    phone: user?.phone || '',
+    email: user?.email || '',
     password: ''
   });
   const [profileMsg, setProfileMsg] = useState('');
@@ -70,18 +70,46 @@ export default function AccountTabs({ user: initialUser }: { user: any }) {
     }
   }, [activeTab, user]);
 
+  // Update form data when user changes
+  useEffect(() => {
+     if(user) {
+         setFormData(prev => ({
+             ...prev,
+             name: user.firstName || '',
+             email: user.email || '',
+             phone: user.phone || ''
+         }));
+     }
+  }, [user]);
 
   const handleProfileUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     setProfileMsg('Actualizando...');
     try {
-        if(formData.name !== user.firstName) {
-            await account.updateName(formData.name);
-             // Update local state to reflect change immediately
-            setUser((prev: any) => ({ ...prev, firstName: formData.name }));
+        const response = await fetch('/api/profile/update', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                name: formData.name !== user.firstName ? formData.name : undefined,
+                phone: formData.phone !== user.phone ? formData.phone : undefined,
+                password: formData.password
+            })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.message || 'Error al actualizar perfil');
         }
-        if(formData.phone !== user.phone && formData.phone) {
-             await account.updatePhone(formData.phone, formData.password); 
+
+        // Update local state to reflect change immediately if successful
+        if(formData.name) {
+             setUser((prev: any) => ({ ...prev, firstName: formData.name }));
+        }
+        if(formData.phone) {
+             setUser((prev: any) => ({ ...prev, phone: formData.phone }));
         }
         
         setProfileMsg('Perfil actualizado correctamente.');
@@ -141,7 +169,7 @@ export default function AccountTabs({ user: initialUser }: { user: any }) {
            
            <button type="submit" className="btn btn-primary">Guardar Cambios</button>
            
-           {profileMsg && <p className="mt-2 text-sm text-green-600 font-medium">{profileMsg}</p>}
+           {profileMsg && <p className={`mt-2 text-sm font-medium ${profileMsg.startsWith('Error') ? 'text-red-600' : 'text-green-600'}`}>{profileMsg}</p>}
         </form>
       )}
 
