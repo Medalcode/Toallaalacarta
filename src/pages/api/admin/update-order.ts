@@ -1,5 +1,6 @@
 import type { APIRoute } from "astro";
-import { isAdmin, updateOrderStatus } from "@/lib/admin-utils";
+import { isAdmin, updateOrderStatus, getOrderById } from "@/lib/admin-utils";
+import { sendOrderProcessingEmail, sendOrderShippedEmail, sendOrderDeliveredEmail } from "@/lib/email";
 
 export const POST: APIRoute = async ({ request, cookies }) => {
   try {
@@ -34,6 +35,10 @@ export const POST: APIRoute = async ({ request, cookies }) => {
       });
     }
 
+    // Get current order to check previous status
+    const currentOrder = await getOrderById(token, orderId);
+    const previousStatus = currentOrder.status;
+
     // Update order
     const updatedOrder = await updateOrderStatus({
       token,
@@ -42,7 +47,55 @@ export const POST: APIRoute = async ({ request, cookies }) => {
       trackingNumber,
     });
 
-    console.log(`✅ Order ${orderId} updated to status: ${status}`);
+    console.log(`✅ Order ${orderId} updated from ${previousStatus} to ${status}`);
+
+    // Send email notification if status changed
+    if (previousStatus !== status) {
+      try {
+        const customerEmail = updatedOrder.customer_email;
+        const customerName = updatedOrder.customer_name;
+        const orderNumber = updatedOrder.order_number;
+
+        // Send appropriate email based on new status
+        switch (status) {
+          case 'processing':
+            await sendOrderProcessingEmail({
+              to: customerEmail,
+              orderNumber,
+              customerName,
+            });
+            console.log(`📧 Processing email sent to ${customerEmail}`);
+            break;
+
+          case 'shipped':
+            await sendOrderShippedEmail({
+              to: customerEmail,
+              orderNumber,
+              customerName,
+              trackingNumber: trackingNumber || undefined,
+            });
+            console.log(`📧 Shipped email sent to ${customerEmail}`);
+            break;
+
+          case 'delivered':
+            await sendOrderDeliveredEmail({
+              to: customerEmail,
+              orderNumber,
+              customerName,
+            });
+            console.log(`📧 Delivered email sent to ${customerEmail}`);
+            break;
+
+          default:
+            // No email for other statuses (pending, cancelled)
+            console.log(`ℹ️ No email sent for status: ${status}`);
+        }
+      } catch (emailError) {
+        // Log email error but don't fail the request
+        console.error('Failed to send status update email:', emailError);
+        // Continue - order was updated successfully
+      }
+    }
 
     return new Response(JSON.stringify({ success: true, order: updatedOrder }), {
       status: 200,

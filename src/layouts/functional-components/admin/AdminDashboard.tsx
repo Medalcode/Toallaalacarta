@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { BiPackage, BiTime, BiCar, BiCheck, BiX, BiDollar, BiSearch } from 'react-icons/bi';
+import { BiPackage, BiTime, BiCar, BiCheck, BiX, BiDollar, BiSearch, BiDownload } from 'react-icons/bi';
 import { getStatusLabel, getStatusColor, formatPrice, getPaymentStatusLabel, getPaymentStatusColor } from '@/lib/order-utils';
 import { formatRut } from '@/lib/rut';
+import { ordersToCSV, downloadCSV, generateExportFilename, filterOrdersForExport } from '@/lib/export-utils';
 
 interface Order {
   $id: string;
@@ -86,6 +87,31 @@ export default function AdminDashboard({ token }: { token: string }) {
     }
   };
 
+  const handleExport = () => {
+    try {
+      // Prepare orders for export (parse JSON fields)
+      const ordersForExport = orders.map(order => ({
+        ...order,
+        shipping_address: JSON.parse(order.shipping_address_json || '{}'),
+        items: JSON.parse(order.items_json || '[]'),
+      }));
+
+      // Convert to CSV
+      const csvContent = ordersToCSV(ordersForExport as any);
+      
+      // Generate filename
+      const filename = generateExportFilename('pedidos', 'csv');
+      
+      // Download
+      downloadCSV(csvContent, filename);
+      
+      console.log(`✅ Exported ${orders.length} orders to ${filename}`);
+    } catch (error) {
+      console.error('Error exporting orders:', error);
+      alert('Error al exportar pedidos. Por favor, intenta nuevamente.');
+    }
+  };
+
   if (loading && !stats) {
     return (
       <div className="flex items-center justify-center py-20">
@@ -159,6 +185,16 @@ export default function AdminDashboard({ token }: { token: string }) {
             <option value="delivered">Entregado</option>
             <option value="cancelled">Cancelado</option>
           </select>
+
+          {/* Export Button */}
+          <button
+            onClick={handleExport}
+            disabled={orders.length === 0}
+            className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+          >
+            <BiDownload size={20} />
+            Exportar CSV ({orders.length})
+          </button>
         </div>
       </div>
 
