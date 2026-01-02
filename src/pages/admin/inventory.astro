@@ -1,0 +1,27 @@
+---
+import Base from "@/layouts/Base.astro";
+import InventoryManager from "@/layouts/functional-components/admin/InventoryManager";
+import { isAdmin } from "@/lib/admin-utils";
+
+// Check authentication
+const token = Astro.cookies.get("token")?.value;
+
+if (!token) {
+  return Astro.redirect("/login");
+}
+
+// Check if user is admin
+const userIsAdmin = await isAdmin(token);
+
+if (!userIsAdmin) {
+  return Astro.redirect("/");
+}
+---
+
+<Base title="Gestión de Inventario - Admin">
+  <div class="min-h-screen bg-gray-50 py-8">
+    <div class="container mx-auto px-4">
+      <InventoryManager client:load token={token} />
+    </div>
+  </div>
+</Base>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BiPackage, BiTime, BiCar, BiCheck, BiX, BiDollar, BiSearch, BiDownload } from 'react-icons/bi';
+import { BiPackage, BiTime, BiCar, BiCheck, BiX, BiDollar, BiSearch, BiDownload, BiSortUp, BiSortDown } from 'react-icons/bi';
 import { getStatusLabel, getStatusColor, formatPrice, getPaymentStatusLabel, getPaymentStatusColor } from '@/lib/order-utils';
 import { formatRut } from '@/lib/rut';
 import { ordersToCSV, downloadCSV, generateExportFilename, filterOrdersForExport } from '@/lib/export-utils';
@@ -31,6 +31,7 @@ interface Stats {
   averageOrderValue: number;
 }
 
+
 export default function AdminDashboard({ token }: { token: string }) {
   const [stats, setStats] = useState<Stats | null>(null);
   const [orders, setOrders] = useState<Order[]>([]);
@@ -38,10 +39,20 @@ export default function AdminDashboard({ token }: { token: string }) {
   const [selectedStatus, setSelectedStatus] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  
+  // Pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(10);
+
+  // Sorting
+  const [sortField, setSortField] = useState<'date' | 'total' | 'status'>('date');
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
+
 
   // Fetch stats and orders
   useEffect(() => {
     fetchData();
+    setCurrentPage(1); // Reset to first page when filters change
   }, [selectedStatus, searchQuery]);
 
   const fetchData = async () => {
@@ -110,6 +121,48 @@ export default function AdminDashboard({ token }: { token: string }) {
       console.error('Error exporting orders:', error);
       alert('Error al exportar pedidos. Por favor, intenta nuevamente.');
     }
+  };
+
+  // Sorting function
+  const handleSort = (field: 'date' | 'total' | 'status') => {
+    if (sortField === field) {
+      // Toggle direction if same field
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      // New field, default to descending
+      setSortField(field);
+      setSortDirection('desc');
+    }
+    setCurrentPage(1); // Reset to first page when sorting
+  };
+
+  // Sort orders
+  const sortedOrders = [...orders].sort((a, b) => {
+    let comparison = 0;
+    
+    switch (sortField) {
+      case 'date':
+        comparison = new Date(a.$createdAt).getTime() - new Date(b.$createdAt).getTime();
+        break;
+      case 'total':
+        comparison = a.total_price - b.total_price;
+        break;
+      case 'status':
+        comparison = a.status.localeCompare(b.status);
+        break;
+    }
+    
+    return sortDirection === 'asc' ? comparison : -comparison;
+  });
+
+  // Pagination calculations (using sorted orders)
+  const totalPages = Math.ceil(sortedOrders.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentOrders = sortedOrders.slice(startIndex, endIndex);
+
+  const goToPage = (page: number) => {
+    setCurrentPage(Math.max(1, Math.min(page, totalPages)));
   };
 
   if (loading && !stats) {
@@ -211,13 +264,37 @@ export default function AdminDashboard({ token }: { token: string }) {
                   Cliente
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Fecha
+                  <button
+                    onClick={() => handleSort('date')}
+                    className="flex items-center gap-1 hover:text-gray-700"
+                  >
+                    Fecha
+                    {sortField === 'date' && (
+                      sortDirection === 'asc' ? <BiSortUp size={16} /> : <BiSortDown size={16} />
+                    )}
+                  </button>
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Total
+                  <button
+                    onClick={() => handleSort('total')}
+                    className="flex items-center gap-1 hover:text-gray-700"
+                  >
+                    Total
+                    {sortField === 'total' && (
+                      sortDirection === 'asc' ? <BiSortUp size={16} /> : <BiSortDown size={16} />
+                    )}
+                  </button>
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Estado
+                  <button
+                    onClick={() => handleSort('status')}
+                    className="flex items-center gap-1 hover:text-gray-700"
+                  >
+                    Estado
+                    {sortField === 'status' && (
+                      sortDirection === 'asc' ? <BiSortUp size={16} /> : <BiSortDown size={16} />
+                    )}
+                  </button>
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Acciones
@@ -232,7 +309,7 @@ export default function AdminDashboard({ token }: { token: string }) {
                   </td>
                 </tr>
               ) : (
-                orders.map((order) => (
+                currentOrders.map((order) => (
                   <tr key={order.$id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-medium text-gray-900">{order.order_number}</div>
@@ -270,6 +347,64 @@ export default function AdminDashboard({ token }: { token: string }) {
             </tbody>
           </table>
         </div>
+
+        {/* Pagination Controls */}
+        {totalPages > 1 && (
+          <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
+            <div className="text-sm text-gray-700">
+              Mostrando <span className="font-medium">{startIndex + 1}</span> a{' '}
+              <span className="font-medium">{Math.min(endIndex, orders.length)}</span> de{' '}
+              <span className="font-medium">{orders.length}</span> pedidos
+            </div>
+            
+            <div className="flex gap-2">
+              <button
+                onClick={() => goToPage(currentPage - 1)}
+                disabled={currentPage === 1}
+                className="px-3 py-1 border rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+              >
+                Anterior
+              </button>
+              
+              {/* Page Numbers */}
+              <div className="flex gap-1">
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
+                  // Show first page, last page, current page, and pages around current
+                  if (
+                    page === 1 ||
+                    page === totalPages ||
+                    (page >= currentPage - 1 && page <= currentPage + 1)
+                  ) {
+                    return (
+                      <button
+                        key={page}
+                        onClick={() => goToPage(page)}
+                        className={`px-3 py-1 border rounded-md ${
+                          currentPage === page
+                            ? 'bg-primary text-white border-primary'
+                            : 'hover:bg-gray-50'
+                        }`}
+                      >
+                        {page}
+                      </button>
+                    );
+                  } else if (page === currentPage - 2 || page === currentPage + 2) {
+                    return <span key={page} className="px-2 py-1">...</span>;
+                  }
+                  return null;
+                })}
+              </div>
+              
+              <button
+                onClick={() => goToPage(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className="px-3 py-1 border rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+              >
+                Siguiente
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Order Detail Modal */}
