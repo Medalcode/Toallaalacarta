@@ -1,6 +1,7 @@
 ---
 import { getCart } from "@/lib/shopify";
 import CheckoutForm from "@/layouts/functional-components/CheckoutForm";
+import PayPalProvider from "@/components/checkout/PayPalProvider";
 import Base from "@/layouts/Base.astro";
 
 // Get cartId from server-side cookies
@@ -34,7 +35,14 @@ if (token) {
           <div class="col-12 lg:col-7">
             <div class="box bg-white p-8 shadow-sm rounded-lg">
               <h3 class="h4 mb-6 border-b pb-4">Detalles de Envío</h3>
-              <CheckoutForm client:load cartId={cartId || ''} user={user} />
+              <PayPalProvider client:load>
+                <CheckoutForm 
+                  client:load 
+                  cartId={cartId || ''} 
+                  user={user} 
+                  cartTotal={cart ? parseFloat(cart.cost.totalAmount.amount) : 0} 
+                />
+              </PayPalProvider>
             </div>
           </div>
           

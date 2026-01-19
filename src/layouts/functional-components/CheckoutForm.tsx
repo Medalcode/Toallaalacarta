@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import Cookies from 'js-cookie';
 import { CHILEAN_REGIONS } from '@/lib/order-utils';
+import { PayPalPaymentButton } from '@/components/checkout/PayPalButton';
 
-export default function CheckoutForm({ cartId, user }: { cartId: string, user?: any }) {
+export default function CheckoutForm({ cartId, user, cartTotal }: { cartId: string, user?: any, cartTotal: number }) {
   const [formData, setFormData] = useState({
     email: user?.email || '',
     firstName: user?.firstName || '',
@@ -219,8 +220,28 @@ export default function CheckoutForm({ cartId, user }: { cartId: string, user?: 
         disabled={loading}
         className="btn btn-primary w-full mt-6 py-3 font-bold text-white rounded-md hover:bg-opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        {loading ? 'Procesando...' : 'Confirmar Pedido'}
+        {loading ? 'Procesando...' : 'Confirmar Pedido (Transferencia)'}
       </button>
+
+      <div className="relative flex py-5 items-center">
+        <div className="flex-grow border-t border-gray-300"></div>
+        <span className="flex-shrink-0 mx-4 text-gray-400">O paga con</span>
+        <div className="flex-grow border-t border-gray-300"></div>
+      </div>
+
+      <PayPalPaymentButton
+        cartId={cartId}
+        totalPrice={cartTotal}
+        internalOrderId={undefined} // We create it on the fly
+        onSuccess={(details) => {
+            console.log("Payment Successful", details);
+            window.location.href = `/checkout/success?orderId=${details.id}&orderNumber=${details.id}`; // Update this if we want to use internal IDs
+        }}
+        onError={(err) => {
+            console.error("PayPal Error", err);
+            setError("Error con PayPal. Intenta nuevamente.");
+        }}
+      />
 
       <p className="text-xs text-gray-500 text-center mt-4">
         * Campos obligatorios

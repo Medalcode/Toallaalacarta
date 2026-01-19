@@ -42,6 +42,18 @@
 - 🔄 Dynamic Home Banner Slider
 - 📝 Write and Update Content in Markdown / MDX
 - ⌛ Infinite Product Load on Scrolling
+- 💳 **New: PayPal Integration** (Secure payments with capture/authorize)
+- 🧪 **New: Testing Infrastructure** (Vitest for unit testing)
+- 🛡️ **New: CI/CD Pipeline** (GitHub Actions validation)
+- 🔍 **New: SEO Optimized** (Sitemap & Robots.txt)
+
+## 📚 Documentation
+
+We have reorganized our documentation to make it easier to navigate:
+
+- **[Technical Docs](docs/technical/README.md)**: Setup guides (Appwrite, Resend) and database schemas.
+- **[Project History](docs/history/)**: Logs of completed phases and project milestones.
+- **[Planning](docs/planning/)**: Roadmaps and pending tasks.
 
 ### 📄 10+ Pre-designed Pages
 
