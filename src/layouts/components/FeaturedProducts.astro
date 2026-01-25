@@ -31,7 +31,7 @@ const { currencySymbol } = config.shopify;
         <div class="text-center col-6 md:col-4 lg:col-3 mb-8 md:mb-14 group relative">
           <div class="relative overflow-hidden rounded-lg shadow-sm border border-border group-hover:shadow-md transition-shadow duration-300">
             <div class="relative w-full h-[180px] md:h-[300px] bg-light/50 dark:bg-darkmode-light/50">
-              <a href={`/products/${handle}`} class="block w-full h-full">
+              <a href={`/products/${handle}`} class="block w-full h-full relative">
                 <img
                   src={featuredImage.url || "/images/product-placeholder.jpg"}
                   width={312}
@@ -47,6 +47,11 @@ const { currencySymbol } = config.shopify;
                     alt={title}
                     class="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-700 ease-in-out group-hover:opacity-100"
                   />
+                )}
+                {!product.availableForSale && (
+                  <div class="absolute top-2 right-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded">
+                    AGOTADO
+                  </div>
                 )}
               </a>
             </div>

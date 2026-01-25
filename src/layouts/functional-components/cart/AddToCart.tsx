@@ -114,6 +114,9 @@ export function AddToCart({
     setSelectedVariantId(variant?.id || defaultVariantId);
   };
 
+  const selectedVariant = variants.find(v => v.id === selectedVariantId);
+  const isVariantAvailable = selectedVariant ? selectedVariant.availableForSale : availableForSale;
+
   useEffect(() => {
     // Update selected variant on mount and whenever the variants change
     updateSelectedVariantFromUrl();
@@ -274,7 +277,7 @@ export function AddToCart({
       </div>
 
       <SubmitButton
-        availableForSale={availableForSale}
+        availableForSale={isVariantAvailable}
         selectedVariantId={selectedVariantId}
         stylesClass={stylesClass}
         handle={handle}

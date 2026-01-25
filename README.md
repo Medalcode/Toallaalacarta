@@ -53,7 +53,16 @@ We have reorganized our documentation to make it easier to navigate:
 
 - **[Technical Docs](docs/technical/README.md)**: Setup guides (Appwrite, Resend) and database schemas.
 - **[Project History](docs/history/)**: Logs of completed phases and project milestones.
+- **[Refactoring Log](docs/history/BITACORA_REFACTORIZACION.md)**: Details on the new modular architecture.
 - **[Planning](docs/planning/)**: Roadmaps and pending tasks.
+
+## 🏗️ Architecture
+
+The project follows a modular, domain-driven structure to ensure scalability:
+
+- **`src/modules/`**: Contains business logic organized by domain (e.g., Orders, Auth).
+- **`src/infrastructure/`**: Handles external services (Appwrite, Payments) and technical capabilities.
+- **`src/pages/api/`**: Acts as the HTTP controller layer, delegating logic to services.
 
 ### 📄 10+ Pre-designed Pages
 

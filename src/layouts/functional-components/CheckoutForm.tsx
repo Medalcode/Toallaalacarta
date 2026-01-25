@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Cookies from 'js-cookie';
 import { CHILEAN_REGIONS } from '@/lib/order-utils';
 import { PayPalPaymentButton } from '@/components/checkout/PayPalButton';
+import TransbankButton from '@/components/checkout/TransbankButton';
 
 export default function CheckoutForm({ cartId, user, cartTotal }: { cartId: string, user?: any, cartTotal: number }) {
   const [formData, setFormData] = useState({
@@ -17,6 +18,7 @@ export default function CheckoutForm({ cartId, user, cartTotal }: { cartId: stri
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState<'transbank' | 'paypal'>('transbank');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -229,19 +231,71 @@ export default function CheckoutForm({ cartId, user, cartTotal }: { cartId: stri
         <div className="flex-grow border-t border-gray-300"></div>
       </div>
 
-      <PayPalPaymentButton
-        cartId={cartId}
-        totalPrice={cartTotal}
-        internalOrderId={undefined} // We create it on the fly
-        onSuccess={(details) => {
+      {/* Payment Method Selector */}
+      <div className="mb-6">
+        <label className="block text-sm font-medium text-gray-700 mb-3">
+          Método de Pago
+        </label>
+        <div className="grid grid-cols-2 gap-4">
+          <button
+            type="button"
+            onClick={() => setPaymentMethod('transbank')}
+            className={`p-4 border-2 rounded-lg transition ${
+              paymentMethod === 'transbank'
+                ? 'border-primary bg-primary/5'
+                : 'border-gray-300 hover:border-gray-400'
+            }`}
+          >
+            <div className="text-center">
+              <div className="font-semibold">Transbank</div>
+              <div className="text-xs text-gray-500">Tarjetas CL</div>
+            </div>
+          </button>
+          <button
+            type="button"
+            onClick={() => setPaymentMethod('paypal')}
+            className={`p-4 border-2 rounded-lg transition ${
+              paymentMethod === 'paypal'
+                ? 'border-primary bg-primary/5'
+                : 'border-gray-300 hover:border-gray-400'
+            }`}
+          >
+            <div className="text-center">
+              <div className="font-semibold">PayPal</div>
+              <div className="text-xs text-gray-500">Internacional</div>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      {/* Payment Buttons */}
+      {paymentMethod === 'transbank' ? (
+        <TransbankButton
+          amount={cartTotal}
+          sessionId={cartId}
+          onSuccess={() => {
+            console.log('Transbank payment initiated');
+          }}
+          onError={(err) => {
+            console.error('Transbank Error', err);
+            setError('Error con Transbank. Intenta nuevamente.');
+          }}
+        />
+      ) : (
+        <PayPalPaymentButton
+          cartId={cartId}
+          totalPrice={cartTotal}
+          internalOrderId={undefined}
+          onSuccess={(details) => {
             console.log("Payment Successful", details);
-            window.location.href = `/checkout/success?orderId=${details.id}&orderNumber=${details.id}`; // Update this if we want to use internal IDs
-        }}
-        onError={(err) => {
+            window.location.href = `/checkout/success?orderId=${details.id}&orderNumber=${details.id}`;
+          }}
+          onError={(err) => {
             console.error("PayPal Error", err);
             setError("Error con PayPal. Intenta nuevamente.");
-        }}
-      />
+          }}
+        />
+      )}
 
       <p className="text-xs text-gray-500 text-center mt-4">
         * Campos obligatorios

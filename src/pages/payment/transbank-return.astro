@@ -1,0 +1,130 @@
+---
+import Layout from '@/layouts/Base.astro';
+---
+
+<Layout title="Procesando Pago - Toalla a la Carta">
+  <section class="section">
+    <div class="container">
+      <div class="row justify-center">
+        <div class="lg:col-8">
+          <div id="payment-status" class="rounded-lg bg-white p-8 shadow-lg text-center">
+            <!-- Loading State -->
+            <div id="loading-state">
+              <div class="mb-6">
+                <svg class="animate-spin h-16 w-16 mx-auto text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+              </div>
+              <h2 class="h3 mb-4">Procesando tu pago...</h2>
+              <p class="text-gray-600">Por favor espera mientras confirmamos tu transacción.</p>
+            </div>
+
+            <!-- Success State -->
+            <div id="success-state" class="hidden">
+              <div class="mb-6">
+                <svg class="h-16 w-16 mx-auto text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+              </div>
+              <h2 class="h3 mb-4 text-green-600">¡Pago Exitoso!</h2>
+              <p class="text-gray-600 mb-4">Tu pedido ha sido confirmado.</p>
+              <div id="order-details" class="bg-gray-50 rounded-lg p-4 mb-6 text-left">
+                <!-- Order details will be inserted here -->
+              </div>
+              <a href="/account" class="btn btn-primary">Ver mis pedidos</a>
+            </div>
+
+            <!-- Error State -->
+            <div id="error-state" class="hidden">
+              <div class="mb-6">
+                <svg class="h-16 w-16 mx-auto text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+              </div>
+              <h2 class="h3 mb-4 text-red-600">Pago Rechazado</h2>
+              <p class="text-gray-600 mb-4" id="error-message">Hubo un problema al procesar tu pago.</p>
+              <a href="/checkout" class="btn btn-primary">Intentar nuevamente</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<script>
+  // Get token from URL
+  const urlParams = new URLSearchParams(window.location.search);
+  const token = urlParams.get('token_ws');
+
+  if (!token) {
+    showError('Token de transacción no encontrado');
+  } else {
+    commitTransaction(token);
+  }
+
+  async function commitTransaction(token: string) {
+    try {
+      const response = await fetch('/api/transbank/commit-transaction', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ token }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        showSuccess(data);
+      } else {
+        showError(data.status || 'Pago rechazado');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      showError('Error al procesar el pago');
+    }
+  }
+
+  function showSuccess(data: any) {
+    document.getElementById('loading-state')?.classList.add('hidden');
+    document.getElementById('success-state')?.classList.remove('hidden');
+
+    const detailsEl = document.getElementById('order-details');
+    if (detailsEl) {
+      detailsEl.innerHTML = `
+        <div class="space-y-2">
+          <div class="flex justify-between">
+            <span class="font-semibold">Orden de Compra:</span>
+            <span>${data.buyOrder}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="font-semibold">Monto:</span>
+            <span>$${data.amount?.toLocaleString('es-CL')}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="font-semibold">Código de Autorización:</span>
+            <span>${data.authorizationCode}</span>
+          </div>
+          ${data.cardNumber ? `
+          <div class="flex justify-between">
+            <span class="font-semibold">Tarjeta:</span>
+            <span>**** **** **** ${data.cardNumber}</span>
+          </div>
+          ` : ''}
+        </div>
+      `;
+    }
+  }
+
+  function showError(message: string) {
+    document.getElementById('loading-state')?.classList.add('hidden');
+    document.getElementById('error-state')?.classList.remove('hidden');
+    
+    const errorEl = document.getElementById('error-message');
+    if (errorEl) {
+      errorEl.textContent = message;
+    }
+  }
+</script>
