@@ -193,3 +193,23 @@ Copyright (c) 2024 - Present, Designed & Developed by [Zeon Studio](https://zeon
 ## 💻 Need Custom Development Services?
 
 If you need a custom theme, theme customization, or complete website development services from scratch you can [Hire Us](https://zeon.studio/).
+
+## 🔧 Agent y Skills (Documentación operativa)
+
+Se han añadido documentación y herramientas para automatizaciones operacionales y pruebas de humo:
+
+- Documentos: `docs/technical/agent.md`, `docs/technical/skills.md` y ejemplos en `docs/technical/skills/`.
+- Script de validación: `scripts/validate_checkout.js` (comprueba salud y realiza un POST de prueba a `TEST_CHECKOUT_PATH`).
+- Workflow de CI: `.github/workflows/validate-checkout.yml` (ejecución manual y cron nocturno).
+- Mapeo de secrets: `docs/technical/secrets-mapping.md`.
+
+Probar localmente:
+
+```powershell
+$env:BASE_URL='http://localhost:3000'
+node scripts/validate_checkout.js
+```
+
+Activar en GitHub Actions: ir a la pestaña "Actions" → "Validate Checkout (Skill)" → "Run workflow" o esperar su ejecución programada.
+
+Consulta los documentos en `docs/technical` para detalles operativos y requisitos de secrets.

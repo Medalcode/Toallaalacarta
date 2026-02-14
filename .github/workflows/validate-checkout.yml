@@ -1,0 +1,40 @@
+name: Validate Checkout (Skill)
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 3 * * *' # nightly at 03:00 UTC
+
+jobs:
+  validate-checkout:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      BASE_URL: ${{ secrets.STAGING_BASE_URL }}
+      TEST_CHECKOUT_PATH: ${{ secrets.TEST_CHECKOUT_PATH }}
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: |
+          corepack enable
+          yarn install --frozen-lockfile
+
+      - name: Run validate-checkout script
+        run: |
+          node scripts/validate_checkout.js
+
+      - name: Upload logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: validate-checkout-logs
+          path: validate-checkout-*.log
