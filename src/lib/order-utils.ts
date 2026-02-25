@@ -140,14 +140,6 @@ export function getPaymentStatusColor(status: PaymentStatus): string {
 }
 
 /**
- * Validates postal code (Chilean format)
- */
-export function validatePostalCode(code: string): boolean {
-  // Chilean postal codes are 7 digits
-  return /^\d{7}$/.test(code);
-}
-
-/**
  * Chilean regions
  */
 export const CHILEAN_REGIONS = [

@@ -1,11 +1,9 @@
-<h1 align=center>Storeplate | AstroJs + Shopify + Tailwind CSS + TypeScript Starter and Boilerplate</h1>
+<h1 align=center>Toalla a la Carta — E-commerce Astro + Shopify + TypeScript</h1>
 
-<p align=center>A free, production-ready astro.js template powered by Tailwind CSS and TypeScript, specifically designed for Shopify. Utilizes the Shopify Storefront API through GraphQL and provides everything you need to jumpstart your Astro project and save valuable time.</p>
+<p align=center>Tienda e-commerce de toallas y textiles personalizados construida con Astro 5, Shopify Storefront API, Appwrite, Transbank y PayPal. Incluye panel de administración, gestión de órdenes, emails transaccionales vía Resend y pipeline de CI/CD.</p>
 
-<p align=center>Made with ♥ by <a href="https://zeon.studio/">Zeon Studio</a></p>
-<p align=center> If you find this project useful, please give it a ⭐ to show your support. </p>
-
-<h2 align="center"> <a target="_blank" href="https://storeplate.netlify.app/" rel="nofollow">👀 Demo</a> | <a  target="_blank" href="https://pagespeed.web.dev/analysis/https-storeplate-vercel-app/qs3wscwqpq?form_factor=desktop">Page Speed (99%)🚀</a>
+<h2 align="center">
+  <a target="_blank" href="https://storeplate.netlify.app/" rel="nofollow">👀 Demo</a>
 </h2>
 
 <p align=center>
@@ -22,47 +20,60 @@
     <img src="https://img.shields.io/github/contributors/zeon-studio/storeplate" alt="contributors"></a>
 </p>
 
-## 📌 Key Features
+## 📌 Características principales
 
-- 🌐 Dynamic Products from Shopify Storefront API
-- 💸 Checkout and Payments with Shopify
-- 🌞 Automatic Light/Dark Mode
-- 🚀 Fetching and Caching Paradigms
-- 🔗 Server Actions for Mutations
-- 🔐 User Authentication
-- 🧩 Similar Products Suggestions
-- 🔍 Search, Sort, Different Views Functionality
-- 🏷️ Tags & Categories & Vendors & Price Range & Product Variants Functionality
-- 🖼️ Single Product Image Zoom, Hover Effect, Slider
-- 🛒 Cart & Easy editing options for cart items
-- 📝 Product Description on Multiple Tabs
-- 🔗 Netlify Setting Pre-configured
-- 📞 Support Contact Form
-- 📱 Fully Responsive
-- 🔄 Dynamic Home Banner Slider
-- 📝 Write and Update Content in Markdown / MDX
-- ⌛ Infinite Product Load on Scrolling
-- 💳 **New: PayPal Integration** (Secure payments with capture/authorize)
-- 🧪 **New: Testing Infrastructure** (Vitest for unit testing)
-- 🛡️ **New: CI/CD Pipeline** (GitHub Actions validation)
-- 🔍 **New: SEO Optimized** (Sitemap & Robots.txt)
+- 🌐 Productos dinámicos vía Shopify Storefront API (GraphQL)
+- 💳 Pagos con **Transbank** (Webpay Plus) y **PayPal** (capture/authorize)
+- 🔐 Autenticación de usuario con Appwrite
+- 🛒 Carrito de compras con edición en tiempo real
+- 📦 Panel de administración con gestión de órdenes e inventario
+- 📧 Emails transaccionales con **Resend**
+- 🧩 Sugerencias de productos similares
+- 🔍 Búsqueda, ordenación y filtros avanzados
+- 🏷️ Tags, categorías, proveedores, rango de precio y variantes
+- 🖼️ Zoom, hover y slider de imágenes de producto
+- 📱 Totalmente responsive
+- 🔄 Home Banner Slider dinámico
+- 📝 Contenido en Markdown / MDX
+- 🧪 Tests unitarios con **Vitest**
+- 🛡️ CI/CD con **GitHub Actions** (lint + tests + validación de checkout)
+- 🔍 SEO optimizado (sitemap + robots.txt)
+- 🤖 Agente operacional con catálogo de Super-Skills documentado
 
-## 📚 Documentation
+## 📚 Documentación
 
-We have reorganized our documentation to make it easier to navigate:
+La documentación está organizada en `docs/`:
 
-- **[Technical Docs](docs/technical/README.md)**: Setup guides (Appwrite, Resend) and database schemas.
-- **[Project History](docs/history/)**: Logs of completed phases and project milestones.
-- **[Refactoring Log](docs/history/BITACORA_REFACTORIZACION.md)**: Details on the new modular architecture.
-- **[Planning](docs/planning/)**: Roadmaps and pending tasks.
+| Documento | Contenido |
+|---|---|
+| [docs/technical/README.md](docs/technical/README.md) | Índice técnico — punto de entrada |
+| [docs/technical/agents.md](docs/technical/agents.md) | Agente operacional único (`toallaalacarta-ops`), alcance, secrets y runbooks |
+| [docs/technical/skills.md](docs/technical/skills.md) | Catálogo de Super-Skills paramétricas |
+| [docs/technical/secrets-mapping.md](docs/technical/secrets-mapping.md) | Variables de entorno por proveedor |
+| [docs/technical/APPWRITE_SETUP.md](docs/technical/APPWRITE_SETUP.md) | Guía de configuración de Appwrite |
+| [docs/technical/RESEND_SETUP.md](docs/technical/RESEND_SETUP.md) | Configuración de emails transaccionales |
+| [docs/history/](docs/history/) | Bitácora de refactorizaciones e hitos |
+| [docs/planning/](docs/planning/) | Roadmap y tareas pendientes |
 
-## 🏗️ Architecture
+## 🏗️ Arquitectura
 
-The project follows a modular, domain-driven structure to ensure scalability:
+El proyecto sigue una estructura modular y orientada a dominio:
 
-- **`src/modules/`**: Contains business logic organized by domain (e.g., Orders, Auth).
-- **`src/infrastructure/`**: Handles external services (Appwrite, Payments) and technical capabilities.
-- **`src/pages/api/`**: Acts as the HTTP controller layer, delegating logic to services.
+```
+src/
+├── infrastructure/        # Clientes externos canónicos (Appwrite Singleton, config)
+├── modules/orders/        # Lógica de negocio por dominio (OrderService, tipos)
+├── lib/                   # Utilidades compartidas (validación, pagos, email, Shopify)
+│   ├── utils/             # Helpers de contenido y carrito (Super-Skills)
+│   └── shopify/           # Cliente GraphQL + queries/mutations/fragments
+├── layouts/               # Componentes Astro y React (UI, admin, cart)
+├── pages/api/             # Capa HTTP — delega a services/lib
+├── pages/                 # Rutas Astro
+├── styles/                # CSS global y tokens de diseño
+└── types/                 # Definiciones TypeScript por colección
+```
+
+**Principio de diseño**: un único agente operacional (`toallaalacarta-ops`) gestiona CI/CD mediante Super-Skills paramétricas. Ver [`docs/technical/agents.md`](docs/technical/agents.md).
 
 ### 📄 10+ Pre-designed Pages
 
@@ -180,36 +191,28 @@ npm run build
 We use GitHub Issues as the official bug tracker for this Template. Please Search [existing issues](https://github.com/zeon-studio/storeplate/issues). It’s possible someone has already reported the same problem.
 If your problem or idea has not been addressed yet, feel free to [open a new issue](https://github.com/zeon-studio/storeplate/issues/new).
 
-<!-- license -->
+## 📝 Licencia
 
-## 📝 License
+Código base original: [Storeplate](https://github.com/zeon-studio/storeplate) — MIT License © Zeon Studio.  
+Adaptaciones, extensiones y personalización: MIT License.
 
-Copyright (c) 2024 - Present, Designed & Developed by [Zeon Studio](https://zeon.studio/)
+## 🤖 Agente Operacional y Skills
 
-**Code License:** Released under the [MIT](https://github.com/zeon-studio/storeplate/blob/main/LICENSE) license.
+El repositorio incluye un agente único (`toallaalacarta-ops`) que gestiona CI/CD y validaciones:
 
-**Image license:** The images are only for demonstration purposes. They have their license, we don't have permission to share those images.
+| Recurso | Ruta |
+|---|---|
+| Registro de agentes | [`docs/technical/agents.md`](docs/technical/agents.md) |
+| Catálogo de Super-Skills | [`docs/technical/skills.md`](docs/technical/skills.md) |
+| Mapeo de secrets | [`docs/technical/secrets-mapping.md`](docs/technical/secrets-mapping.md) |
+| Script de validación | `scripts/validate_checkout.js` |
+| Workflow CI/CD | `.github/workflows/validate-checkout.yml` |
 
-## 💻 Need Custom Development Services?
-
-If you need a custom theme, theme customization, or complete website development services from scratch you can [Hire Us](https://zeon.studio/).
-
-## 🔧 Agent y Skills (Documentación operativa)
-
-Se han añadido documentación y herramientas para automatizaciones operacionales y pruebas de humo:
-
-- Documentos: `docs/technical/agent.md`, `docs/technical/skills.md` y ejemplos en `docs/technical/skills/`.
-- Script de validación: `scripts/validate_checkout.js` (comprueba salud y realiza un POST de prueba a `TEST_CHECKOUT_PATH`).
-- Workflow de CI: `.github/workflows/validate-checkout.yml` (ejecución manual y cron nocturno).
-- Mapeo de secrets: `docs/technical/secrets-mapping.md`.
-
-Probar localmente:
+Validar el checkout localmente:
 
 ```powershell
-$env:BASE_URL='http://localhost:3000'
+$env:BASE_URL='http://localhost:4321'
 node scripts/validate_checkout.js
 ```
 
-Activar en GitHub Actions: ir a la pestaña "Actions" → "Validate Checkout (Skill)" → "Run workflow" o esperar su ejecución programada.
-
-Consulta los documentos en `docs/technical` para detalles operativos y requisitos de secrets.
+Activar en GitHub Actions: pestaña **Actions** → **Validate Checkout (Skill)** → **Run workflow**.

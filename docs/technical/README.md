@@ -2,6 +2,15 @@
 
 Esta sección contiene guías técnicas y esquemas de base de datos para el proyecto Storeplate / Toalla a la Carta.
 
+## Arquitectura de Agentes y Skills
+
+- [Registro de Agentes](./agents.md) (**canónico**)
+  - Agente operacional único (`toallaalacarta-ops`), alcance, secrets, triggers y runbooks.
+- [Catálogo de Skills](./skills.md) (**canónico**)
+  - Super-Skills paramétricas que reemplazan micro-utilidades dispersas: `content-transform`, `cart-action`, `catalog-query`, `payment-action`.
+- [Mapeo de Secrets](./secrets-mapping.md)
+  - Variables de entorno por proveedor y recomendaciones de rotación.
+
 ## Configuración y Setup
 
 - [Setup de Appwrite](./APPWRITE_SETUP.md)
