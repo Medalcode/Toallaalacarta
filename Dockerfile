@@ -1,15 +1,13 @@
 # Stage 1: Build
-FROM node:lts-alpine AS build
+FROM node:22.21.1-alpine AS build
 WORKDIR /app
-COPY package.json package-lock.json* ./
-# Usamos npm install en lugar de ci si no hay package-lock.json consistente, pero ci es mejor para CI/CD.
-# Asumidremos que package-lock.json podría no existir o no estar sincronizado, pero intentaremos instalar.
-RUN npm install
+COPY package.json yarn.lock ./
+RUN corepack enable && yarn install --frozen-lockfile
 COPY . .
-RUN npm run build
+RUN yarn build
 
 # Stage 2: Runtime
-FROM node:lts-alpine AS runtime
+FROM node:22.21.1-alpine AS runtime
 WORKDIR /app
 
 # Copiada de dependencias y build

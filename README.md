@@ -94,8 +94,8 @@ src/
 
 - shopify
 - astro 5.15+
-- node v22.20+
-- npm v10.2+
+- node v22.21.1+
+- yarn v1.22+
 - tailwind v4.1+
 
 <!-- get Shopify storefront API access token-->
@@ -169,19 +169,19 @@ src/
 ### 👉 Install Dependencies
 
 ```bash
-npm install
+yarn install
 ```
 
 ### 👉 Development Command
 
 ```bash
-npm run dev
+yarn dev
 ```
 
 ### 👉 Build Command
 
 ```bash
-npm run build
+yarn build
 ```
 
 <!-- reporting issue -->

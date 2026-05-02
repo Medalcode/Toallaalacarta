@@ -11,19 +11,21 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: "20"
-          cache: "npm"
+          node-version: "22.21.1"
+          cache: "yarn"
 
       - name: Install Dependencies
-        run: npm ci
+        run: |
+          corepack enable
+          yarn install --frozen-lockfile
 
       - name: Run Linter
-        run: npm run check
+        run: yarn check
 
       - name: Run Tests
-        run: npm run test -- --run # Run once, not in watch mode
+        run: yarn test --run
