@@ -3,21 +3,24 @@
 <p align=center>Tienda e-commerce de toallas y textiles personalizados construida con Astro 5, Shopify Storefront API, Appwrite, Transbank y PayPal. Incluye panel de administración, gestión de órdenes, emails transaccionales vía Resend y pipeline de CI/CD.</p>
 
 <h2 align="center">
-  <a target="_blank" href="https://storeplate.netlify.app/" rel="nofollow">👀 Demo</a>
+  <a target="_blank" href="https://toallaalacarta.netlify.app/" rel="nofollow">👀 Demo</a>
 </h2>
 
 <p align=center>
 
- <a href="https://github.com/withastro/astro/releases/tag/astro@5.15.3" alt="Contributors">
-    <img src="https://img.shields.io/static/v1?label=ASTRO&message=5.15.3&color=BC52EE&logo=astro" alt="astro version"/>
-</a>
-  <a href="https://github.com/zeon-studio/storeplate/blob/main/LICENSE">
-    <img src="https://img.shields.io/github/license/zeon-studio/storeplate" alt="license"></a>
+  <a href="https://github.com/Medalcode/Toallaalacarta/actions/workflows/ci.yml">
+    <img src="https://github.com/Medalcode/Toallaalacarta/actions/workflows/ci.yml/badge.svg" alt="CI status"/>
+  </a>
+  <a href="https://github.com/withastro/astro/releases/tag/astro@5.16.3">
+    <img src="https://img.shields.io/static/v1?label=ASTRO&message=5.16%2B&color=BC52EE&logo=astro" alt="astro version"/>
+  </a>
+  <img src="https://img.shields.io/static/v1?label=Node&message=22.21.1&color=339933&logo=nodedotjs" alt="node version"/>
+  <img src="https://img.shields.io/static/v1?label=Yarn&message=1.22&color=2C8EBB&logo=yarn" alt="yarn version"/>
+  <a href="https://github.com/Medalcode/Toallaalacarta/blob/main/LICENSE">
+    <img src="https://img.shields.io/github/license/Medalcode/Toallaalacarta" alt="license"/>
+  </a>
+  <img src="https://img.shields.io/github/languages/code-size/Medalcode/Toallaalacarta" alt="code size"/>
 
-  <img src="https://img.shields.io/github/languages/code-size/zeon-studio/storeplate" alt="code size">
-
-  <a href="https://github.com/zeon-studio/storeplate/graphs/contributors">
-    <img src="https://img.shields.io/github/contributors/zeon-studio/storeplate" alt="contributors"></a>
 </p>
 
 ## 📌 Características principales
@@ -90,15 +93,35 @@ src/
 
 ## 🚀 Getting Started
 
-### 📦 Dependencies
+### 📦 Requisitos
 
-- shopify
-- astro 5.15+
-- node v22.20+
-- npm v10.2+
-- tailwind v4.1+
+| Herramienta | Versión mínima |
+|---|---|
+| Node.js | 22.21.1 |
+| Yarn | 1.22 |
+| Astro | 5.16+ |
+| Tailwind CSS | 4.1+ |
 
-<!-- get Shopify storefront API access token-->
+> El gestor de paquetes oficial del proyecto es **Yarn**. No uses `npm install` para evitar inconsistencias en el lockfile.
+
+### ⚙️ Variables de entorno
+
+Copia `.env.example` a `.env` y completa los valores:
+
+```bash
+cp .env.example .env
+```
+
+| Variable | Descripción |
+|---|---|
+| `PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN` | Token de acceso al Storefront API de Shopify |
+| `PUBLIC_SHOPIFY_STORE_DOMAIN` | Dominio de tu tienda (`*.myshopify.com`) |
+| `PUBLIC_SHOPIFY_API_SECRET_KEY` | Clave secreta de la app Shopify |
+| `RESEND_API_KEY` | API key de [Resend](https://resend.com) para emails transaccionales |
+| `EMAIL_FROM` | Dirección remitente de emails |
+| `EMAIL_REPLY_TO` | Dirección de respuesta |
+| `PUBLIC_SITE_URL` | URL base del sitio (e.g. `https://toallaalacarta.netlify.app`) |
+| `ADMIN_EMAILS` | Emails de administradores separados por coma |
 
 ## 🛒 Retrieve Shopify Token & Add Demo Products
 
@@ -166,30 +189,35 @@ src/
 
 4. Add the products you want to display in the hero slider to this collection.
 
-### 👉 Install Dependencies
+### 👉 Instalar dependencias
 
 ```bash
-npm install
+yarn install
 ```
 
-### 👉 Development Command
+### 👉 Modo desarrollo
 
 ```bash
-npm run dev
+yarn dev
 ```
 
-### 👉 Build Command
+### 👉 Build de producción
 
 ```bash
-npm run build
+yarn build
+```
+
+### 👉 Preview del build
+
+```bash
+yarn preview
 ```
 
 <!-- reporting issue -->
 
-## 🐞 Reporting Issues
+## 🐞 Reportar Issues
 
-We use GitHub Issues as the official bug tracker for this Template. Please Search [existing issues](https://github.com/zeon-studio/storeplate/issues). It’s possible someone has already reported the same problem.
-If your problem or idea has not been addressed yet, feel free to [open a new issue](https://github.com/zeon-studio/storeplate/issues/new).
+Usa el [issue tracker de este repositorio](https://github.com/Medalcode/Toallaalacarta/issues) para reportar bugs o proponer mejoras. Revisa primero si ya existe un issue similar antes de abrir uno nuevo.
 
 ## 📝 Licencia
 
