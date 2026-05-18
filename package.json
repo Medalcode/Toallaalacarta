@@ -4,7 +4,6 @@
   "description": "Astro and Tailwindcss boilerplate",
   "author": "zeon.studio",
   "license": "MIT",
-  "packageManager": "yarn@1.22.22",
   "type": "module",
   "scripts": {
     "dev": "concurrently \"node scripts/themeGenerator.js --watch\" \"astro dev\"",
@@ -12,13 +11,12 @@
     "preview": "astro preview",
     "format": "prettier -w ./src",
     "check": "astro check",
-    "remove-darkmode": "node scripts/removeDarkmode.js && yarn format",
+    "remove-darkmode": "npm run format",
     "test": "vitest"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.6",
     "@astrojs/mdx": "4.3.12",
-    "@astrojs/netlify": "6.6.3",
     "@astrojs/node": "^9.5.1",
     "@astrojs/react": "4.4.2",
     "@astrojs/sitemap": "^3.6.0",

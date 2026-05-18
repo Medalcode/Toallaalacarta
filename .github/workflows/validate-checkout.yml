@@ -24,9 +24,7 @@ jobs:
           node-version: '18'
 
       - name: Install dependencies
-        run: |
-          corepack enable
-          yarn install --frozen-lockfile
+        run: npm ci
 
       - name: Run validate-checkout script
         run: |
