@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { getWebpayPlus } from '@/lib/transbank';
+import { getWebpayTransaction } from '@/lib/transbank';
 import { Client, Databases } from 'node-appwrite';
 import { sendOrderConfirmationEmail } from '@/lib/email';
 
@@ -23,10 +23,8 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     // Get Webpay Plus instance
-    const webpay = getWebpayPlus();
-
-    // Commit transaction
-    const response = await webpay.commit(token);
+    const tx = getWebpayTransaction();
+    const response = await tx.commit(token);
 
     console.log('✅ Transbank transaction committed:', {
       buyOrder: response.buy_order,

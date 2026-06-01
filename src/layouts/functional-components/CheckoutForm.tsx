@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import Cookies from 'js-cookie';
 import { CHILEAN_REGIONS } from '@/lib/order-utils';
 import { PayPalPaymentButton } from '@/components/checkout/PayPalButton';
-import TransbankButton from '@/components/checkout/TransbankButton';
 
 export default function CheckoutForm({ cartId, user, cartTotal }: { cartId: string, user?: any, cartTotal: number }) {
   const [formData, setFormData] = useState({
@@ -30,6 +29,7 @@ export default function CheckoutForm({ cartId, user, cartTotal }: { cartId: stri
     setError('');
 
     try {
+      // 1. Create Order in Appwrite
       const response = await fetch('/api/checkout', {
         method: 'POST',
         headers: {
@@ -43,8 +43,6 @@ export default function CheckoutForm({ cartId, user, cartTotal }: { cartId: stri
           phone: formData.phone,
           notes: formData.notes,
           cartId,
-          // Email, firstName, lastName are NOT sent
-          // Backend will use authenticated user's data
         }),
       });
 
@@ -57,13 +55,40 @@ export default function CheckoutForm({ cartId, user, cartTotal }: { cartId: stri
       // Clear Cart
       Cookies.remove('cartId');
 
-      // Redirect to Success Page with order number
+      // 2. Handle Payment Redirection
+      if (paymentMethod === 'transbank') {
+        const tbkResponse = await fetch('/api/payment/create', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ orderId: data.orderId })
+        });
+        
+        const tbkData = await tbkResponse.json();
+        
+        if (!tbkResponse.ok) {
+          throw new Error(tbkData.message || 'Error al iniciar el pago con Transbank');
+        }
+
+        // Redirect to Transbank
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = tbkData.url;
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'token_ws';
+        input.value = tbkData.token;
+        form.appendChild(input);
+        document.body.appendChild(form);
+        form.submit();
+        return; // Stop execution here
+      }
+
+      // If no payment method matches (or testing), just redirect to success
       window.location.href = `/checkout/success?orderId=${data.orderId}&orderNumber=${data.orderNumber}`;
 
     } catch (err: any) {
       console.error(err);
       setError(err.message || 'Hubo un error al procesar tu pedido. Por favor intenta nuevamente.');
-    } finally {
       setLoading(false);
     }
   };
@@ -217,22 +242,8 @@ export default function CheckoutForm({ cartId, user, cartTotal }: { cartId: stri
         </div>
       )}
 
-      <button 
-        type="submit" 
-        disabled={loading}
-        className="btn btn-primary w-full mt-6 py-3 font-bold text-white rounded-md hover:bg-opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed"
-      >
-        {loading ? 'Procesando...' : 'Confirmar Pedido (Transferencia)'}
-      </button>
-
-      <div className="relative flex py-5 items-center">
-        <div className="flex-grow border-t border-gray-300"></div>
-        <span className="flex-shrink-0 mx-4 text-gray-400">O paga con</span>
-        <div className="flex-grow border-t border-gray-300"></div>
-      </div>
-
       {/* Payment Method Selector */}
-      <div className="mb-6">
+      <div className="mb-6 border-t pt-6">
         <label className="block text-sm font-medium text-gray-700 mb-3">
           Método de Pago
         </label>
@@ -268,33 +279,30 @@ export default function CheckoutForm({ cartId, user, cartTotal }: { cartId: stri
         </div>
       </div>
 
-      {/* Payment Buttons */}
       {paymentMethod === 'transbank' ? (
-        <TransbankButton
-          amount={cartTotal}
-          sessionId={cartId}
-          onSuccess={() => {
-            console.log('Transbank payment initiated');
-          }}
-          onError={(err) => {
-            console.error('Transbank Error', err);
-            setError('Error con Transbank. Intenta nuevamente.');
-          }}
-        />
+        <button 
+          type="submit" 
+          disabled={loading}
+          className="btn btn-primary w-full mt-6 py-3 font-bold text-white rounded-md hover:bg-opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+        >
+          {loading ? 'Procesando...' : 'Pagar con Transbank'}
+        </button>
       ) : (
-        <PayPalPaymentButton
-          cartId={cartId}
-          totalPrice={cartTotal}
-          internalOrderId={undefined}
-          onSuccess={(details) => {
-            console.log("Payment Successful", details);
-            window.location.href = `/checkout/success?orderId=${details.id}&orderNumber=${details.id}`;
-          }}
-          onError={(err) => {
-            console.error("PayPal Error", err);
-            setError("Error con PayPal. Intenta nuevamente.");
-          }}
-        />
+        <div className="mt-6">
+          <PayPalPaymentButton
+            cartId={cartId}
+            totalPrice={cartTotal}
+            internalOrderId={undefined}
+            onSuccess={(details) => {
+              console.log("Payment Successful", details);
+              window.location.href = `/checkout/success?orderId=${details.id}&orderNumber=${details.id}`;
+            }}
+            onError={(err) => {
+              console.error("PayPal Error", err);
+              setError("Error con PayPal. Intenta nuevamente.");
+            }}
+          />
+        </div>
       )}
 
       <p className="text-xs text-gray-500 text-center mt-4">

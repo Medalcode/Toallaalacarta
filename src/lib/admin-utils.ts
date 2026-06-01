@@ -40,12 +40,16 @@ export async function getAllOrders({
   searchQuery,
   limit = 50,
   offset = 0,
+  startDate,
+  endDate,
 }: {
   token: string;
   status?: string;
   searchQuery?: string;
   limit?: number;
   offset?: number;
+  startDate?: string;
+  endDate?: string;
 }) {
   const client = new Client();
   client
@@ -70,6 +74,14 @@ export async function getAllOrders({
   if (searchQuery) {
     // Try to search by email or RUT
     queries.push(Query.search('customer_email', searchQuery));
+  }
+
+  // Filter by date range if provided
+  if (startDate) {
+    queries.push(Query.greaterThanEqual('$createdAt', startDate));
+  }
+  if (endDate) {
+    queries.push(Query.lessThanEqual('$createdAt', endDate));
   }
 
   try {

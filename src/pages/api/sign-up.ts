@@ -2,6 +2,8 @@ import { createCustomer, getCustomerAccessToken } from "@/lib/shopify";
 import type { APIRoute } from "astro";
 import { validateRut } from "@/lib/rut";
 import { sendWelcomeEmail } from "@/lib/email";
+import { rateLimiter, RATE_LIMITS, getClientIdentifier } from "@/lib/rate-limiter";
+import { logRateLimitExceeded } from "@/lib/audit-logger";
 
 export const POST: APIRoute = async ({ request }) => {
   try {
@@ -20,6 +22,33 @@ export const POST: APIRoute = async ({ request }) => {
             status: 400,
             headers: { "Content-Type": "application/json" },
         });
+    }
+
+    const identifier = getClientIdentifier(request, email);
+    const rateLimit = rateLimiter.check(
+      identifier,
+      RATE_LIMITS.SIGNUP.maxAttempts,
+      RATE_LIMITS.SIGNUP.windowMs,
+      RATE_LIMITS.SIGNUP.blockDurationMs
+    );
+
+    if (!rateLimit.allowed) {
+      await logRateLimitExceeded(identifier, '/api/sign-up', request);
+      return new Response(
+        JSON.stringify({
+          errors: [{
+            code: "RATE_LIMIT_EXCEEDED",
+            message: `Demasiados intentos de registro. Intenta nuevamente en ${Math.ceil(rateLimit.resetIn / 60)} minutos.`
+          }],
+        }),
+        { 
+          status: 429,
+          headers: { 
+            "Content-Type": "application/json",
+            "Retry-After": rateLimit.resetIn.toString(),
+          } 
+        },
+      );
     }
 
     // Sanitize RUT to use as User ID (remove dots and dash)

@@ -1,5 +1,5 @@
 ---
-import { getCart } from "@/lib/shopify";
+import { getCart, getUserDetails } from "@/lib/shopify";
 import CheckoutForm from "@/layouts/functional-components/CheckoutForm";
 import PayPalProvider from "@/components/checkout/PayPalProvider";
 import Base from "@/layouts/Base.astro";
@@ -68,7 +68,7 @@ if (token) {
                       <p class="text-gray-500 text-xs">{item.merchandise.title}</p>
                       {item.attributes && item.attributes.length > 0 && (
                         <div class="mt-1 flex flex-col gap-0.5">
-                          {item.attributes.map(attr => (
+                          {item.attributes.map((attr: any) => (
                              <span class="text-[10px] text-gray-500 bg-gray-200 px-1.5 py-0.5 rounded w-fit">
                                {attr.key}: <span class="font-medium text-gray-700">{attr.value}</span>
                              </span>

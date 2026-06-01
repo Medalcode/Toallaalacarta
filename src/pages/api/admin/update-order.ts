@@ -1,6 +1,9 @@
 import type { APIRoute } from "astro";
 import { isAdmin, updateOrderStatus, getOrderById } from "@/lib/admin-utils";
 import { sendOrderProcessingEmail, sendOrderShippedEmail, sendOrderDeliveredEmail } from "@/lib/email";
+import { appwriteService } from "@/infrastructure/database/appwrite.client";
+import { APP_CONFIG } from "@/infrastructure/config";
+
 
 export const POST: APIRoute = async ({ request, cookies }) => {
   try {
@@ -56,39 +59,59 @@ export const POST: APIRoute = async ({ request, cookies }) => {
         const customerName = updatedOrder.customer_name;
         const orderNumber = updatedOrder.order_number;
 
-        // Send appropriate email based on new status
-        switch (status) {
-          case 'processing':
-            await sendOrderProcessingEmail({
-              to: customerEmail,
-              orderNumber,
-              customerName,
-            });
-            console.log(`📧 Processing email sent to ${customerEmail}`);
-            break;
+        // Check user preferences before sending
+        let sendEmail = true;
+        try {
+          const documentId = customerEmail.replace(/[^a-zA-Z0-9-]/g, '-').toLowerCase().substring(0, 36);
+          const preferences = await appwriteService.databases.getDocument(
+            APP_CONFIG.appwrite.databaseId,
+            'user_preferences',
+            documentId
+          );
+          if (preferences.email_orders === false) {
+            sendEmail = false;
+          }
+        } catch (prefError: any) {
+          // Si no existe, el valor por defecto es true (enviar)
+        }
 
-          case 'shipped':
-            await sendOrderShippedEmail({
-              to: customerEmail,
-              orderNumber,
-              customerName,
-              trackingNumber: trackingNumber || undefined,
-            });
-            console.log(`📧 Shipped email sent to ${customerEmail}`);
-            break;
+        if (!sendEmail) {
+          console.log(`ℹ️ Email skipped for ${customerEmail} due to user preferences`);
+        } else {
+          // Send appropriate email based on new status
+          switch (status) {
+            case 'processing':
+              await sendOrderProcessingEmail({
+                to: customerEmail,
+                orderNumber,
+                customerName,
+              });
+              console.log(`📧 Processing email sent to ${customerEmail}`);
+              break;
 
-          case 'delivered':
-            await sendOrderDeliveredEmail({
-              to: customerEmail,
-              orderNumber,
-              customerName,
-            });
-            console.log(`📧 Delivered email sent to ${customerEmail}`);
-            break;
+            case 'shipped':
+              await sendOrderShippedEmail({
+                to: customerEmail,
+                orderNumber,
+                customerName,
+                trackingNumber: trackingNumber || undefined,
+              });
+              console.log(`📧 Shipped email sent to ${customerEmail}`);
+              break;
 
-          default:
-            // No email for other statuses (pending, cancelled)
-            console.log(`ℹ️ No email sent for status: ${status}`);
+            case 'delivered':
+              await sendOrderDeliveredEmail({
+                to: customerEmail,
+                orderNumber,
+                customerName,
+              });
+              console.log(`📧 Delivered email sent to ${customerEmail}`);
+              break;
+
+            default:
+              // No email for other statuses (pending, cancelled)
+              console.log(`ℹ️ No email sent for status: ${status}`);
+          }
         }
       } catch (emailError) {
         // Log email error but don't fail the request

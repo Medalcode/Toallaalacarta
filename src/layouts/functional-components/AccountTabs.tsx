@@ -1,14 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { databases, APPWRITE_CONFIG, account } from '@/lib/appwrite';
 import { Query } from 'appwrite';
-import { BiUser, BiShoppingBag } from "react-icons/bi";
+import { BiUser, BiShoppingBag, BiBell } from "react-icons/bi";
 import { formatRut } from '@/lib/rut';
 
 export default function AccountTabs({ user: initialUser }: { user: any }) {
   const [user, setUser] = useState<any>(initialUser);
-  const [activeTab, setActiveTab] = useState<'profile' | 'orders'>('profile');
+  const [activeTab, setActiveTab] = useState<'profile' | 'orders' | 'preferences'>('profile');
   const [orders, setOrders] = useState<any[]>([]);
   const [loadingOrders, setLoadingOrders] = useState(false);
+  
+  // Preferences State
+  const [preferences, setPreferences] = useState({ email_orders: true, email_promotions: false });
+  const [loadingPrefs, setLoadingPrefs] = useState(false);
+  const [prefMsg, setPrefMsg] = useState('');
   
   // Profile State
   const [formData, setFormData] = useState({
@@ -71,6 +76,25 @@ export default function AccountTabs({ user: initialUser }: { user: any }) {
     }
   }, [activeTab, user]);
 
+  // Fetch Preferences
+  useEffect(() => {
+    if (activeTab === 'preferences' && user?.email && user.email !== 'user@example.com') {
+      setLoadingPrefs(true);
+      fetch('/api/user/preferences')
+        .then(res => res.json())
+        .then(data => {
+          if (data.email_orders !== undefined) {
+            setPreferences({
+              email_orders: data.email_orders,
+              email_promotions: data.email_promotions || false
+            });
+          }
+        })
+        .catch(err => console.error("Error fetching preferences", err))
+        .finally(() => setLoadingPrefs(false));
+    }
+  }, [activeTab, user]);
+
   // Update form data when user changes
   useEffect(() => {
      if(user) {
@@ -119,6 +143,29 @@ export default function AccountTabs({ user: initialUser }: { user: any }) {
     }
   };
 
+  const handlePreferencesUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setPrefMsg('Guardando...');
+    try {
+        const response = await fetch('/api/user/preferences', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(preferences)
+        });
+
+        if (!response.ok) {
+            throw new Error('Error al actualizar preferencias');
+        }
+        
+        setPrefMsg('Preferencias guardadas correctamente.');
+        setTimeout(() => setPrefMsg(''), 3000);
+    } catch (err: any) {
+        setPrefMsg('Error: ' + err.message);
+    }
+  };
+
   return (
     <div>
       {/* Tabs Header */}
@@ -134,6 +181,12 @@ export default function AccountTabs({ user: initialUser }: { user: any }) {
           onClick={() => setActiveTab('orders')}
         >
           <BiShoppingBag /> Mis Pedidos
+        </button>
+        <button 
+          className={`flex items-center gap-2 px-6 py-3 font-medium transition-colors ${activeTab === 'preferences' ? 'border-b-2 border-primary text-primary' : 'text-gray-500 hover:text-gray-700'}`}
+          onClick={() => setActiveTab('preferences')}
+        >
+          <BiBell /> Preferencias
         </button>
       </div>
 
@@ -203,6 +256,55 @@ export default function AccountTabs({ user: initialUser }: { user: any }) {
              </div>
            ) : (
              <OrdersList orders={orders} />
+           )}
+        </div>
+      )}
+
+      {/* Preferences Content */}
+      {activeTab === 'preferences' && (
+        <div className="max-w-lg">
+           <h3 className="text-lg font-bold mb-4">Configuración de Notificaciones</h3>
+           {loadingPrefs ? (
+             <p className="text-gray-500">Cargando preferencias...</p>
+           ) : (
+             <form onSubmit={handlePreferencesUpdate} className="space-y-6">
+                <div className="bg-white p-4 border rounded-lg">
+                  <label className="flex items-start gap-3 cursor-pointer">
+                    <input 
+                      type="checkbox" 
+                      className="mt-1 h-4 w-4 text-primary rounded border-gray-300 focus:ring-primary" 
+                      checked={preferences.email_orders}
+                      onChange={(e) => setPreferences({ ...preferences, email_orders: e.target.checked })}
+                    />
+                    <div>
+                      <span className="font-medium block text-gray-900">Actualizaciones de pedidos</span>
+                      <span className="text-sm text-gray-500">
+                        Recibe correos cuando tu pedido esté en proceso, enviado o entregado. (Nota: La confirmación de compra y correos legales siempre se enviarán).
+                      </span>
+                    </div>
+                  </label>
+                </div>
+                
+                <div className="bg-white p-4 border rounded-lg">
+                  <label className="flex items-start gap-3 cursor-pointer">
+                    <input 
+                      type="checkbox" 
+                      className="mt-1 h-4 w-4 text-primary rounded border-gray-300 focus:ring-primary" 
+                      checked={preferences.email_promotions}
+                      onChange={(e) => setPreferences({ ...preferences, email_promotions: e.target.checked })}
+                    />
+                    <div>
+                      <span className="font-medium block text-gray-900">Ofertas y promociones</span>
+                      <span className="text-sm text-gray-500">
+                        Recibe novedades, descuentos exclusivos y lanzamientos.
+                      </span>
+                    </div>
+                  </label>
+                </div>
+
+                <button type="submit" className="btn btn-primary">Guardar Preferencias</button>
+                {prefMsg && <p className={`mt-2 text-sm font-medium ${prefMsg.startsWith('Error') ? 'text-red-600' : 'text-green-600'}`}>{prefMsg}</p>}
+             </form>
            )}
         </div>
       )}

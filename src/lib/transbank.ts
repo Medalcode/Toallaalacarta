@@ -1,4 +1,4 @@
-import { WebpayPlus, Options, IntegrationType } from 'transbank-sdk';
+import { WebpayPlus, Options, Environment } from 'transbank-sdk';
 
 /**
  * Transbank configuration
@@ -18,9 +18,9 @@ export const TRANSBANK_CONFIG = {
 };
 
 /**
- * Get configured Webpay Plus instance
+ * Get configured Webpay Plus Transaction instance
  */
-export function getWebpayPlus() {
+export function getWebpayTransaction() {
   const isProduction = TRANSBANK_CONFIG.environment === 'production';
   const config = isProduction ? TRANSBANK_CONFIG.production : TRANSBANK_CONFIG.integration;
 
@@ -28,22 +28,19 @@ export function getWebpayPlus() {
     throw new Error('Transbank credentials not configured');
   }
 
-  const options = new Options(
-    config.commerceCode,
-    config.apiKey,
-    isProduction ? IntegrationType.LIVE : IntegrationType.TEST
-  );
-
-  return new WebpayPlus(options);
+  const environment = isProduction ? Environment.Production : Environment.Integration;
+  const options = new Options(config.commerceCode, config.apiKey, environment);
+  
+  return new WebpayPlus.Transaction(options);
 }
 
 /**
- * Generate unique buy order ID
+ * Generate a unique buy order ID
  */
 export function generateBuyOrder(): string {
-  const timestamp = Date.now();
+  const timestamp = Date.now().toString().slice(-6);
   const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
-  return `TBK-${timestamp}-${random}`;
+  return `O-${timestamp}-${random}`;
 }
 
 /**

@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { getWebpayPlus, generateBuyOrder } from '@/lib/transbank';
+import { getWebpayTransaction, generateBuyOrder } from '@/lib/transbank';
 
 export const POST: APIRoute = async ({ request }) => {
   try {
@@ -25,10 +25,10 @@ export const POST: APIRoute = async ({ request }) => {
     const buyOrder = generateBuyOrder();
 
     // Get Webpay Plus instance
-    const webpay = getWebpayPlus();
+    const tx = getWebpayTransaction();
 
     // Create transaction
-    const response = await webpay.create(
+    const response = await tx.create(
       buyOrder,
       sessionId,
       Math.round(amount), // Amount in CLP (integer)

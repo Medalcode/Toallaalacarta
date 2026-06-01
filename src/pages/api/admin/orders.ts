@@ -29,6 +29,8 @@ export const GET: APIRoute = async ({ request, cookies }) => {
     const searchQuery = url.searchParams.get("search") || "";
     const limit = parseInt(url.searchParams.get("limit") || "50");
     const offset = parseInt(url.searchParams.get("offset") || "0");
+    const startDate = url.searchParams.get("startDate") || undefined;
+    const endDate = url.searchParams.get("endDate") || undefined;
 
     // Get orders
     const result = await getAllOrders({
@@ -37,6 +39,8 @@ export const GET: APIRoute = async ({ request, cookies }) => {
       searchQuery: searchQuery || undefined,
       limit,
       offset,
+      startDate,
+      endDate,
     });
 
     return new Response(JSON.stringify(result), {

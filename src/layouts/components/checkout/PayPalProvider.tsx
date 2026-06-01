@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import React from 'react';
 import { PayPalScriptProvider } from "@paypal/react-paypal-js";
 
 interface Props {

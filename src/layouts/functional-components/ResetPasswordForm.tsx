@@ -44,7 +44,7 @@ export default function ResetPasswordForm({ token }: Props) {
     }
 
     try {
-      const response = await fetch('/api/reset-password', {
+      const response = await fetch('/api/password-reset/confirm-reset', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

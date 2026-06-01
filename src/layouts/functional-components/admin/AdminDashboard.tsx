@@ -3,6 +3,7 @@ import { BiPackage, BiTime, BiCar, BiCheck, BiX, BiDollar, BiSearch, BiDownload,
 import { getStatusLabel, getStatusColor, formatPrice, getPaymentStatusLabel, getPaymentStatusColor } from '@/lib/order-utils';
 import { formatRut } from '@/lib/rut';
 import { ordersToCSV, downloadCSV, generateExportFilename, filterOrdersForExport } from '@/lib/export-utils';
+import InventoryPanel from './InventoryPanel';
 
 interface Order {
   $id: string;
@@ -38,8 +39,15 @@ export default function AdminDashboard({ token }: { token: string }) {
   const [loading, setLoading] = useState(true);
   const [selectedStatus, setSelectedStatus] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [selectedOrdersForBulk, setSelectedOrdersForBulk] = useState<string[]>([]);
+  const [isBulkUpdating, setIsBulkUpdating] = useState(false);
   
+  // Tabs
+  const [activeTab, setActiveTab] = useState<'orders' | 'inventory'>('orders');
+
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
@@ -53,7 +61,8 @@ export default function AdminDashboard({ token }: { token: string }) {
   useEffect(() => {
     fetchData();
     setCurrentPage(1); // Reset to first page when filters change
-  }, [selectedStatus, searchQuery]);
+    setSelectedOrdersForBulk([]); // Reset bulk selection
+  }, [selectedStatus, searchQuery, startDate, endDate]);
 
   const fetchData = async () => {
     setLoading(true);
@@ -66,7 +75,11 @@ export default function AdminDashboard({ token }: { token: string }) {
       setStats(statsData);
 
       // Fetch orders
-      const ordersRes = await fetch(`/api/admin/orders?status=${selectedStatus}&search=${searchQuery}`, {
+      let queryParams = `?status=${selectedStatus}&search=${searchQuery}`;
+      if (startDate) queryParams += `&startDate=${startDate}T00:00:00.000Z`;
+      if (endDate) queryParams += `&endDate=${endDate}T23:59:59.999Z`;
+
+      const ordersRes = await fetch(`/api/admin/orders${queryParams}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const ordersData = await ordersRes.json();
@@ -95,6 +108,54 @@ export default function AdminDashboard({ token }: { token: string }) {
       }
     } catch (error) {
       console.error('Error updating order:', error);
+    }
+  };
+
+  const handleBulkStatusUpdate = async (newStatus: string) => {
+    if (!selectedOrdersForBulk.length || !newStatus) return;
+    
+    if (!confirm(`¿Estás seguro de actualizar ${selectedOrdersForBulk.length} pedidos a "${newStatus}"?`)) {
+      return;
+    }
+
+    setIsBulkUpdating(true);
+    try {
+      const res = await fetch('/api/admin/update-order-bulk', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ orderIds: selectedOrdersForBulk, status: newStatus })
+      });
+
+      if (res.ok) {
+        fetchData();
+        setSelectedOrdersForBulk([]);
+      } else {
+        alert('Error al actualizar algunos pedidos. Revisa los logs.');
+      }
+    } catch (error) {
+      console.error('Error in bulk update:', error);
+      alert('Error en la actualización masiva.');
+    } finally {
+      setIsBulkUpdating(false);
+    }
+  };
+
+  const toggleOrderSelection = (orderId: string) => {
+    setSelectedOrdersForBulk(prev => 
+      prev.includes(orderId) 
+        ? prev.filter(id => id !== orderId)
+        : [...prev, orderId]
+    );
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedOrdersForBulk.length === currentOrders.length && currentOrders.length > 0) {
+      setSelectedOrdersForBulk([]);
+    } else {
+      setSelectedOrdersForBulk(currentOrders.map(o => o.$id));
     }
   };
 
@@ -178,8 +239,36 @@ export default function AdminDashboard({ token }: { token: string }) {
 
   return (
     <div className="space-y-8">
-      {/* Stats Cards */}
-      {stats && (
+      {/* Tabs Navigation */}
+      <div className="flex border-b border-gray-200">
+        <button
+          className={`px-6 py-3 font-medium text-sm border-b-2 transition-colors ${
+            activeTab === 'orders'
+              ? 'border-primary text-primary'
+              : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+          }`}
+          onClick={() => setActiveTab('orders')}
+        >
+          Pedidos
+        </button>
+        <button
+          className={`px-6 py-3 font-medium text-sm border-b-2 transition-colors ${
+            activeTab === 'inventory'
+              ? 'border-primary text-primary'
+              : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+          }`}
+          onClick={() => setActiveTab('inventory')}
+        >
+          Inventario
+        </button>
+      </div>
+
+      {activeTab === 'inventory' ? (
+        <InventoryPanel token={token} />
+      ) : (
+        <div className="space-y-8">
+          {/* Stats Cards */}
+          {stats && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <StatCard
             icon={<BiPackage className="text-blue-600" />}
@@ -209,7 +298,7 @@ export default function AdminDashboard({ token }: { token: string }) {
       )}
 
       {/* Filters */}
-      <div className="bg-white rounded-lg shadow p-6">
+      <div className="bg-white rounded-lg shadow p-6 space-y-4">
         <div className="flex flex-col md:flex-row gap-4">
           {/* Search */}
           <div className="flex-1">
@@ -239,16 +328,58 @@ export default function AdminDashboard({ token }: { token: string }) {
             <option value="cancelled">Cancelado</option>
           </select>
 
+          {/* Date Filters */}
+          <div className="flex items-center gap-2">
+            <input 
+              type="date" 
+              className="px-4 py-2 border rounded-lg focus:ring-primary focus:border-primary"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+            />
+            <span className="text-gray-500">-</span>
+            <input 
+              type="date" 
+              className="px-4 py-2 border rounded-lg focus:ring-primary focus:border-primary"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+            />
+          </div>
+
           {/* Export Button */}
           <button
             onClick={handleExport}
             disabled={orders.length === 0}
-            className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors whitespace-nowrap"
           >
             <BiDownload size={20} />
-            Exportar CSV ({orders.length})
+            Exportar CSV
           </button>
         </div>
+
+        {/* Bulk Actions Bar */}
+        {selectedOrdersForBulk.length > 0 && (
+          <div className="flex items-center gap-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+            <span className="font-medium text-blue-800 text-sm">
+              {selectedOrdersForBulk.length} seleccionados
+            </span>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-blue-800">Mover a:</span>
+              <select 
+                className="px-3 py-1 border rounded text-sm bg-white"
+                onChange={(e) => handleBulkStatusUpdate(e.target.value)}
+                value=""
+                disabled={isBulkUpdating}
+              >
+                <option value="" disabled>Seleccionar estado</option>
+                <option value="processing">En Proceso</option>
+                <option value="shipped">Enviado</option>
+                <option value="delivered">Entregado</option>
+                <option value="cancelled">Cancelado</option>
+              </select>
+            </div>
+            {isBulkUpdating && <span className="text-sm text-blue-600 animate-pulse">Actualizando...</span>}
+          </div>
+        )}
       </div>
 
       {/* Orders Table */}
@@ -257,6 +388,14 @@ export default function AdminDashboard({ token }: { token: string }) {
           <table className="w-full">
             <thead className="bg-gray-50 border-b">
               <tr>
+                <th className="px-6 py-3 text-left">
+                  <input 
+                    type="checkbox" 
+                    className="rounded border-gray-300 text-primary focus:ring-primary"
+                    checked={currentOrders.length > 0 && selectedOrdersForBulk.length === currentOrders.length}
+                    onChange={toggleSelectAll}
+                  />
+                </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Orden
                 </th>
@@ -310,7 +449,15 @@ export default function AdminDashboard({ token }: { token: string }) {
                 </tr>
               ) : (
                 currentOrders.map((order) => (
-                  <tr key={order.$id} className="hover:bg-gray-50">
+                  <tr key={order.$id} className={`hover:bg-gray-50 ${selectedOrdersForBulk.includes(order.$id) ? 'bg-blue-50/30' : ''}`}>
+                    <td className="px-6 py-4">
+                      <input 
+                        type="checkbox" 
+                        className="rounded border-gray-300 text-primary focus:ring-primary"
+                        checked={selectedOrdersForBulk.includes(order.$id)}
+                        onChange={() => toggleOrderSelection(order.$id)}
+                      />
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-medium text-gray-900">{order.order_number}</div>
                       <div className="text-xs text-gray-500">{order.$id.slice(0, 8)}...</div>
@@ -414,6 +561,8 @@ export default function AdminDashboard({ token }: { token: string }) {
           onClose={() => setSelectedOrder(null)}
           onStatusUpdate={handleStatusUpdate}
         />
+      )}
+        </div>
       )}
     </div>
   );
