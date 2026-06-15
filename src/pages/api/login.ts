@@ -1,36 +1,29 @@
-import { getCustomerAccessToken, getUserDetails } from "@/lib/shopify";
 import { rateLimiter, RATE_LIMITS, getClientIdentifier } from "@/lib/rate-limiter";
 import { logUserLogin, logRateLimitExceeded } from "@/lib/audit-logger";
 import { validateEmail, sanitizeEmail } from "@/lib/validation";
 import type { APIRoute } from "astro";
+import { Client, Account } from "appwrite";
+import { APP_CONFIG } from "@/infrastructure/config";
 
-// Exporting the handler function for the API route
 export const POST: APIRoute = async ({ request }) => {
   try {
     const { email, password } = await request.json();
 
-    // Validate required fields
     if (!email || !password) {
       return new Response(
-        JSON.stringify({
-          errors: [{ message: "Email y contraseña son requeridos" }],
-        }),
-        { status: 400, headers: { "Content-Type": "application/json" } },
+        JSON.stringify({ errors: [{ message: "Email y contraseña son requeridos" }] }),
+        { status: 400, headers: { "Content-Type": "application/json" } }
       );
     }
 
-    // Sanitize and validate email
     const sanitizedEmail = sanitizeEmail(email);
     if (!validateEmail(sanitizedEmail)) {
       return new Response(
-        JSON.stringify({
-          errors: [{ message: "Email inválido" }],
-        }),
-        { status: 400, headers: { "Content-Type": "application/json" } },
+        JSON.stringify({ errors: [{ message: "Email inválido" }] }),
+        { status: 400, headers: { "Content-Type": "application/json" } }
       );
     }
 
-    // Check rate limit
     const identifier = getClientIdentifier(request, sanitizedEmail);
     const rateLimit = rateLimiter.check(
       identifier,
@@ -40,73 +33,61 @@ export const POST: APIRoute = async ({ request }) => {
     );
 
     if (!rateLimit.allowed) {
-      // Log rate limit exceeded
       await logRateLimitExceeded(identifier, '/api/login', request);
-      
       return new Response(
         JSON.stringify({
-          errors: [{
-            code: "RATE_LIMIT_EXCEEDED",
-            message: `Demasiados intentos de inicio de sesión. Intenta nuevamente en ${Math.ceil(rateLimit.resetIn / 60)} minutos.`
-          }],
+          errors: [{ code: "RATE_LIMIT_EXCEEDED", message: `Demasiados intentos. Intenta nuevamente en ${Math.ceil(rateLimit.resetIn / 60)} minutos.` }]
         }),
-        { 
-          status: 429,
-          headers: { 
-            "Content-Type": "application/json",
-            "Retry-After": rateLimit.resetIn.toString(),
-          } 
-        },
+        { status: 429, headers: { "Content-Type": "application/json", "Retry-After": rateLimit.resetIn.toString() } }
       );
     }
 
-    // Get the customer token via Shopify API
-    const { token, customerLoginErrors } = await getCustomerAccessToken({
-      email: sanitizedEmail,
-      password,
-    });
+    // Initialize Appwrite Client
+    const client = new Client()
+      .setEndpoint(APP_CONFIG.appwrite.endpoint)
+      .setProject(APP_CONFIG.appwrite.projectId);
+    
+    const account = new Account(client);
 
-    if (customerLoginErrors?.length > 0) {
-      // Log failed login attempt
-      await logUserLogin('', sanitizedEmail, request, false);
+    try {
+      // Create session with Appwrite
+      const session = await account.createEmailPasswordSession(sanitizedEmail, password);
       
-      return new Response(JSON.stringify({ errors: customerLoginErrors }), {
-        status: 400,
+      // Fetch user details to return to frontend
+      const user = await account.get();
+
+      rateLimiter.reset(identifier);
+      await logUserLogin(user.$id, sanitizedEmail, request, true);
+
+      // Return the token (secret) and user info
+      const response = new Response(JSON.stringify({
+        id: user.$id,
+        firstName: user.name,
+        email: user.email,
+        token: session.secret
+      }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
+
+      // Secure HTTPOnly cookie
+      response.headers.set("Set-Cookie", `token=${session.secret}; Path=/; SameSite=Lax; HttpOnly${import.meta.env.PROD ? '; Secure' : ''}`);
+
+      return response;
+
+    } catch (appwriteError: any) {
+      await logUserLogin('', sanitizedEmail, request, false);
+      return new Response(JSON.stringify({ errors: [{ message: appwriteError.message || "Credenciales inválidas" }] }), {
+        status: 401,
         headers: { "Content-Type": "application/json" },
       });
     }
 
-    // Fetch customer details using the token
-    const { customer } = await getUserDetails(token);
-
-    // Reset rate limit on successful login
-    rateLimiter.reset(identifier);
-
-    // Log successful login
-    await logUserLogin(customer.id || '', sanitizedEmail, request, true);
-
-    const response = new Response(JSON.stringify({ ...customer, token }), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
-
-    // Set token in cookie with HttpOnly flag
-    response.headers.set("Set-Cookie", `token=${token}; Path=/; SameSite=Lax; HttpOnly`);
-
-    return response;
   } catch (error: any) {
     console.error("Error during login:", error);
-
     return new Response(
-      JSON.stringify({
-        errors: [
-          {
-            code: "INTERNAL_ERROR",
-            message: "Ocurrió un error al iniciar sesión. Por favor, intenta nuevamente.",
-          },
-        ],
-      }),
-      { status: 500, headers: { "Content-Type": "application/json" } },
+      JSON.stringify({ errors: [{ code: "INTERNAL_ERROR", message: "Error interno al iniciar sesión." }] }),
+      { status: 500, headers: { "Content-Type": "application/json" } }
     );
   }
 };

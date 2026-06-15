@@ -609,13 +609,14 @@ export async function getCollectionProducts({
 
 import { account as globalAccount } from "@/lib/appwrite";
 import { Client as NodeClient, Account as NodeAccount, ID as NodeID, Databases as NodeDatabases, Query as NodeQuery } from "node-appwrite";
+import { APP_CONFIG } from "@/infrastructure/config";
 
 // Helper to get a fresh client for server-side operations using Node SDK to avoid localStorage/window issues
 const createNodeClient = () => {
     const client = new NodeClient();
     client
-        .setEndpoint(import.meta.env.PUBLIC_APPWRITE_ENDPOINT)
-        .setProject(import.meta.env.PUBLIC_APPWRITE_PROJECT_ID);
+        .setEndpoint(APP_CONFIG.appwrite.endpoint)
+        .setProject(APP_CONFIG.appwrite.projectId);
     return client;
 };
 

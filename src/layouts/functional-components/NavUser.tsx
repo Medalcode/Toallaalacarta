@@ -1,5 +1,3 @@
-import { getUserDetails } from "@/lib/shopify";
-import type { user } from "@/lib/shopify/types";
 import Cookies from "js-cookie";
 import React, { useEffect, useState } from "react";
 import Gravatar from "react-gravatar";
@@ -12,9 +10,11 @@ export const fetchUser = async () => {
     if (!accessToken) {
       return null;
     } else {
-      const userDetails: user = await getUserDetails(accessToken);
-      const userInfo = userDetails.customer;
-      return userInfo;
+      const res = await fetch("/api/profile");
+      if (!res.ok) return null;
+      
+      const data = await res.json();
+      return data.user;
     }
   } catch (error) {
     // console.log("Error fetching user details:", error);

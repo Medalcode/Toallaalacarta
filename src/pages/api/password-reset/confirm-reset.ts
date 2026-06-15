@@ -1,27 +1,28 @@
 import type { APIRoute } from "astro";
-import { passwordResetManager } from "@/lib/password-reset";
-// Nota: Deberíamos importar la mutación de Shopify para cambiar la contraseña
-// import { updateCustomerPassword } from "@/lib/shopify";
+import { Client, Account } from "appwrite";
+import { APP_CONFIG } from "@/infrastructure/config";
 
 export const POST: APIRoute = async ({ request }) => {
   try {
-    const { token, password } = await request.json();
+    // Appwrite requires userId and secret, which come from the recovery URL
+    const { userId, secret, password, passwordConfirm } = await request.json();
 
-    if (!token || !password) {
-      return new Response(JSON.stringify({ message: "Token y contraseña son requeridos" }), { status: 400 });
+    if (!userId || !secret || !password || !passwordConfirm) {
+      return new Response(JSON.stringify({ message: "Faltan datos requeridos para el reseteo" }), { status: 400 });
     }
 
-    const validation = passwordResetManager.validateToken(token);
+    if (password !== passwordConfirm) {
+      return new Response(JSON.stringify({ message: "Las contraseñas no coinciden" }), { status: 400 });
+    }
+
+    const client = new Client()
+      .setEndpoint(APP_CONFIG.appwrite.endpoint)
+      .setProject(APP_CONFIG.appwrite.projectId);
     
-    if (!validation.valid || !validation.email) {
-      return new Response(JSON.stringify({ message: validation.error || "Token inválido" }), { status: 400 });
-    }
+    const account = new Account(client);
 
-    // Aquí llamaríamos a Shopify o Appwrite para actualizar la contraseña del cliente
-    // await updateCustomerPassword(validation.email, password);
-
-    // Marcar token como usado
-    passwordResetManager.useToken(token);
+    // Call Appwrite to update password securely
+    await account.updateRecovery(userId, secret, password, passwordConfirm);
 
     return new Response(JSON.stringify({ success: true, message: "Contraseña actualizada exitosamente" }), {
       status: 200,
@@ -30,8 +31,8 @@ export const POST: APIRoute = async ({ request }) => {
   } catch (error: any) {
     console.error("Password confirm error:", error);
     return new Response(
-      JSON.stringify({ message: "Error al procesar la solicitud" }),
-      { status: 500 }
+      JSON.stringify({ message: error.message || "Error al procesar la solicitud" }),
+      { status: 400 }
     );
   }
 };

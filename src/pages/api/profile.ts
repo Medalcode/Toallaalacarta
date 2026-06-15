@@ -1,6 +1,7 @@
 import type { APIRoute } from "astro";
-import { Client, Account, Databases, Query } from "appwrite";
-import { APPWRITE_CONFIG } from "@/lib/appwrite";
+import { Query } from "appwrite";
+import { APP_CONFIG } from "@/infrastructure/config";
+import { appwriteService } from "@/infrastructure/database/appwrite.client";
 
 export const GET: APIRoute = async ({ cookies }) => {
   const token = cookies.get("token")?.value;
@@ -10,28 +11,15 @@ export const GET: APIRoute = async ({ cookies }) => {
   }
 
   try {
-    const client = new Client();
-    client
-      .setEndpoint(import.meta.env.PUBLIC_APPWRITE_ENDPOINT)
-      .setProject(import.meta.env.PUBLIC_APPWRITE_PROJECT_ID);
-    
-    // Set the session context for this client using the token passed in cookies
-    client.setSession(token);
-
-    const account = new Account(client);
-    const databases = new Databases(client);
+    const { account, databases } = appwriteService.createSessionClient(token);
 
     // 1. Get User Details
     const user = await account.get();
 
     // 2. Get User Orders
-    // We filter by email because that's how we linked them in checkout.ts
-    // Ideally we filter by owner (user.$id) but our schema uses customer_email.
-    // If we used permissions correctly, listDocuments might implicitly only return owned docs, 
-    // but the query makes it explicit.
     const ordersResponse = await databases.listDocuments(
-        APPWRITE_CONFIG.DATABASE_ID,
-        APPWRITE_CONFIG.COLLECTION_ORDERS,
+        APP_CONFIG.appwrite.databaseId,
+        APP_CONFIG.appwrite.collections.orders,
         [
             Query.equal('customer_email', user.email),
             Query.orderDesc('$createdAt')

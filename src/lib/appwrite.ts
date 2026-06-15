@@ -5,16 +5,17 @@
  *   - Cliente: import { appwriteService } from '@/infrastructure/database/appwrite.client'
  * Migración progresiva: no eliminar hasta que todos los imports apunten a infrastructure/
  */
-import { Client, Databases, Account } from 'appwrite';
+import { Client, Account, Databases, Storage } from "appwrite";
+import { APP_CONFIG } from "@/infrastructure/config";
 
-export const client = new Client();
+// --- CLIENT SIDE INIT --- //
 
-client
-  .setEndpoint(import.meta.env.PUBLIC_APPWRITE_ENDPOINT)
-  .setProject(import.meta.env.PUBLIC_APPWRITE_PROJECT_ID);
+const client = new Client()
+  .setEndpoint(APP_CONFIG.appwrite.endpoint)
+  .setProject(APP_CONFIG.appwrite.projectId);
 
-export const databases = new Databases(client);
 export const account = new Account(client);
+export const databases = new Databases(client);
 
 // IDs constantes para bases de datos y colecciones
 // Debes reemplazar estos valores con los IDs reales de tu proyecto en Appwrite

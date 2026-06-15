@@ -1,5 +1,6 @@
 ---
-import { getCart, getUserDetails } from "@/lib/shopify";
+import { getCart } from "@/lib/shopify";
+import { appwriteService } from "@/infrastructure/database/appwrite.client";
 import CheckoutForm from "@/layouts/functional-components/CheckoutForm";
 import PayPalProvider from "@/components/checkout/PayPalProvider";
 import Base from "@/layouts/Base.astro";
@@ -17,8 +18,14 @@ let user;
 
 if (token) {
     try {
-        const userData = await getUserDetails(token);
-        user = userData?.customer;
+        const { account } = appwriteService.createSessionClient(token);
+        const userData = await account.get();
+        user = {
+            id: userData.$id,
+            firstName: userData.name,
+            email: userData.email,
+            phone: userData.phone
+        };
     } catch (e) {
         console.error("Error fetching user in checkout:", e);
     }

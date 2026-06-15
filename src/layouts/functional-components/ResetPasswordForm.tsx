@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import { BiLock, BiCheckCircle, BiErrorCircle } from 'react-icons/bi';
 
 interface Props {
-  token: string;
+  userId: string;
+  secret: string;
 }
 
-export default function ResetPasswordForm({ token }: Props) {
+export default function ResetPasswordForm({ userId, secret }: Props) {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -49,7 +50,7 @@ export default function ResetPasswordForm({ token }: Props) {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ token, password }),
+        body: JSON.stringify({ userId, secret, password, passwordConfirm: confirmPassword }),
       });
 
       const data = await response.json();

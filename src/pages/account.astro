@@ -5,7 +5,7 @@ import { getOrders } from "@/lib/appwrite_utils"; // We will create this
 // import { account } from "@/lib/appwrite"; // We might need client-side logic too
 import AccountTabs from "@/layouts/functional-components/AccountTabs"; // React component for tabs
 
-import { getCustomerAccessToken, getUserDetails } from "@/lib/shopify";
+import { appwriteService } from "@/infrastructure/database/appwrite.client";
 
 // Server-side check for user
 const token = Astro.cookies.get("token")?.value;
@@ -17,8 +17,15 @@ if (!token) {
 }
 
 try {
-  const userDetails = await getUserDetails(token);
-  currentUser = userDetails.customer;
+  const { account } = appwriteService.createSessionClient(token);
+  const user = await account.get();
+  
+  currentUser = {
+    id: user.$id,
+    firstName: user.name,
+    email: user.email,
+    phone: user.phone
+  };
 } catch (e) {
   return Astro.redirect("/login");
 }

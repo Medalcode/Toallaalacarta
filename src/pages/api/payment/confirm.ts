@@ -1,8 +1,7 @@
 import type { APIRoute } from "astro";
 import { getWebpayTransaction } from "@/lib/transbank";
-import { appwriteService } from "@/infrastructure/database/appwrite.client";
 import { APP_CONFIG } from "@/infrastructure/config";
-import { Query } from "appwrite";
+import { Client as NodeClient, Databases as NodeDatabases } from "node-appwrite";
 
 export const GET: APIRoute = async ({ request, url, redirect }) => {
   const token_ws = url.searchParams.get('token_ws');
@@ -24,22 +23,52 @@ export const GET: APIRoute = async ({ request, url, redirect }) => {
     const tx = getWebpayTransaction();
     const commitResponse = await tx.commit(token_ws);
 
-    // Admin client to update order status bypassing user permissions if needed, 
-    // but typically webhooks need admin client
-    const databases = appwriteService.databases;
+    // Initialize Admin Client to bypass client permissions
+    const client = new NodeClient();
+    client
+        .setEndpoint(APP_CONFIG.appwrite.endpoint)
+        .setProject(APP_CONFIG.appwrite.projectId)
+        .setKey(import.meta.env.APPWRITE_API_KEY || ''); // Requires API Key for secure server execution
 
-    // Find the order by session_id or token
+    const databases = new NodeDatabases(client);
+
+    // Find the order by session_id
     const orderId = commitResponse.session_id; 
 
+    // Retrieve order to validate amount and idempotency
+    const order = await databases.getDocument(
+        APP_CONFIG.appwrite.databaseId,
+        APP_CONFIG.appwrite.collections.orders,
+        orderId
+    );
+
+    if (order.payment_status === 'paid') {
+      console.log(`Order ${orderId} already paid`);
+      return redirect(`/checkout/success?orderId=${orderId}`);
+    }
+
+    // Verify Amount Match! Crucial for integrity
+    if (commitResponse.amount !== order.total_price) {
+        console.error(`Amount mismatch: TBK ${commitResponse.amount} vs DB ${order.total_price}`);
+        await databases.updateDocument(
+            APP_CONFIG.appwrite.databaseId,
+            APP_CONFIG.appwrite.collections.orders,
+            orderId,
+            { payment_status: 'failed', notes: 'Amount mismatch detected' }
+        );
+        return redirect(`/checkout/error?reason=amount_mismatch`);
+    }
+
     if (commitResponse.status === 'AUTHORIZED') {
-      // Update order to PAID
+      // Update order to PAID securely
       await databases.updateDocument(
         APP_CONFIG.appwrite.databaseId,
         APP_CONFIG.appwrite.collections.orders,
         orderId,
         { 
             payment_status: 'paid',
-            status: 'processing'
+            status: 'processing',
+            payment_transaction_id: token_ws
         }
       );
       return redirect(`/checkout/success?orderId=${orderId}`);

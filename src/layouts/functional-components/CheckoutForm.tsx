@@ -81,6 +81,26 @@ export default function CheckoutForm({ cartId, user, cartTotal }: { cartId: stri
         document.body.appendChild(form);
         form.submit();
         return; // Stop execution here
+      } else if (paymentMethod === 'paypal') {
+        const paypalResponse = await fetch('/api/paypal/create-order', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ cartId, totalPrice: cartTotal, internalOrderId: data.orderId })
+        });
+        
+        const paypalData = await paypalResponse.json();
+        
+        if (!paypalResponse.ok) {
+          throw new Error(paypalData.message || 'Error al iniciar el pago con PayPal');
+        }
+
+        const approveLink = paypalData.links?.find((l: any) => l.rel === "approve");
+        if (approveLink) {
+          window.location.href = approveLink.href;
+          return;
+        } else {
+          throw new Error('No se pudo generar el enlace de pago de PayPal');
+        }
       }
 
       // If no payment method matches (or testing), just redirect to success
@@ -288,21 +308,13 @@ export default function CheckoutForm({ cartId, user, cartTotal }: { cartId: stri
           {loading ? 'Procesando...' : 'Pagar con Transbank'}
         </button>
       ) : (
-        <div className="mt-6">
-          <PayPalPaymentButton
-            cartId={cartId}
-            totalPrice={cartTotal}
-            internalOrderId={undefined}
-            onSuccess={(details) => {
-              console.log("Payment Successful", details);
-              window.location.href = `/checkout/success?orderId=${details.id}&orderNumber=${details.id}`;
-            }}
-            onError={(err) => {
-              console.error("PayPal Error", err);
-              setError("Error con PayPal. Intenta nuevamente.");
-            }}
-          />
-        </div>
+        <button 
+          type="submit" 
+          disabled={loading}
+          className="btn btn-primary w-full mt-6 py-3 font-bold text-white rounded-md hover:bg-opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700"
+        >
+          {loading ? 'Procesando...' : 'Pagar con PayPal'}
+        </button>
       )}
 
       <p className="text-xs text-gray-500 text-center mt-4">

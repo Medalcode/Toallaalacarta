@@ -1,8 +1,8 @@
 import type { APIRoute } from "astro";
-import { passwordResetManager } from "@/lib/password-reset";
-import { sendPasswordResetEmail } from "@/lib/email";
 import { rateLimiter, RATE_LIMITS, getClientIdentifier } from "@/lib/rate-limiter";
 import { logRateLimitExceeded } from "@/lib/audit-logger";
+import { Client, Account } from "appwrite";
+import { APP_CONFIG } from "@/infrastructure/config";
 
 export const POST: APIRoute = async ({ request, url }) => {
   try {
@@ -30,17 +30,21 @@ export const POST: APIRoute = async ({ request, url }) => {
       );
     }
 
-    // Always generate a token, but in real life we should verify if the user exists in Shopify or Appwrite.
-    // For privacy reasons, we return a success response even if the email doesn't exist.
-    const token = passwordResetManager.createToken(email);
-    const resetUrl = new URL(`/reset-password?token=${token}`, url.origin).toString();
+    const client = new Client()
+      .setEndpoint(APP_CONFIG.appwrite.endpoint)
+      .setProject(APP_CONFIG.appwrite.projectId);
+    
+    const account = new Account(client);
 
-    // Enviar email
-    await sendPasswordResetEmail({
-      to: email,
-      name: "Usuario",
-      resetToken: resetUrl,
-    }).catch((e: any) => console.error("Error al enviar email de recuperación:", e));
+    const resetUrl = new URL('/reset-password', url.origin).toString();
+
+    try {
+      // Appwrite natively sends the recovery email containing userId and secret query parameters
+      await account.createRecovery(email, resetUrl);
+    } catch (e: any) {
+      console.error("Appwrite createRecovery error:", e);
+      // We don't return an error here to prevent email enumeration attacks
+    }
 
     return new Response(JSON.stringify({ success: true, message: "Si el correo está registrado, recibirás un enlace de recuperación." }), {
       status: 200,
