@@ -22,7 +22,7 @@ export const POST: APIRoute = async ({ request }) => {
     const account = new Account(client);
 
     // Call Appwrite to update password securely
-    await account.updateRecovery(userId, secret, password, passwordConfirm);
+    await account.updateRecovery(userId, secret, password);
 
     return new Response(JSON.stringify({ success: true, message: "Contraseña actualizada exitosamente" }), {
       status: 200,

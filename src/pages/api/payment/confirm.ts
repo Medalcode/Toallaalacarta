@@ -24,11 +24,17 @@ export const GET: APIRoute = async ({ request, url, redirect }) => {
     const commitResponse = await tx.commit(token_ws);
 
     // Initialize Admin Client to bypass client permissions
+    const apiKey = import.meta.env.APPWRITE_API_KEY;
+    if (!apiKey) {
+      console.error("❌ APPWRITE_API_KEY is missing in environment variables");
+      return redirect(`/checkout/error?reason=server_configuration_error`);
+    }
+
     const client = new NodeClient();
     client
         .setEndpoint(APP_CONFIG.appwrite.endpoint)
         .setProject(APP_CONFIG.appwrite.projectId)
-        .setKey(import.meta.env.APPWRITE_API_KEY || ''); // Requires API Key for secure server execution
+        .setKey(apiKey);
 
     const databases = new NodeDatabases(client);
 

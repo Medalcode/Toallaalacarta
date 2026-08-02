@@ -15,7 +15,10 @@ class RateLimiter {
 
   constructor() {
     // Cleanup expired entries every minute
-    setInterval(() => this.cleanup(), this.cleanupInterval);
+    const timer = setInterval(() => this.cleanup(), this.cleanupInterval);
+    if (typeof timer === 'object' && typeof timer.unref === 'function') {
+      timer.unref();
+    }
   }
 
   /**

@@ -62,17 +62,21 @@ export const POST: APIRoute = async ({ request, cookies }) => {
         // Check user preferences before sending
         let sendEmail = true;
         try {
-          const documentId = customerEmail.replace(/[^a-zA-Z0-9-]/g, '-').toLowerCase().substring(0, 36);
-          const preferences = await appwriteService.databases.getDocument(
-            APP_CONFIG.appwrite.databaseId,
-            'user_preferences',
-            documentId
-          );
-          if (preferences.email_orders === false) {
-            sendEmail = false;
+          if (customerEmail && typeof customerEmail === 'string') {
+            const documentId = customerEmail.replace(/[^a-zA-Z0-9-]/g, '-').toLowerCase().substring(0, 36);
+            if (documentId) {
+              const preferences = await appwriteService.databases.getDocument(
+                APP_CONFIG.appwrite.databaseId,
+                'user_preferences',
+                documentId
+              );
+              if (preferences && preferences.email_orders === false) {
+                sendEmail = false;
+              }
+            }
           }
         } catch (prefError: any) {
-          // Si no existe, el valor por defecto es true (enviar)
+          // Si no existe o falla la búsqueda, el valor por defecto es true (enviar)
         }
 
         if (!sendEmail) {

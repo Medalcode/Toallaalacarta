@@ -7,6 +7,18 @@ import NavUser from "@/functional-components/NavUser";
 import SearchBar from "@/functional-components/SearchBar";
 import Cart from "@/functional-components/cart/Cart.astro";
 
+interface ChildNavigationLink {
+  name: string;
+  url: string;
+}
+
+interface NavigationLink {
+  name: string;
+  url: string;
+  hasChildren?: boolean;
+  children?: ChildNavigationLink[];
+}
+
 const { navigation_button, settings } = config;
 
 // determine if a menu item is active
@@ -19,8 +31,8 @@ const isMenuItemActive = (url: string) => {
 };
 
 // determine if any child is active
-const isParentActive = (children: any[]) => {
-  return children.some((child) => isMenuItemActive(child.url));
+const isParentActive = (children?: ChildNavigationLink[]) => {
+  return children ? children.some((child) => isMenuItemActive(child.url)) : false;
 };
 ---
 
@@ -78,7 +90,7 @@ const isParentActive = (children: any[]) => {
           </div>
           <ul class="nav-list">
             {
-              menu.main.map((menuItem) => (
+              (menu.main as NavigationLink[]).map((menuItem: NavigationLink) => (
                 <li
                   class:list={[
                     "nav-item",
@@ -114,7 +126,7 @@ const isParentActive = (children: any[]) => {
                       </button>
 
                       <ul class="submenu hidden pl-4 mt-2 space-y-2 bg-white dark:bg-dark rounded-md shadow py-4">
-                        {menuItem.children.map((child) => (
+                        {menuItem.children?.map((child: ChildNavigationLink) => (
                           <li>
                             <a
                               href={child.url}
@@ -223,7 +235,7 @@ const isParentActive = (children: any[]) => {
           </div>
           <ul class="nav-list">
             {
-              menu.main.map((menuItem) => (
+              (menu.main as NavigationLink[]).map((menuItem: NavigationLink) => (
                 <li
                   class:list={[
                     "nav-item",
@@ -258,7 +270,7 @@ const isParentActive = (children: any[]) => {
                         </svg>
                       </button>
                       <ul class="submenu hidden pl-4 mt-2 space-y-2 bg-white dark:bg-dark rounded-md shadow py-4">
-                        {menuItem.children.map((child) => (
+                        {menuItem.children?.map((child: ChildNavigationLink) => (
                           <li>
                             <a
                               href={child.url}
