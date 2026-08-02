@@ -5,25 +5,19 @@
  *   - Cliente: import { appwriteService } from '@/infrastructure/database/appwrite.client'
  * Migración progresiva: no eliminar hasta que todos los imports apunten a infrastructure/
  */
-import { Client, Account, Databases, Storage } from "appwrite";
+import { appwriteService } from "@/infrastructure/database/appwrite.client";
 import { APP_CONFIG } from "@/infrastructure/config";
 
-// --- CLIENT SIDE INIT --- //
+// Re-export shared singleton instances from infrastructure service
+export const account = appwriteService.account;
+export const databases = appwriteService.databases;
 
-const client = new Client()
-  .setEndpoint(APP_CONFIG.appwrite.endpoint)
-  .setProject(APP_CONFIG.appwrite.projectId);
-
-export const account = new Account(client);
-export const databases = new Databases(client);
-
-// IDs constantes para bases de datos y colecciones
-// Debes reemplazar estos valores con los IDs reales de tu proyecto en Appwrite
+// Constantes sincronizadas con la configuración centralizada de infraestructura
 export const APPWRITE_CONFIG = {
-  DATABASE_ID: 'toalla-db',
-  COLLECTION_PRODUCTS: 'products',
-  COLLECTION_VARIANTS: 'variants',
-  COLLECTION_CARTS: 'carts',
-  COLLECTION_CART_LINES: 'cart-lines',
-  COLLECTION_ORDERS: 'orders'
+  DATABASE_ID: APP_CONFIG.appwrite.databaseId,
+  COLLECTION_PRODUCTS: APP_CONFIG.appwrite.collections.products,
+  COLLECTION_VARIANTS: APP_CONFIG.appwrite.collections.variants,
+  COLLECTION_CARTS: APP_CONFIG.appwrite.collections.carts,
+  COLLECTION_CART_LINES: APP_CONFIG.appwrite.collections.cartLines,
+  COLLECTION_ORDERS: APP_CONFIG.appwrite.collections.orders
 };

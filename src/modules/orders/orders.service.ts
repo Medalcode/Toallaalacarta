@@ -1,11 +1,16 @@
-import { ID, Databases } from 'appwrite';
+import { ID, Databases, type Models } from 'appwrite';
 import { APP_CONFIG } from '@/infrastructure/config';
 import type { CreateOrderDTO, OrderDocument } from './orders.types';
 import { generateOrderNumber } from '@/lib/order-utils'; 
 
 export class OrderService {
-  private dbId = APP_CONFIG.appwrite.databaseId;
-  private collectionId = APP_CONFIG.appwrite.collections.orders;
+  private get dbId() {
+    return APP_CONFIG.appwrite.databaseId;
+  }
+
+  private get collectionId() {
+    return APP_CONFIG.appwrite.collections.orders;
+  }
 
   /**
    * Creates a new order in the database.
@@ -15,14 +20,14 @@ export class OrderService {
   async createOrder(data: CreateOrderDTO, databases: Databases): Promise<OrderDocument> {
     const orderNumber = generateOrderNumber();
 
-    const orderDoc: OrderDocument = {
+    const orderDoc = {
       customer_email: data.userEmail,
       customer_rut: data.userId, // Assuming RUT is ID as per original code
       customer_name: data.shippingAddress.name,
       order_number: orderNumber,
       total_price: data.totalPrice,
-      status: 'pending',
-      payment_status: 'pending',
+      status: 'pending' as const,
+      payment_status: 'pending' as const,
       payment_method: null,
       payment_transaction_id: null,
       shipping_address_json: JSON.stringify(data.shippingAddress),
@@ -31,11 +36,11 @@ export class OrderService {
     };
 
     try {
-      const response = await databases.createDocument(
+      const response = await databases.createDocument<Models.Document & OrderDocument>(
         this.dbId,
         this.collectionId,
         ID.unique(),
-        orderDoc as any 
+        orderDoc
       );
       return response as unknown as OrderDocument;
     } catch (error) {
@@ -49,7 +54,7 @@ export class OrderService {
    */
   async getOrder(orderId: string, databases: Databases): Promise<OrderDocument | null> {
     try {
-      const response = await databases.getDocument(
+      const response = await databases.getDocument<Models.Document & OrderDocument>(
         this.dbId,
         this.collectionId,
         orderId
