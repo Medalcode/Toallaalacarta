@@ -3,41 +3,76 @@
  * Protects against brute force attacks and spam
  */
 
-interface RateLimitEntry {
+export interface RateLimitEntry {
   count: number;
   resetTime: number;
   blockedUntil?: number;
 }
 
-class RateLimiter {
+export interface RateLimitStore {
+  get(key: string): RateLimitEntry | undefined;
+  set(key: string, entry: RateLimitEntry): void;
+  delete(key: string): void;
+  entries(): IterableIterator<[string, RateLimitEntry]>;
+}
+
+export class InMemoryRateLimitStore implements RateLimitStore {
   private attempts: Map<string, RateLimitEntry> = new Map();
+
+  get(key: string): RateLimitEntry | undefined {
+    return this.attempts.get(key);
+  }
+
+  set(key: string, entry: RateLimitEntry): void {
+    this.attempts.set(key, entry);
+  }
+
+  delete(key: string): void {
+    this.attempts.delete(key);
+  }
+
+  entries(): IterableIterator<[string, RateLimitEntry]> {
+    return this.attempts.entries();
+  }
+}
+
+export class RateLimiter {
+  private store: RateLimitStore;
+  private timer?: ReturnType<typeof setInterval>;
   private readonly cleanupInterval: number = 60000; // 1 minute
 
-  constructor() {
-    // Cleanup expired entries every minute
-    const timer = setInterval(() => this.cleanup(), this.cleanupInterval);
-    if (typeof timer === 'object' && typeof timer.unref === 'function') {
-      timer.unref();
+  constructor(store: RateLimitStore = new InMemoryRateLimitStore()) {
+    this.store = store;
+    
+    // Cleanup expired entries periodically
+    this.timer = setInterval(() => this.cleanup(), this.cleanupInterval);
+    if (typeof this.timer === 'object' && typeof (this.timer as any).unref === 'function') {
+      (this.timer as any).unref();
+    }
+  }
+
+  /**
+   * Stop background timer and release resources
+   */
+  destroy(): void {
+    if (this.timer) {
+      clearInterval(this.timer);
+      this.timer = undefined;
     }
   }
 
   /**
    * Check if an action is allowed
-   * @param key - Unique identifier (email, IP, etc.)
-   * @param maxAttempts - Maximum attempts allowed
-   * @param windowMs - Time window in milliseconds
-   * @param blockDurationMs - How long to block after exceeding limit
    */
   check(
     key: string,
     maxAttempts: number = 5,
-    windowMs: number = 15 * 60 * 1000, // 15 minutes
-    blockDurationMs: number = 30 * 60 * 1000 // 30 minutes
+    windowMs: number = 15 * 60 * 1000,
+    blockDurationMs: number = 30 * 60 * 1000
   ): { allowed: boolean; remaining: number; resetIn: number } {
     const now = Date.now();
-    const entry = this.attempts.get(key);
+    const entry = this.store.get(key);
 
-    // Check if blocked
     if (entry?.blockedUntil && entry.blockedUntil > now) {
       return {
         allowed: false,
@@ -46,9 +81,8 @@ class RateLimiter {
       };
     }
 
-    // Reset if window expired
     if (!entry || entry.resetTime < now) {
-      this.attempts.set(key, {
+      this.store.set(key, {
         count: 1,
         resetTime: now + windowMs,
       });
@@ -59,16 +93,14 @@ class RateLimiter {
       };
     }
 
-    // Increment count
     entry.count++;
 
-    // Check if limit exceeded
     if (entry.count > maxAttempts) {
       entry.blockedUntil = now + blockDurationMs;
-      this.attempts.set(key, entry);
-      
+      this.store.set(key, entry);
+
       console.warn(`🚨 Rate limit exceeded for: ${key}`);
-      
+
       return {
         allowed: false,
         remaining: 0,
@@ -76,7 +108,7 @@ class RateLimiter {
       };
     }
 
-    this.attempts.set(key, entry);
+    this.store.set(key, entry);
     return {
       allowed: true,
       remaining: maxAttempts - entry.count,
@@ -85,10 +117,10 @@ class RateLimiter {
   }
 
   /**
-   * Reset attempts for a key (e.g., after successful login)
+   * Reset attempts for a key
    */
   reset(key: string): void {
-    this.attempts.delete(key);
+    this.store.delete(key);
   }
 
   /**
@@ -96,9 +128,9 @@ class RateLimiter {
    */
   private cleanup(): void {
     const now = Date.now();
-    for (const [key, entry] of this.attempts.entries()) {
+    for (const [key, entry] of this.store.entries()) {
       if (entry.resetTime < now && (!entry.blockedUntil || entry.blockedUntil < now)) {
-        this.attempts.delete(key);
+        this.store.delete(key);
       }
     }
   }
@@ -107,7 +139,7 @@ class RateLimiter {
    * Get current status for a key
    */
   getStatus(key: string): RateLimitEntry | null {
-    return this.attempts.get(key) || null;
+    return this.store.get(key) || null;
   }
 }
 

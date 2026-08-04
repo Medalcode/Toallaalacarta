@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { rateLimiter, RATE_LIMITS, checkRateLimit, getClientIdentifier } from '../lib/rate-limiter';
+import { rateLimiter, RateLimiter, RATE_LIMITS, checkRateLimit, getClientIdentifier } from '../lib/rate-limiter';
 
 describe('RateLimiter System', () => {
   const testKey = 'test-ip:127.0.0.1';
@@ -59,4 +59,10 @@ describe('RateLimiter System', () => {
     expect(res.allowed).toBe(true);
     expect(res.remaining).toBe(RATE_LIMITS.LOGIN.maxAttempts - 1);
   });
+
+  it('should clean up timer without error when destroy() is called', () => {
+    const limiter = new RateLimiter();
+    expect(() => limiter.destroy()).not.toThrow();
+  });
 });
+
