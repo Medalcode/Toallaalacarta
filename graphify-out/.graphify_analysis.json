@@ -1,0 +1,1226 @@
+{
+  "communities": {
+    "0": [
+      "src_layouts_functional_components_accounttabs",
+      "src_layouts_functional_components_accounttabs_ordercard",
+      "src_layouts_functional_components_accounttabs_orderdetailmodal",
+      "src_layouts_functional_components_accounttabs_orderslist",
+      "src_lib_appwrite",
+      "src_lib_appwrite_account",
+      "src_lib_appwrite_appwrite_config",
+      "src_lib_appwrite_databases",
+      "src_lib_audit_logger",
+      "src_lib_audit_logger_auditaction",
+      "src_lib_audit_logger_auditlevel",
+      "src_lib_audit_logger_auditlogentry",
+      "src_lib_audit_logger_auditlogger",
+      "src_lib_audit_logger_auditlogger_consolelog",
+      "src_lib_audit_logger_auditlogger_filterlogs",
+      "src_lib_audit_logger_auditlogger_getrecentlogs",
+      "src_lib_audit_logger_auditlogger_log",
+      "src_lib_audit_logger_auditlogger_savetodatabase",
+      "src_lib_audit_logger_getipaddress",
+      "src_lib_audit_logger_logordercreated",
+      "src_lib_audit_logger_logorderstatuschange",
+      "src_lib_audit_logger_logpasswordreset",
+      "src_lib_audit_logger_logratelimitexceeded",
+      "src_lib_audit_logger_logsuspiciousactivity",
+      "src_lib_audit_logger_loguserlogin",
+      "src_lib_audit_logger_loguserregister",
+      "src_lib_email_sendpasswordresetemail",
+      "src_lib_email_sendwelcomeemail",
+      "src_lib_password_reset",
+      "src_lib_password_reset_passwordresetmanager",
+      "src_lib_password_reset_passwordresetmanager_cleanup",
+      "src_lib_password_reset_passwordresetmanager_constructor",
+      "src_lib_password_reset_passwordresetmanager_createtoken",
+      "src_lib_password_reset_passwordresetmanager_generatetoken",
+      "src_lib_password_reset_passwordresetmanager_gettokeninfo",
+      "src_lib_password_reset_passwordresetmanager_revoketokensforemail",
+      "src_lib_password_reset_passwordresetmanager_usetoken",
+      "src_lib_password_reset_passwordresetmanager_validatetoken",
+      "src_lib_password_reset_resettoken",
+      "src_lib_rate_limiter",
+      "src_lib_rate_limiter_checkratelimit",
+      "src_lib_rate_limiter_getclientidentifier",
+      "src_lib_rate_limiter_rate_limits",
+      "src_lib_rate_limiter_ratelimitentry",
+      "src_lib_rate_limiter_ratelimiter",
+      "src_lib_rate_limiter_ratelimiter_check",
+      "src_lib_rate_limiter_ratelimiter_cleanup",
+      "src_lib_rate_limiter_ratelimiter_constructor",
+      "src_lib_rate_limiter_ratelimiter_getstatus",
+      "src_lib_rate_limiter_ratelimiter_reset",
+      "src_lib_validation_sanitizeemail",
+      "src_lib_validation_validateemail",
+      "src_pages_api_forgot_password",
+      "src_pages_api_forgot_password_post",
+      "src_pages_api_login",
+      "src_pages_api_login_post",
+      "src_pages_api_password_reset_confirm_reset_post",
+      "src_pages_api_password_reset_request_reset",
+      "src_pages_api_password_reset_request_reset_post",
+      "src_pages_api_reset_password",
+      "src_pages_api_sign_up",
+      "src_pages_api_sign_up_post",
+      "src_tests_audit_logger_test",
+      "src_tests_rate_limiter_test"
+    ],
+    "1": [
+      "src_layouts_components_checkout_paypalbutton",
+      "src_layouts_components_checkout_paypalbutton_paypalbuttonprops",
+      "src_layouts_components_checkout_paypalbutton_paypalpaymentbutton",
+      "src_layouts_functional_components_accounttabs_accounttabs",
+      "src_layouts_functional_components_admin_admindashboard",
+      "src_layouts_functional_components_admin_admindashboard_admindashboard",
+      "src_layouts_functional_components_admin_admindashboard_order",
+      "src_layouts_functional_components_admin_admindashboard_orderdetailmodal",
+      "src_layouts_functional_components_admin_admindashboard_statcard",
+      "src_layouts_functional_components_admin_admindashboard_stats",
+      "src_layouts_functional_components_admin_inventorypanel",
+      "src_layouts_functional_components_admin_inventorypanel_inventorypanel",
+      "src_layouts_functional_components_checkoutform",
+      "src_layouts_functional_components_checkoutform_checkoutform",
+      "src_layouts_functional_components_signupform",
+      "src_layouts_functional_components_signupform_formdata",
+      "src_layouts_functional_components_signupform_signupform",
+      "src_lib_email_sendorderconfirmationemail",
+      "src_lib_export_utils",
+      "src_lib_export_utils_downloadcsv",
+      "src_lib_export_utils_exportoptions",
+      "src_lib_export_utils_filterordersforexport",
+      "src_lib_export_utils_formatcurrency",
+      "src_lib_export_utils_formatdate",
+      "src_lib_export_utils_generateexportfilename",
+      "src_lib_export_utils_getexportstats",
+      "src_lib_export_utils_order",
+      "src_lib_export_utils_orderstocsv",
+      "src_lib_order_utils",
+      "src_lib_order_utils_chilean_regions",
+      "src_lib_order_utils_chileanregion",
+      "src_lib_order_utils_formatchileanphone",
+      "src_lib_order_utils_formatprice",
+      "src_lib_order_utils_generateordernumber",
+      "src_lib_order_utils_getpaymentstatuscolor",
+      "src_lib_order_utils_getpaymentstatuslabel",
+      "src_lib_order_utils_getstatuscolor",
+      "src_lib_order_utils_getstatuslabel",
+      "src_lib_order_utils_orderstatus",
+      "src_lib_order_utils_paymentstatus",
+      "src_lib_order_utils_test",
+      "src_lib_order_utils_validatechileanphone",
+      "src_lib_rut",
+      "src_lib_rut_formatrut",
+      "src_lib_rut_test",
+      "src_lib_rut_validaterut",
+      "src_modules_orders_orders_service",
+      "src_modules_orders_orders_service_orderservice",
+      "src_modules_orders_orders_service_orderservice_collectionid",
+      "src_modules_orders_orders_service_orderservice_createorder",
+      "src_modules_orders_orders_service_orderservice_dbid",
+      "src_modules_orders_orders_service_orderservice_getorder",
+      "src_modules_orders_orders_types",
+      "src_modules_orders_orders_types_createorderdto",
+      "src_modules_orders_orders_types_orderdocument",
+      "src_modules_orders_orders_types_orderitem",
+      "src_modules_orders_orders_types_shippingaddress",
+      "src_pages_api_checkout",
+      "src_pages_api_checkout_post",
+      "src_pages_api_checkout_rationale_90",
+      "src_tests_orders_service_test"
+    ],
+    "2": [
+      "src_cartstore",
+      "src_cartstore_additemtocart",
+      "src_cartstore_cart",
+      "src_cartstore_getlayoutview",
+      "src_cartstore_layoutview",
+      "src_cartstore_refreshcartstate",
+      "src_cartstore_removeitemfromcart",
+      "src_cartstore_totalquantity",
+      "src_cartstore_updatecartitemquantity",
+      "src_layouts_functional_components_cart_cartmodal",
+      "src_layouts_functional_components_cart_cartmodal_cartmodal",
+      "src_layouts_functional_components_cart_closecart",
+      "src_layouts_functional_components_cart_closecart_closecart",
+      "src_layouts_functional_components_cart_deleteitembutton",
+      "src_layouts_functional_components_cart_deleteitembutton_deleteitembutton",
+      "src_layouts_functional_components_cart_deleteitembutton_deleteitembuttonprops",
+      "src_layouts_functional_components_cart_deleteitembutton_submitbutton",
+      "src_layouts_functional_components_cart_deleteitembutton_submitbuttonprops",
+      "src_layouts_functional_components_cart_edititemquantitybutton",
+      "src_layouts_functional_components_cart_edititemquantitybutton_edititemquantitybutton",
+      "src_layouts_functional_components_cart_edititemquantitybutton_props",
+      "src_layouts_functional_components_cart_opencart",
+      "src_layouts_functional_components_cart_opencart_opencart",
+      "src_layouts_functional_components_cart_opencart_opencartprops",
+      "src_layouts_functional_components_loadings_loadingdots",
+      "src_layouts_functional_components_loadings_loadingdots_loadingdots",
+      "src_layouts_functional_components_loadings_skeleton_skeletoncards",
+      "src_layouts_functional_components_loadings_skeleton_skeletoncards_skeletoncards",
+      "src_layouts_functional_components_navuser",
+      "src_layouts_functional_components_navuser_fetchuser",
+      "src_layouts_functional_components_navuser_navuser",
+      "src_layouts_functional_components_price",
+      "src_layouts_functional_components_price_price",
+      "src_layouts_functional_components_price_priceprops",
+      "src_layouts_functional_components_productlayoutviews",
+      "src_layouts_functional_components_productlayoutviews_productgrid",
+      "src_layouts_functional_components_productlayoutviews_productlayoutviews",
+      "src_layouts_functional_components_productlayoutviews_productlist",
+      "src_layouts_helpers_announcement_cookies",
+      "src_lib_shopify_index_addtocart",
+      "src_lib_shopify_index_createcart",
+      "src_lib_shopify_index_createcustomer",
+      "src_lib_shopify_index_createnodeclient",
+      "src_lib_shopify_index_getcart",
+      "src_lib_shopify_index_getcustomeraccesstoken",
+      "src_lib_shopify_index_getuserdetails",
+      "src_lib_shopify_index_removefromcart",
+      "src_lib_shopify_index_reshapecart",
+      "src_lib_shopify_index_updatecart",
+      "src_lib_shopify_types_cartitem",
+      "src_lib_utils_cartactions",
+      "src_lib_utils_cartactions_additem",
+      "src_lib_utils_cartactions_removeitem",
+      "src_lib_utils_cartactions_updateitemquantity"
+    ],
+    "3": [
+      "src_lib_shopify_index",
+      "src_lib_shopify_index_extractvariables",
+      "src_lib_shopify_index_getmenu",
+      "src_lib_shopify_index_getpage",
+      "src_lib_shopify_index_rationale_743",
+      "src_lib_shopify_mockdata",
+      "src_lib_shopify_mockdata_mockcollections",
+      "src_lib_shopify_mockdata_mockproducts",
+      "src_lib_shopify_queries_menu",
+      "src_lib_shopify_queries_menu_getmenuquery",
+      "src_lib_shopify_types",
+      "src_lib_shopify_types_cart",
+      "src_lib_shopify_types_collection",
+      "src_lib_shopify_types_connection",
+      "src_lib_shopify_types_customeraccesstokeninput",
+      "src_lib_shopify_types_customererror",
+      "src_lib_shopify_types_customerinput",
+      "src_lib_shopify_types_edge",
+      "src_lib_shopify_types_image",
+      "src_lib_shopify_types_maybe",
+      "src_lib_shopify_types_menu",
+      "src_lib_shopify_types_money",
+      "src_lib_shopify_types_page",
+      "src_lib_shopify_types_registeroperation",
+      "src_lib_shopify_types_seo",
+      "src_lib_shopify_types_shopifyaddtocartoperation",
+      "src_lib_shopify_types_shopifycart",
+      "src_lib_shopify_types_shopifycartoperation",
+      "src_lib_shopify_types_shopifycollection",
+      "src_lib_shopify_types_shopifycollectionoperation",
+      "src_lib_shopify_types_shopifycollectionproductsoperation",
+      "src_lib_shopify_types_shopifycollectionsoperation",
+      "src_lib_shopify_types_shopifycreatecartoperation",
+      "src_lib_shopify_types_shopifycustomer",
+      "src_lib_shopify_types_shopifymenuoperation",
+      "src_lib_shopify_types_shopifypageoperation",
+      "src_lib_shopify_types_shopifypagesoperation",
+      "src_lib_shopify_types_shopifyproduct",
+      "src_lib_shopify_types_shopifyproductoperation",
+      "src_lib_shopify_types_shopifyproductrecommendationsoperation",
+      "src_lib_shopify_types_shopifyproductsoperation",
+      "src_lib_shopify_types_shopifyremovefromcartoperation",
+      "src_lib_shopify_types_shopifyupdatecartoperation",
+      "src_lib_shopify_types_user",
+      "src_lib_shopify_types_useroperation"
+    ],
+    "4": [
+      "ref_astro",
+      "src_infrastructure_config",
+      "src_infrastructure_config_app_config",
+      "src_infrastructure_database_appwrite_client",
+      "src_infrastructure_database_appwrite_client_appwriteservice",
+      "src_infrastructure_database_appwrite_client_appwriteservice_constructor",
+      "src_infrastructure_database_appwrite_client_appwriteservice_createsessionclient",
+      "src_infrastructure_database_appwrite_client_appwriteservice_getinstance",
+      "src_infrastructure_database_appwrite_client_appwriteservice_getpublicclient",
+      "src_layouts_components_checkout_paypalprovider",
+      "src_layouts_components_checkout_paypalprovider_paypalprovider",
+      "src_layouts_components_checkout_paypalprovider_props",
+      "src_lib_paypal",
+      "src_lib_paypal_generateaccesstoken",
+      "src_lib_paypal_paypal_api_url",
+      "src_lib_transbank",
+      "src_lib_transbank_generatebuyorder",
+      "src_lib_transbank_gettransbankstatuslabel",
+      "src_lib_transbank_getwebpaytransaction",
+      "src_lib_transbank_transbank_config",
+      "src_lib_transbank_transbankstatus",
+      "src_pages_account",
+      "src_pages_api_password_reset_confirm_reset",
+      "src_pages_api_payment_confirm",
+      "src_pages_api_payment_confirm_get",
+      "src_pages_api_payment_create",
+      "src_pages_api_payment_create_post",
+      "src_pages_api_paypal_confirm",
+      "src_pages_api_paypal_confirm_get",
+      "src_pages_api_paypal_create_order",
+      "src_pages_api_paypal_create_order_post",
+      "src_pages_api_profile",
+      "src_pages_api_profile_get",
+      "src_pages_api_profile_update",
+      "src_pages_api_profile_update_post",
+      "src_pages_api_user_preferences",
+      "src_pages_api_user_preferences_get",
+      "src_pages_api_user_preferences_post",
+      "src_pages_checkout",
+      "src_tests_paypal_test",
+      "src_tests_transbank_test"
+    ],
+    "5": [
+      "scripts_setup_appwrite",
+      "scripts_setup_appwrite_client",
+      "scripts_setup_appwrite_databases",
+      "scripts_setup_appwrite_setup",
+      "src_layouts_functional_components_admin_inventorymanager",
+      "src_layouts_functional_components_admin_inventorymanager_inventoryitem",
+      "src_layouts_functional_components_admin_inventorymanager_inventorymanager",
+      "src_layouts_functional_components_admin_inventorymanager_inventorystats",
+      "src_layouts_functional_components_admin_inventorymanager_rationale_37",
+      "src_layouts_functional_components_admin_inventorymanager_rationale_58",
+      "src_lib_admin_utils",
+      "src_lib_admin_utils_getallorders",
+      "src_lib_admin_utils_getorderbyid",
+      "src_lib_admin_utils_getorderstats",
+      "src_lib_admin_utils_isadmin",
+      "src_lib_admin_utils_updateorderstatus",
+      "src_lib_email",
+      "src_lib_email_email_config",
+      "src_lib_email_resend",
+      "src_lib_email_sendorderdeliveredemail",
+      "src_lib_email_sendorderprocessingemail",
+      "src_lib_email_sendordershippedemail",
+      "src_pages_admin",
+      "src_pages_admin_inventory",
+      "src_pages_api_admin_inventory",
+      "src_pages_api_admin_inventory_get",
+      "src_pages_api_admin_orders",
+      "src_pages_api_admin_orders_get",
+      "src_pages_api_admin_stats",
+      "src_pages_api_admin_stats_get",
+      "src_pages_api_admin_update_order",
+      "src_pages_api_admin_update_order_bulk",
+      "src_pages_api_admin_update_order_bulk_post",
+      "src_pages_api_admin_update_order_post",
+      "src_pages_api_reset_password_post"
+    ],
+    "6": [
+      "ref_astro_tsconfigs_strict",
+      "ref_astro_types_d_ts",
+      "ref_dist",
+      "ref_node_modules",
+      "ref_src_layouts_components",
+      "ref_src_layouts_functional_components",
+      "ref_src_layouts_helpers",
+      "ref_src_layouts_partials",
+      "ref_src_layouts_shortcodes",
+      "ref_ts",
+      "ref_tsx",
+      "tsconfig",
+      "tsconfig_compileroptions",
+      "tsconfig_compileroptions_allowjs",
+      "tsconfig_compileroptions_allowsyntheticdefaultimports",
+      "tsconfig_compileroptions_baseurl",
+      "tsconfig_compileroptions_forceconsistentcasinginfilenames",
+      "tsconfig_compileroptions_incremental",
+      "tsconfig_compileroptions_isolatedmodules",
+      "tsconfig_compileroptions_jsx",
+      "tsconfig_compileroptions_noemit",
+      "tsconfig_compileroptions_paths",
+      "tsconfig_compileroptions_strict",
+      "tsconfig_compileroptions_target",
+      "tsconfig_exclude",
+      "tsconfig_extends",
+      "tsconfig_include",
+      "tsconfig_paths_components",
+      "tsconfig_paths_functional_components",
+      "tsconfig_paths_helpers",
+      "tsconfig_paths_partials",
+      "tsconfig_paths_shortcodes"
+    ],
+    "7": [
+      "src_layouts_functional_components_cart_addtocart",
+      "src_layouts_functional_components_cart_addtocart_addtocartprops",
+      "src_layouts_functional_components_cart_addtocart_submitbutton",
+      "src_layouts_functional_components_cart_addtocart_submitbuttonprops",
+      "src_layouts_functional_components_loadings_skeleton_skeletonproductthumb",
+      "src_layouts_functional_components_loadings_skeleton_skeletonproductthumb_skeletonproductthumb",
+      "src_layouts_functional_components_product_productgallery",
+      "src_layouts_functional_components_product_productgallery_customzoomimage",
+      "src_layouts_functional_components_product_productgallery_customzoomimageprops",
+      "src_layouts_functional_components_product_productgallery_imageitem",
+      "src_layouts_functional_components_product_productgallery_position",
+      "src_layouts_functional_components_product_productgallery_productgallery",
+      "src_layouts_functional_components_product_productgallery_productgalleryprops",
+      "src_layouts_functional_components_product_variantdropdown",
+      "src_layouts_functional_components_product_variantdropdown_variantdropdown",
+      "src_layouts_functional_components_product_variantselector",
+      "src_layouts_functional_components_product_variantselector_combination",
+      "src_layouts_functional_components_product_variantselector_generateimagemap",
+      "src_layouts_functional_components_product_variantselector_variantselector",
+      "src_lib_shopify_types_productoption",
+      "src_lib_shopify_types_productvariant",
+      "src_personalizationstore",
+      "src_personalizationstore_embroiderycolor",
+      "src_personalizationstore_embroideryfont",
+      "src_personalizationstore_embroiderytext"
+    ],
+    "8": [
+      "src_layouts_components_featuredproducts",
+      "src_layouts_functional_components_cart_addtocart_addtocart",
+      "src_layouts_functional_components_product_tabs",
+      "src_layouts_functional_components_product_tabs_tabs",
+      "src_layouts_partials_calltoaction",
+      "src_lib_shopify_index_getcollection",
+      "src_lib_shopify_index_getcollectionproducts",
+      "src_lib_shopify_index_getcollections",
+      "src_lib_shopify_index_getpages",
+      "src_lib_shopify_index_getproduct",
+      "src_lib_shopify_index_getproductrecommendations",
+      "src_lib_shopify_index_getproducts",
+      "src_lib_shopify_index_gettags",
+      "src_lib_shopify_index_getvendors",
+      "src_lib_shopify_index_removeedgesandnodes",
+      "src_lib_shopify_index_reshapecollection",
+      "src_lib_shopify_index_reshapecollections",
+      "src_lib_shopify_index_reshapeimages",
+      "src_lib_shopify_index_reshapeproduct",
+      "src_lib_shopify_index_reshapeproducts",
+      "src_pages_api_products_json",
+      "src_pages_api_products_json_get",
+      "src_pages_index",
+      "src_pages_products_slug"
+    ],
+    "9": [
+      "src_lib_validation",
+      "src_lib_validation_sanitizeaddress",
+      "src_lib_validation_sanitizehtml",
+      "src_lib_validation_sanitizename",
+      "src_lib_validation_sanitizeobject",
+      "src_lib_validation_sanitizephone",
+      "src_lib_validation_sanitizepostalcode",
+      "src_lib_validation_sanitizestring",
+      "src_lib_validation_sanitizeurl",
+      "src_lib_validation_test",
+      "src_lib_validation_validateaddress",
+      "src_lib_validation_validateamount",
+      "src_lib_validation_validatecheckoutdata",
+      "src_lib_validation_validatejson",
+      "src_lib_validation_validatename",
+      "src_lib_validation_validateordernumber",
+      "src_lib_validation_validatepassword",
+      "src_lib_validation_validatephone",
+      "src_lib_validation_validatepostalcode",
+      "src_lib_validation_validateregistrationdata",
+      "src_lib_validation_validateurl"
+    ],
+    "10": [
+      "src_layouts_functional_components_heroslider",
+      "src_layouts_functional_components_heroslider_heroslider",
+      "src_layouts_functional_components_productgrid",
+      "src_layouts_functional_components_productgrid_productgrid",
+      "src_layouts_functional_components_productlist",
+      "src_layouts_functional_components_productlist_productlist",
+      "src_lib_constants",
+      "src_lib_constants_default_option",
+      "src_lib_constants_defaultsort",
+      "src_lib_constants_hidden_product_tag",
+      "src_lib_constants_shopify_graphql_api_endpoint",
+      "src_lib_constants_sortfilteritem",
+      "src_lib_constants_sorting",
+      "src_lib_constants_tags",
+      "src_lib_shopify_index_gethighestproductprice",
+      "src_lib_shopify_types_pageinfo",
+      "src_lib_shopify_types_product",
+      "src_pages_products_index",
+      "src_pages_products_index_searchparamsobject",
+      "src_pages_products_index_tags"
+    ],
+    "11": [
+      "src_cartstore_setlayoutview",
+      "src_layouts_functional_components_filter_dropdownmenu",
+      "src_layouts_functional_components_filter_dropdownmenu_dropdownmenu",
+      "src_layouts_functional_components_filter_filterdropdownitem",
+      "src_layouts_functional_components_filter_filterdropdownitem_filterdropdownitem",
+      "src_layouts_functional_components_filter_filterdropdownitem_pathfilteritem",
+      "src_layouts_functional_components_filter_filterdropdownitem_sortfilteritem",
+      "src_layouts_functional_components_product_productlayouts",
+      "src_layouts_functional_components_product_productlayouts_listitem",
+      "src_layouts_functional_components_product_productlayouts_pathfilteritem",
+      "src_layouts_functional_components_product_productlayouts_productlayouts",
+      "src_lib_utils",
+      "src_lib_utils_createurl",
+      "src_lib_utils_ensurestartswith",
+      "src_lib_utils_validateenvironmentvariables"
+    ],
+    "12": [
+      "src_lib_shopify_fragments_image",
+      "src_lib_shopify_fragments_product",
+      "src_lib_shopify_fragments_seo",
+      "src_lib_shopify_queries_collection",
+      "src_lib_shopify_queries_collection_getcollectionproductsquery",
+      "src_lib_shopify_queries_collection_getcollectionquery",
+      "src_lib_shopify_queries_collection_getcollectionsquery",
+      "src_lib_shopify_queries_page",
+      "src_lib_shopify_queries_page_getpagequery",
+      "src_lib_shopify_queries_page_getpagesquery",
+      "src_lib_shopify_queries_product",
+      "src_lib_shopify_queries_product_gethighestproductpricequery",
+      "src_lib_shopify_queries_product_getproductquery",
+      "src_lib_shopify_queries_product_getproductrecommendationsquery",
+      "src_lib_shopify_queries_product_getproductsquery"
+    ],
+    "13": [
+      "astro_google_tagmanager",
+      "astro_transitions",
+      "bi",
+      "src_layouts_base",
+      "src_layouts_components_twsizeindicator",
+      "src_layouts_functional_components_forgotpasswordform",
+      "src_layouts_functional_components_forgotpasswordform_forgotpasswordform",
+      "src_pages_404",
+      "src_pages_checkout_success",
+      "src_pages_checkout_success_orderid",
+      "src_pages_checkout_success_ordernumber",
+      "src_pages_forgot_password",
+      "src_pages_login",
+      "src_pages_sign_up"
+    ],
+    "14": [
+      "eslint",
+      "package_devdependencies",
+      "package_devdependencies_eslint",
+      "package_devdependencies_prettier",
+      "package_devdependencies_tailwind_bootstrap_grid",
+      "package_devdependencies_tailwindcss_forms",
+      "package_devdependencies_tailwindcss_typography",
+      "package_devdependencies_types_react_dom",
+      "prettier",
+      "tailwind_bootstrap_grid",
+      "tailwindcss_forms",
+      "tailwindcss_typography",
+      "types_react_dom"
+    ],
+    "15": [
+      "src_content_config",
+      "src_content_config_collections",
+      "src_content_config_pagescollection",
+      "src_types_pages_aboutcollection",
+      "src_types_pages_aboutcollection_aboutcollection",
+      "src_types_pages_contactcollection",
+      "src_types_pages_contactcollection_contactcollection",
+      "src_types_sections_ctasectioncollection",
+      "src_types_sections_ctasectioncollection_ctasectioncollection",
+      "src_types_sections_paymentcollection",
+      "src_types_sections_paymentcollection_paymentcollection"
+    ],
+    "16": [
+      "src_layouts_components_breadcrumbs",
+      "src_layouts_partials_pageheader",
+      "src_layouts_partials_postsidebar",
+      "src_layouts_shortcodes_notice",
+      "src_layouts_shortcodes_notice_notice",
+      "src_lib_utils_textconverter",
+      "src_lib_utils_textconverter_htmlentitydecoder",
+      "src_lib_utils_textconverter_humanize",
+      "src_lib_utils_textconverter_plainify",
+      "src_lib_utils_textconverter_titleify",
+      "src_pages_contact"
+    ],
+    "17": [
+      "fa",
+      "src_layouts_functional_components_accordion",
+      "src_layouts_functional_components_accordion_accordion",
+      "src_layouts_functional_components_testimonials",
+      "src_layouts_functional_components_testimonials_testimonials",
+      "src_layouts_helpers_announcement",
+      "src_layouts_helpers_announcement_announcement",
+      "src_lib_utils_textconverter_markdownify",
+      "src_pages_about",
+      "src_types"
+    ],
+    "18": [
+      "src_layouts_functional_components_product_showtags",
+      "src_layouts_functional_components_product_showtags_showtags",
+      "src_layouts_functional_components_productfilters",
+      "src_layouts_functional_components_productfilters_productfilters",
+      "src_layouts_functional_components_rangeslider_rangeslider",
+      "src_layouts_functional_components_rangeslider_rangeslider_createurl",
+      "src_layouts_functional_components_rangeslider_rangeslider_rangeslider",
+      "src_lib_utils_taxonomyfilter",
+      "src_lib_utils_taxonomyfilter_taxonomyfilter",
+      "src_lib_utils_textconverter_slugify"
+    ],
+    "19": [
+      "appwrite",
+      "astro_auto_import",
+      "digi4care_astro_google_tagmanager",
+      "github_slugger",
+      "package_dependencies",
+      "package_dependencies_appwrite",
+      "package_dependencies_astro_auto_import",
+      "package_dependencies_digi4care_astro_google_tagmanager",
+      "package_dependencies_github_slugger"
+    ],
+    "20": [
+      "scripts_themegenerator",
+      "scripts_themegenerator_addcolorstocss",
+      "scripts_themegenerator_determinepaths",
+      "scripts_themegenerator_dirname",
+      "scripts_themegenerator_filename",
+      "scripts_themegenerator_findfont",
+      "scripts_themegenerator_generatethemecss",
+      "scripts_themegenerator_themepath_outputpath",
+      "scripts_themegenerator_tokebab"
+    ],
+    "21": [
+      "src_layouts_components_social",
+      "src_layouts_functional_components_socialshare",
+      "src_layouts_functional_components_socialshare_socialshare",
+      "src_layouts_helpers_dynamicicon",
+      "src_layouts_helpers_dynamicicon_dynamicicon",
+      "src_layouts_helpers_dynamicicon_geticonlibrary",
+      "src_layouts_helpers_dynamicicon_iconlibraries",
+      "src_layouts_helpers_dynamicicon_iconmap",
+      "src_layouts_helpers_dynamicicon_idynamicicon"
+    ],
+    "22": [
+      "astro_assets",
+      "css",
+      "modules",
+      "navigation",
+      "pagination",
+      "src_layouts_components_imagemod",
+      "src_layouts_components_imagemod_images",
+      "src_layouts_partials_testimonials"
+    ],
+    "23": [
+      "astro_content",
+      "src_lib_contentparser",
+      "src_lib_contentparser_getsinglepage",
+      "src_lib_taxonomyparser",
+      "src_lib_taxonomyparser_getalltaxonomy",
+      "src_lib_taxonomyparser_gettaxonomy",
+      "src_pages_regular",
+      "src_pages_regular_getstaticpaths"
+    ],
+    "24": [
+      "package_scripts",
+      "package_scripts_build",
+      "package_scripts_check",
+      "package_scripts_dev",
+      "package_scripts_format",
+      "package_scripts_preview",
+      "package_scripts_remove_darkmode",
+      "package_scripts_test"
+    ],
+    "25": [
+      "src_lib_shopify_fragments_cart",
+      "src_lib_shopify_mutations_cart",
+      "src_lib_shopify_mutations_cart_addtocartmutation",
+      "src_lib_shopify_mutations_cart_createcartmutation",
+      "src_lib_shopify_mutations_cart_editcartitemsmutation",
+      "src_lib_shopify_mutations_cart_removefromcartmutation",
+      "src_lib_shopify_queries_cart",
+      "src_lib_shopify_queries_cart_getcartquery"
+    ],
+    "26": [
+      "package",
+      "package_author",
+      "package_description",
+      "package_license",
+      "package_name",
+      "package_type",
+      "package_version"
+    ],
+    "27": [
+      "scripts_validate_checkout",
+      "scripts_validate_checkout_checkendpoint",
+      "scripts_validate_checkout_fetchwithtimeout",
+      "scripts_validate_checkout_fs",
+      "scripts_validate_checkout_log",
+      "scripts_validate_checkout_run",
+      "scripts_validate_checkout_url"
+    ],
+    "28": [
+      "src_layouts_components_logo",
+      "src_layouts_components_themeswitcher",
+      "src_layouts_functional_components_cart_cart",
+      "src_layouts_functional_components_searchbar",
+      "src_layouts_functional_components_searchbar_searchbar",
+      "src_layouts_partials_footer",
+      "src_layouts_partials_header"
+    ],
+    "29": [
+      "src_layouts_functional_components_resetpasswordform",
+      "src_layouts_functional_components_resetpasswordform_props",
+      "src_layouts_functional_components_resetpasswordform_resetpasswordform",
+      "src_pages_reset_password",
+      "src_pages_reset_password_secret",
+      "src_pages_reset_password_url",
+      "src_pages_reset_password_userid"
+    ],
+    "30": [
+      "src_lib_shopify_index_shopifyfetch",
+      "src_lib_typeguards",
+      "src_lib_typeguards_finderror",
+      "src_lib_typeguards_isobject",
+      "src_lib_typeguards_isshopifyerror",
+      "src_lib_typeguards_shopifyerrorlike"
+    ],
+    "31": [
+      "src_pages_payment_transbank_return",
+      "src_pages_payment_transbank_return_committransaction",
+      "src_pages_payment_transbank_return_showerror",
+      "src_pages_payment_transbank_return_showsuccess",
+      "src_pages_payment_transbank_return_token"
+    ],
+    "32": [
+      "src_layouts_functional_components_collectionsslider",
+      "src_layouts_functional_components_collectionsslider_collectionsslider",
+      "src_layouts_functional_components_loadings_skeleton_skeletoncategory",
+      "src_layouts_functional_components_loadings_skeleton_skeletoncategory_skeletoncategory"
+    ],
+    "33": [
+      "src_lib_shopify_mutations_customer",
+      "src_lib_shopify_mutations_customer_createcustomermutation",
+      "src_lib_shopify_mutations_customer_getcustomeraccesstokenmutation",
+      "src_lib_shopify_mutations_customer_getuserdetailsquery"
+    ],
+    "34": [
+      "src_layouts_components_checkout_transbankbutton",
+      "src_layouts_components_checkout_transbankbutton_transbankbutton",
+      "src_layouts_components_checkout_transbankbutton_transbankbuttonprops"
+    ],
+    "35": [
+      "src_layouts_components_price",
+      "src_layouts_components_price_combinedclassname",
+      "src_layouts_components_price_formattedamount"
+    ],
+    "36": [
+      "src_layouts_shortcodes_tabs",
+      "src_layouts_shortcodes_tabs_tabprops",
+      "src_layouts_shortcodes_tabs_tabs"
+    ],
+    "37": [
+      "src_lib_shopify_queries_vendor",
+      "src_lib_shopify_queries_vendor_gettagsquery",
+      "src_lib_shopify_queries_vendor_getvendorsquery"
+    ],
+    "38": [
+      "src_lib_utils_sortfunctions",
+      "src_lib_utils_sortfunctions_sortbydate",
+      "src_lib_utils_sortfunctions_sortbyweight"
+    ],
+    "39": [
+      "src_types_index_d",
+      "src_types_index_d_faq",
+      "src_types_index_d_testimonial"
+    ],
+    "40": [
+      "package_dependencies_astro",
+      "package_json_astro"
+    ],
+    "41": [
+      "astrojs_check",
+      "package_dependencies_astrojs_check"
+    ],
+    "42": [
+      "astrojs_mdx",
+      "package_dependencies_astrojs_mdx"
+    ],
+    "43": [
+      "astrojs_node",
+      "package_dependencies_astrojs_node"
+    ],
+    "44": [
+      "astrojs_react",
+      "package_dependencies_astrojs_react"
+    ],
+    "45": [
+      "astrojs_sitemap",
+      "package_dependencies_astrojs_sitemap"
+    ],
+    "46": [
+      "concurrently",
+      "package_devdependencies_concurrently"
+    ],
+    "47": [
+      "date_fns",
+      "package_dependencies_date_fns"
+    ],
+    "48": [
+      "io5",
+      "src_layouts_components_share"
+    ],
+    "49": [
+      "js_cookie",
+      "package_dependencies_js_cookie"
+    ],
+    "50": [
+      "jsdom",
+      "package_devdependencies_jsdom"
+    ],
+    "51": [
+      "justinribeiro_lite_youtube",
+      "package_dependencies_justinribeiro_lite_youtube"
+    ],
+    "52": [
+      "marked",
+      "package_dependencies_marked"
+    ],
+    "53": [
+      "nanostores",
+      "package_dependencies_nanostores"
+    ],
+    "54": [
+      "nanostores_react",
+      "package_dependencies_nanostores_react"
+    ],
+    "55": [
+      "node_appwrite",
+      "package_dependencies_node_appwrite"
+    ],
+    "56": [
+      "package_dependencies_astro_font",
+      "package_json_astro_font"
+    ],
+    "57": [
+      "package_dependencies_paypal_react_paypal_js",
+      "paypal_react_paypal_js"
+    ],
+    "58": [
+      "package_dependencies_prop_types",
+      "prop_types"
+    ],
+    "59": [
+      "package_dependencies_react",
+      "react"
+    ],
+    "60": [
+      "package_dependencies_react_dom",
+      "react_dom"
+    ],
+    "61": [
+      "package_dependencies_react_gravatar",
+      "react_gravatar"
+    ],
+    "62": [
+      "package_dependencies_react_icons",
+      "react_icons"
+    ],
+    "63": [
+      "package_dependencies_remark_collapse",
+      "remark_collapse"
+    ],
+    "64": [
+      "package_dependencies_remark_toc",
+      "remark_toc"
+    ],
+    "65": [
+      "package_dependencies_resend",
+      "resend"
+    ],
+    "66": [
+      "package_dependencies_sharp",
+      "sharp"
+    ],
+    "67": [
+      "package_dependencies_swiper",
+      "package_json_swiper"
+    ],
+    "68": [
+      "package_dependencies_transbank_sdk",
+      "transbank_sdk"
+    ],
+    "69": [
+      "package_dependencies_vite",
+      "vite"
+    ],
+    "70": [
+      "package_devdependencies_types_react_gravatar",
+      "types_react_gravatar"
+    ],
+    "71": [
+      "package_devdependencies_prettier_plugin_astro",
+      "prettier_plugin_astro"
+    ],
+    "72": [
+      "package_devdependencies_prettier_plugin_tailwindcss",
+      "prettier_plugin_tailwindcss"
+    ],
+    "73": [
+      "package_devdependencies_tailwindcss",
+      "tailwindcss"
+    ],
+    "74": [
+      "package_devdependencies_tailwindcss_vite",
+      "tailwindcss_vite"
+    ],
+    "75": [
+      "package_devdependencies_testing_library_react",
+      "testing_library_react"
+    ],
+    "76": [
+      "package_devdependencies_types_js_cookie",
+      "types_js_cookie"
+    ],
+    "77": [
+      "package_devdependencies_types_node",
+      "types_node"
+    ],
+    "78": [
+      "package_devdependencies_types_react",
+      "types_react"
+    ],
+    "79": [
+      "package_devdependencies_typescript",
+      "typescript"
+    ],
+    "80": [
+      "package_devdependencies_vitest",
+      "vitest"
+    ],
+    "81": [
+      "setup_admin",
+      "setup_admin_sh__entry"
+    ],
+    "82": [
+      "setup_resend",
+      "setup_resend_sh__entry"
+    ],
+    "83": [
+      "src_layouts_functional_components_loadings_skeleton_skeletondescription",
+      "src_layouts_functional_components_loadings_skeleton_skeletondescription_skeletondescription"
+    ],
+    "84": [
+      "src_layouts_functional_components_loadings_skeleton_skeletonfeaturedproducts",
+      "src_layouts_functional_components_loadings_skeleton_skeletonfeaturedproducts_skeletonfeaturedproducts"
+    ],
+    "85": [
+      "src_layouts_functional_components_loadings_skeleton_skeletonproductgallery",
+      "src_layouts_functional_components_loadings_skeleton_skeletonproductgallery_skeletonproductgallery"
+    ],
+    "86": [
+      "src_layouts_functional_components_loadings_skeleton_skeletonproducts",
+      "src_layouts_functional_components_loadings_skeleton_skeletonproducts_skeletonproducts"
+    ],
+    "87": [
+      "src_layouts_functional_components_product_paymentslider",
+      "src_layouts_functional_components_product_paymentslider_paymentslider"
+    ],
+    "88": [
+      "src_layouts_shortcodes_accordion",
+      "src_layouts_shortcodes_accordion_accordion"
+    ],
+    "89": [
+      "src_layouts_shortcodes_button",
+      "src_layouts_shortcodes_button_button"
+    ],
+    "90": [
+      "src_layouts_shortcodes_tab",
+      "src_layouts_shortcodes_tab_tab"
+    ],
+    "91": [
+      "src_layouts_shortcodes_video",
+      "src_layouts_shortcodes_video_video"
+    ],
+    "92": [
+      "src_layouts_shortcodes_youtube",
+      "src_layouts_shortcodes_youtube_youtube"
+    ],
+    "93": [
+      "src_lib_utils_bgimagemod",
+      "src_lib_utils_bgimagemod_bgimagemod"
+    ],
+    "94": [
+      "src_lib_utils_dateformat",
+      "src_lib_utils_dateformat_dateformat"
+    ],
+    "95": [
+      "src_lib_utils_readingtime",
+      "src_lib_utils_readingtime_readingtime"
+    ],
+    "96": [
+      "src_lib_utils_similaritems",
+      "src_lib_utils_similaritems_similaritems"
+    ],
+    "97": [
+      "astro_astro"
+    ],
+    "98": [
+      "astro_config"
+    ],
+    "99": [
+      "astro_font_astro_font"
+    ],
+    "100": [
+      "src_layouts_components_pagination"
+    ],
+    "101": [
+      "swiper_swiper"
+    ],
+    "102": [
+      "vitest_config"
+    ]
+  },
+  "cohesion": {
+    "0": 0.07043650793650794,
+    "1": 0.06284153005464481,
+    "2": 0.07756813417190776,
+    "3": 0.07777777777777778,
+    "4": 0.09634146341463415,
+    "5": 0.11092436974789915,
+    "6": 0.0625,
+    "7": 0.12,
+    "8": 0.11594202898550725,
+    "9": 0.18571428571428572,
+    "10": 0.15263157894736842,
+    "11": 0.22857142857142856,
+    "12": 0.14285714285714285,
+    "13": 0.14285714285714285,
+    "14": 0.15384615384615385,
+    "15": 0.2545454545454545,
+    "16": 0.3090909090909091,
+    "17": 0.28888888888888886,
+    "18": 0.3333333333333333,
+    "19": 0.2222222222222222,
+    "20": 0.3333333333333333,
+    "21": 0.2777777777777778,
+    "22": 0.25,
+    "23": 0.42857142857142855,
+    "24": 0.25,
+    "25": 0.25,
+    "26": 0.2857142857142857,
+    "27": 0.5238095238095238,
+    "28": 0.2857142857142857,
+    "29": 0.2857142857142857,
+    "30": 0.4666666666666667,
+    "31": 0.6,
+    "32": 0.6666666666666666,
+    "33": 0.5,
+    "34": 0.6666666666666666,
+    "35": 0.6666666666666666,
+    "36": 0.6666666666666666,
+    "37": 0.6666666666666666,
+    "38": 0.6666666666666666,
+    "39": 0.6666666666666666,
+    "40": 1.0,
+    "41": 1.0,
+    "42": 1.0,
+    "43": 1.0,
+    "44": 1.0,
+    "45": 1.0,
+    "46": 1.0,
+    "47": 1.0,
+    "48": 1.0,
+    "49": 1.0,
+    "50": 1.0,
+    "51": 1.0,
+    "52": 1.0,
+    "53": 1.0,
+    "54": 1.0,
+    "55": 1.0,
+    "56": 1.0,
+    "57": 1.0,
+    "58": 1.0,
+    "59": 1.0,
+    "60": 1.0,
+    "61": 1.0,
+    "62": 1.0,
+    "63": 1.0,
+    "64": 1.0,
+    "65": 1.0,
+    "66": 1.0,
+    "67": 1.0,
+    "68": 1.0,
+    "69": 1.0,
+    "70": 1.0,
+    "71": 1.0,
+    "72": 1.0,
+    "73": 1.0,
+    "74": 1.0,
+    "75": 1.0,
+    "76": 1.0,
+    "77": 1.0,
+    "78": 1.0,
+    "79": 1.0,
+    "80": 1.0,
+    "81": 1.0,
+    "82": 1.0,
+    "83": 1.0,
+    "84": 1.0,
+    "85": 1.0,
+    "86": 1.0,
+    "87": 1.0,
+    "88": 1.0,
+    "89": 1.0,
+    "90": 1.0,
+    "91": 1.0,
+    "92": 1.0,
+    "93": 1.0,
+    "94": 1.0,
+    "95": 1.0,
+    "96": 1.0,
+    "97": 1.0,
+    "98": 1.0,
+    "99": 1.0,
+    "100": 1.0,
+    "101": 1.0,
+    "102": 1.0
+  },
+  "gods": [
+    {
+      "id": "ref_astro",
+      "label": "**/*.astro",
+      "degree": 21
+    },
+    {
+      "id": "src_infrastructure_config_app_config",
+      "label": "APP_CONFIG",
+      "degree": 15
+    },
+    {
+      "id": "src_lib_admin_utils_isadmin",
+      "label": "isAdmin()",
+      "degree": 15
+    },
+    {
+      "id": "src_infrastructure_database_appwrite_client_appwriteservice",
+      "label": "AppwriteService",
+      "degree": 13
+    },
+    {
+      "id": "src_cartstore_refreshcartstate",
+      "label": "refreshCartState()",
+      "degree": 12
+    },
+    {
+      "id": "src_lib_shopify_index_getcart",
+      "label": "getCart()",
+      "degree": 12
+    },
+    {
+      "id": "tsconfig_compileroptions",
+      "label": "compilerOptions",
+      "degree": 12
+    },
+    {
+      "id": "src_lib_audit_logger_logratelimitexceeded",
+      "label": "logRateLimitExceeded()",
+      "degree": 11
+    },
+    {
+      "id": "src_lib_password_reset_passwordresetmanager",
+      "label": "PasswordResetManager",
+      "degree": 11
+    },
+    {
+      "id": "src_lib_rate_limiter_ratelimiter",
+      "label": "RateLimiter",
+      "degree": 11
+    }
+  ],
+  "surprises": [
+    {
+      "source": "getAllOrders()",
+      "target": "client",
+      "source_files": [
+        "src/lib/admin-utils.ts",
+        "scripts/setup_appwrite.js"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "references",
+      "why": "connects across different repos/directories"
+    },
+    {
+      "source": "getOrderById()",
+      "target": "client",
+      "source_files": [
+        "src/lib/admin-utils.ts",
+        "scripts/setup_appwrite.js"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "references",
+      "why": "connects across different repos/directories"
+    },
+    {
+      "source": "getOrderStats()",
+      "target": "client",
+      "source_files": [
+        "src/lib/admin-utils.ts",
+        "scripts/setup_appwrite.js"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "references",
+      "why": "connects across different repos/directories"
+    },
+    {
+      "source": "isAdmin()",
+      "target": "client",
+      "source_files": [
+        "src/lib/admin-utils.ts",
+        "scripts/setup_appwrite.js"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "references",
+      "why": "connects across different repos/directories"
+    },
+    {
+      "source": "updateOrderStatus()",
+      "target": "client",
+      "source_files": [
+        "src/lib/admin-utils.ts",
+        "scripts/setup_appwrite.js"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "references",
+      "why": "connects across different repos/directories"
+    }
+  ],
+  "questions": [
+    {
+      "type": "bridge_node",
+      "question": "Why does `**/*.astro` connect `**/*.astro` to `audit-logger.ts`, `AdminDashboard.tsx`, `isAdmin`, `compilerOptions`, `[slug].astro`?",
+      "why": "High betweenness centrality (0.079) - this node is a cross-community bridge."
+    },
+    {
+      "type": "bridge_node",
+      "question": "Why does `include` connect `compilerOptions` to `**/*.astro`?",
+      "why": "High betweenness centrality (0.057) - this node is a cross-community bridge."
+    },
+    {
+      "type": "isolated_nodes",
+      "question": "What connects `name`, `version`, `description` to the rest of the system?",
+      "why": "156 weakly-connected nodes found - possible documentation gaps or missing edges."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `audit-logger.ts` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.07043650793650794 - nodes in this community are weakly interconnected."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `AdminDashboard.tsx` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.06284153005464481 - nodes in this community are weakly interconnected."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `cartStore.ts` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.07756813417190776 - nodes in this community are weakly interconnected."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `index.ts` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.07777777777777778 - nodes in this community are weakly interconnected."
+    }
+  ]
+}

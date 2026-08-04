@@ -27,3 +27,7 @@ jobs:
 
       - name: Run Tests
         run: npm run test -- --run # Run once, not in watch mode
+
+      - name: Build Production Bundle
+        run: npm run build
+

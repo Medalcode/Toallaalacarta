@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>/ — graphify tree viewer</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f9f9f9;
+      color: #333;
+    }
+    h1 {
+      margin: 20px 0 0 24px;
+      font-size: 2.2rem;
+      font-weight: bold;
+      color: #1e3a56;
+    }
+    .controls {
+      margin: 20px 0 15px 24px;
+    }
+    button {
+      margin-right: 10px;
+      padding: 8px 18px;
+      background: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: background 0.2s ease-in-out;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    button:active {
+      background: #004085;
+    }
+    #tree-container {
+      width: calc(100vw - 48px); /* Adjust for body margin/padding */
+      height: 85vh;
+      overflow: auto;
+      border-radius: 8px;
+      background: #fff;
+      margin-left: 24px;
+      margin-right: 24px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      border: 1px solid #ddd;
+    }
+    svg {
+      background: #fff;
+      border-radius: 8px;
+      display: block; /* Important for D3 */
+    }
+    .node circle {
+      stroke-width: 2.5px;
+    }
+    .node text { /* Base style for the <text> container */
+      font: 13px 'Segoe UI', sans-serif;
+      paint-order: stroke fill; /* Ensures text is readable over lines */
+      stroke: #fff; /* White halo */
+      stroke-width: 3px; /* Halo thickness */
+      stroke-linejoin: round;
+      stroke-opacity: 0.85; /* Halo opacity */
+    }
+    .link {
+      fill: none;
+      stroke-opacity: 0.7;
+      stroke-width: 2px;
+    }
+  </style>
+</head>
+<body>
+  <h1>/ — Knowledge Graph</h1>
+  <div class="controls">
+    <button onclick="expandAll()">Expand All</button>
+    <button onclick="collapseAll()">Collapse All</button>
+    <button onclick="resetView()">Reset View</button>
+  </div>
+  <div id="tree-container">
+    <svg id="tree-svg" width="6000" height="8000"></svg>
+  </div>
+
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script>
+    const initialJsonData = {"name":"/","total_count":627,"children":[{"name":"@digi4care","total_count":1,"children":[{"name":"astro-google-tagmanager","total_count":1,"children":[]}]},{"name":"package.json","total_count":116,"children":[{"name":"@astrojs/check","total_count":1,"children":[]},{"name":"@astrojs/check","total_count":1,"children":[]},{"name":"@astrojs/mdx","total_count":1,"children":[]},{"name":"@astrojs/mdx","total_count":1,"children":[]},{"name":"@astrojs/node","total_count":1,"children":[]},{"name":"@astrojs/node","total_count":1,"children":[]},{"name":"@astrojs/react","total_count":1,"children":[]},{"name":"@astrojs/react","total_count":1,"children":[]},{"name":"@astrojs/sitemap","total_count":1,"children":[]},{"name":"@astrojs/sitemap","total_count":1,"children":[]},{"name":"@digi4care/astro-google-tagmanager","total_count":1,"children":[]},{"name":"@digi4care/astro-google-tagmanager","total_count":1,"children":[]},{"name":"@justinribeiro/lite-youtube","total_count":1,"children":[]},{"name":"@justinribeiro/lite-youtube","total_count":1,"children":[]},{"name":"@nanostores/react","total_count":1,"children":[]},{"name":"@nanostores/react","total_count":1,"children":[]},{"name":"@paypal/react-paypal-js","total_count":1,"children":[]},{"name":"@paypal/react-paypal-js","total_count":1,"children":[]},{"name":"@tailwindcss/forms","total_count":1,"children":[]},{"name":"@tailwindcss/forms","total_count":1,"children":[]},{"name":"@tailwindcss/typography","total_count":1,"children":[]},{"name":"@tailwindcss/typography","total_count":1,"children":[]},{"name":"@tailwindcss/vite","total_count":1,"children":[]},{"name":"@tailwindcss/vite","total_count":1,"children":[]},{"name":"@testing-library/react","total_count":1,"children":[]},{"name":"@testing-library/react","total_count":1,"children":[]},{"name":"@types/js-cookie","total_count":1,"children":[]},{"name":"@types/js-cookie","total_count":1,"children":[]},{"name":"@types/node","total_count":1,"children":[]},{"name":"@types/node","total_count":1,"children":[]},{"name":"@types/react","total_count":1,"children":[]},{"name":"@types/react","total_count":1,"children":[]},{"name":"@types/react-dom","total_count":1,"children":[]},{"name":"@types/react-dom","total_count":1,"children":[]},{"name":"@types/react-gravatar","total_count":1,"children":[]},{"name":"@types/react-gravatar","total_count":1,"children":[]},{"name":"appwrite","total_count":1,"children":[]},{"name":"appwrite","total_count":1,"children":[]},{"name":"astro","total_count":1,"children":[]},{"name":"astro","total_count":1,"children":[]},{"name":"astro-auto-import","total_count":1,"children":[]},{"name":"astro-auto-import","total_count":1,"children":[]},{"name":"astro-font","total_count":1,"children":[]},{"name":"astro-font","total_count":1,"children":[]},{"name":"author","total_count":1,"children":[]},{"name":"build","total_count":1,"children":[]},{"name":"check","total_count":1,"children":[]},{"name":"concurrently","total_count":1,"children":[]},{"name":"concurrently","total_count":1,"children":[]},{"name":"date-fns","total_count":1,"children":[]},{"name":"date-fns","total_count":1,"children":[]},{"name":"dependencies","total_count":1,"children":[]},{"name":"description","total_count":1,"children":[]},{"name":"dev","total_count":1,"children":[]},{"name":"devDependencies","total_count":1,"children":[]},{"name":"eslint","total_count":1,"children":[]},{"name":"eslint","total_count":1,"children":[]},{"name":"format","total_count":1,"children":[]},{"name":"github-slugger","total_count":1,"children":[]},{"name":"github-slugger","total_count":1,"children":[]},{"name":"js-cookie","total_count":1,"children":[]},{"name":"js-cookie","total_count":1,"children":[]},{"name":"jsdom","total_count":1,"children":[]},{"name":"jsdom","total_count":1,"children":[]},{"name":"license","total_count":1,"children":[]},{"name":"marked","total_count":1,"children":[]},{"name":"marked","total_count":1,"children":[]},{"name":"name","total_count":1,"children":[]},{"name":"nanostores","total_count":1,"children":[]},{"name":"nanostores","total_count":1,"children":[]},{"name":"node-appwrite","total_count":1,"children":[]},{"name":"node-appwrite","total_count":1,"children":[]},{"name":"prettier","total_count":1,"children":[]},{"name":"prettier","total_count":1,"children":[]},{"name":"prettier-plugin-astro","total_count":1,"children":[]},{"name":"prettier-plugin-astro","total_count":1,"children":[]},{"name":"prettier-plugin-tailwindcss","total_count":1,"children":[]},{"name":"prettier-plugin-tailwindcss","total_count":1,"children":[]},{"name":"preview","total_count":1,"children":[]},{"name":"prop-types","total_count":1,"children":[]},{"name":"prop-types","total_count":1,"children":[]},{"name":"react","total_count":1,"children":[]},{"name":"react","total_count":1,"children":[]},{"name":"react-dom","total_count":1,"children":[]},{"name":"react-dom","total_count":1,"children":[]},{"name":"react-gravatar","total_count":1,"children":[]},{"name":"react-gravatar","total_count":1,"children":[]},{"name":"react-icons","total_count":1,"children":[]},{"name":"react-icons","total_count":1,"children":[]},{"name":"remark-collapse","total_count":1,"children":[]},{"name":"remark-collapse","total_count":1,"children":[]},{"name":"remark-toc","total_count":1,"children":[]},{"name":"remark-toc","total_count":1,"children":[]},{"name":"remove-darkmode","total_count":1,"children":[]},{"name":"resend","total_count":1,"children":[]},{"name":"resend","total_count":1,"children":[]},{"name":"scripts","total_count":1,"children":[]},{"name":"sharp","total_count":1,"children":[]},{"name":"sharp","total_count":1,"children":[]},{"name":"swiper","total_count":1,"children":[]},{"name":"swiper","total_count":1,"children":[]},{"name":"tailwind-bootstrap-grid","total_count":1,"children":[]},{"name":"tailwind-bootstrap-grid","total_count":1,"children":[]},{"name":"tailwindcss","total_count":1,"children":[]},{"name":"tailwindcss","total_count":1,"children":[]},{"name":"test","total_count":1,"children":[]},{"name":"transbank-sdk","total_count":1,"children":[]},{"name":"transbank-sdk","total_count":1,"children":[]},{"name":"type","total_count":1,"children":[]},{"name":"typescript","total_count":1,"children":[]},{"name":"typescript","total_count":1,"children":[]},{"name":"version","total_count":1,"children":[]},{"name":"vite","total_count":1,"children":[]},{"name":"vite","total_count":1,"children":[]},{"name":"vitest","total_count":1,"children":[]},{"name":"vitest","total_count":1,"children":[]}]},{"name":"react-icons","total_count":3,"children":[{"name":"bi","total_count":1,"children":[]},{"name":"fa","total_count":1,"children":[]},{"name":"io5","total_count":1,"children":[]}]},{"name":"scripts","total_count":17,"children":[{"name":"setup_appwrite.js","total_count":3,"children":[{"name":"client","total_count":1,"children":[]},{"name":"databases","total_count":1,"children":[]},{"name":"setup()","total_count":1,"children":[]}]},{"name":"themeGenerator.js","total_count":8,"children":[{"name":"__dirname","total_count":1,"children":[]},{"name":"__filename","total_count":1,"children":[]},{"name":"addColorsToCss()","total_count":1,"children":[]},{"name":"determinePaths()","total_count":1,"children":[]},{"name":"findFont()","total_count":1,"children":[]},{"name":"generateThemeCSS()","total_count":1,"children":[]},{"name":"toKebab()","total_count":1,"children":[]},{"name":"{ themePath, outputPath }","total_count":1,"children":[]}]},{"name":"validate_checkout.js","total_count":6,"children":[{"name":"checkEndpoint()","total_count":1,"children":[]},{"name":"fetchWithTimeout()","total_count":1,"children":[]},{"name":"fs","total_count":1,"children":[]},{"name":"log()","total_count":1,"children":[]},{"name":"run()","total_count":1,"children":[]},{"name":"{ URL }","total_count":1,"children":[]}]}]},{"name":"setup-admin.sh","total_count":1,"children":[{"name":"setup-admin.sh script","total_count":1,"children":[]}]},{"name":"setup-resend.sh","total_count":1,"children":[{"name":"setup-resend.sh script","total_count":1,"children":[]}]},{"name":"src","total_count":444,"children":[{"name":"__tests__","total_count":5,"children":[{"name":"audit-logger.test.ts","total_count":1,"children":[]},{"name":"orders.service.test.ts","total_count":1,"children":[]},{"name":"paypal.test.ts","total_count":1,"children":[]},{"name":"rate-limiter.test.ts","total_count":1,"children":[]},{"name":"transbank.test.ts","total_count":1,"children":[]}]},{"name":"cartStore.ts","total_count":9,"children":[{"name":"addItemToCart()","total_count":1,"children":[]},{"name":"cart","total_count":1,"children":[]},{"name":"getLayoutView()","total_count":1,"children":[]},{"name":"layoutView","total_count":1,"children":[]},{"name":"refreshCartState()","total_count":1,"children":[]},{"name":"removeItemFromCart()","total_count":1,"children":[]},{"name":"setLayoutView()","total_count":1,"children":[]},{"name":"totalQuantity","total_count":1,"children":[]},{"name":"updateCartItemQuantity()","total_count":1,"children":[]}]},{"name":"content.config.ts","total_count":2,"children":[{"name":"collections","total_count":1,"children":[]},{"name":"pagesCollection","total_count":1,"children":[]}]},{"name":"infrastructure","total_count":6,"children":[{"name":"config.ts","total_count":1,"children":[{"name":"APP_CONFIG","total_count":1,"children":[]}]},{"name":"database","total_count":5,"children":[{"name":"appwrite.client.ts","total_count":5,"children":[{"name":".constructor()","total_count":1,"children":[]},{"name":".createSessionClient()","total_count":1,"children":[]},{"name":".getInstance()","total_count":1,"children":[]},{"name":".getPublicClient()","total_count":1,"children":[]},{"name":"AppwriteService","total_count":1,"children":[]}]}]}]},{"name":"layouts","total_count":121,"children":[{"name":"components","total_count":17,"children":[{"name":"checkout","total_count":6,"children":[{"name":"PayPalButton.tsx","total_count":2,"children":[{"name":"PayPalButtonProps","total_count":1,"children":[]},{"name":"PayPalPaymentButton()","total_count":1,"children":[]}]},{"name":"PayPalProvider.tsx","total_count":2,"children":[{"name":"PayPalProvider()","total_count":1,"children":[]},{"name":"Props","total_count":1,"children":[]}]},{"name":"TransbankButton.tsx","total_count":2,"children":[{"name":"TransbankButton()","total_count":1,"children":[]},{"name":"TransbankButtonProps","total_count":1,"children":[]}]}]},{"name":"ImageMod.astro","total_count":1,"children":[{"name":"images","total_count":1,"children":[]}]},{"name":"Price.astro","total_count":2,"children":[{"name":"combinedClassName","total_count":1,"children":[]},{"name":"formattedAmount","total_count":1,"children":[]}]},{"name":"Breadcrumbs.astro","total_count":1,"children":[]},{"name":"FeaturedProducts.astro","total_count":1,"children":[]},{"name":"Logo.astro","total_count":1,"children":[]},{"name":"Pagination.astro","total_count":1,"children":[]},{"name":"Share.astro","total_count":1,"children":[]},{"name":"Social.astro","total_count":1,"children":[]},{"name":"ThemeSwitcher.astro","total_count":1,"children":[]},{"name":"TwSizeIndicator.astro","total_count":1,"children":[]}]},{"name":"functional-components","total_count":82,"children":[{"name":"Accordion.tsx","total_count":1,"children":[{"name":"Accordion()","total_count":1,"children":[]}]},{"name":"AccountTabs.tsx","total_count":4,"children":[{"name":"AccountTabs()","total_count":1,"children":[]},{"name":"OrderCard()","total_count":1,"children":[]},{"name":"OrderDetailModal()","total_count":1,"children":[]},{"name":"OrdersList()","total_count":1,"children":[]}]},{"name":"admin","total_count":11,"children":[{"name":"AdminDashboard.tsx","total_count":5,"children":[{"name":"AdminDashboard()","total_count":1,"children":[]},{"name":"Order","total_count":1,"children":[]},{"name":"OrderDetailModal()","total_count":1,"children":[]},{"name":"StatCard()","total_count":1,"children":[]},{"name":"Stats","total_count":1,"children":[]}]},{"name":"InventoryManager.tsx","total_count":5,"children":[{"name":"InventoryItem","total_count":1,"children":[]},{"name":"InventoryManager()","total_count":1,"children":[]},{"name":"InventoryStats","total_count":1,"children":[]},{"name":"TODO: Implement API endpoints","total_count":1,"children":[]},{"name":"TODO: Implement update API","total_count":1,"children":[]}]},{"name":"InventoryPanel.tsx","total_count":1,"children":[{"name":"InventoryPanel()","total_count":1,"children":[]}]}]},{"name":"cart","total_count":15,"children":[{"name":"AddToCart.tsx","total_count":4,"children":[{"name":"AddToCart()","total_count":1,"children":[]},{"name":"AddToCartProps","total_count":1,"children":[]},{"name":"SubmitButton()","total_count":1,"children":[]},{"name":"SubmitButtonProps","total_count":1,"children":[]}]},{"name":"CartModal.tsx","total_count":1,"children":[{"name":"CartModal()","total_count":1,"children":[]}]},{"name":"CloseCart.tsx","total_count":1,"children":[{"name":"CloseCart()","total_count":1,"children":[]}]},{"name":"DeleteItemButton.tsx","total_count":4,"children":[{"name":"DeleteItemButton()","total_count":1,"children":[]},{"name":"DeleteItemButtonProps","total_count":1,"children":[]},{"name":"SubmitButton()","total_count":1,"children":[]},{"name":"SubmitButtonProps","total_count":1,"children":[]}]},{"name":"EditItemQuantityButton.tsx","total_count":2,"children":[{"name":"EditItemQuantityButton()","total_count":1,"children":[]},{"name":"Props","total_count":1,"children":[]}]},{"name":"OpenCart.tsx","total_count":2,"children":[{"name":"OpenCart()","total_count":1,"children":[]},{"name":"OpenCartProps","total_count":1,"children":[]}]},{"name":"Cart.astro","total_count":1,"children":[]}]},{"name":"CheckoutForm.tsx","total_count":1,"children":[{"name":"CheckoutForm()","total_count":1,"children":[]}]},{"name":"CollectionsSlider.tsx","total_count":1,"children":[{"name":"CollectionsSlider()","total_count":1,"children":[]}]},{"name":"filter","total_count":4,"children":[{"name":"DropdownMenu.tsx","total_count":1,"children":[{"name":"DropdownMenu()","total_count":1,"children":[]}]},{"name":"FilterDropdownItem.tsx","total_count":3,"children":[{"name":"FilterDropdownItem()","total_count":1,"children":[]},{"name":"PathFilterItem()","total_count":1,"children":[]},{"name":"SortFilterItem()","total_count":1,"children":[]}]}]},{"name":"ForgotPasswordForm.tsx","total_count":1,"children":[{"name":"ForgotPasswordForm()","total_count":1,"children":[]}]},{"name":"HeroSlider.tsx","total_count":1,"children":[{"name":"HeroSlider()","total_count":1,"children":[]}]},{"name":"loadings","total_count":8,"children":[{"name":"LoadingDots.tsx","total_count":1,"children":[{"name":"LoadingDots()","total_count":1,"children":[]}]},{"name":"skeleton","total_count":7,"children":[{"name":"SkeletonCards.tsx","total_count":1,"children":[{"name":"SkeletonCards()","total_count":1,"children":[]}]},{"name":"SkeletonCategory.tsx","total_count":1,"children":[{"name":"SkeletonCategory()","total_count":1,"children":[]}]},{"name":"SkeletonDescription.tsx","total_count":1,"children":[{"name":"SkeletonDescription()","total_count":1,"children":[]}]},{"name":"SkeletonFeaturedProducts.tsx","total_count":1,"children":[{"name":"SkeletonFeaturedProducts()","total_count":1,"children":[]}]},{"name":"SkeletonProductGallery.tsx","total_count":1,"children":[{"name":"SkeletonProductGallery()","total_count":1,"children":[]}]},{"name":"SkeletonProducts.tsx","total_count":1,"children":[{"name":"SkeletonProducts()","total_count":1,"children":[]}]},{"name":"SkeletonProductThumb.tsx","total_count":1,"children":[{"name":"SkeletonProductThumb()","total_count":1,"children":[]}]}]}]},{"name":"NavUser.tsx","total_count":2,"children":[{"name":"fetchUser()","total_count":1,"children":[]},{"name":"NavUser()","total_count":1,"children":[]}]},{"name":"Price.tsx","total_count":2,"children":[{"name":"Price()","total_count":1,"children":[]},{"name":"PriceProps","total_count":1,"children":[]}]},{"name":"product","total_count":16,"children":[{"name":"PaymentSlider.tsx","total_count":1,"children":[{"name":"PaymentSlider()","total_count":1,"children":[]}]},{"name":"ProductGallery.tsx","total_count":6,"children":[{"name":"CustomZoomImage()","total_count":1,"children":[]},{"name":"CustomZoomImageProps","total_count":1,"children":[]},{"name":"ImageItem","total_count":1,"children":[]},{"name":"Position","total_count":1,"children":[]},{"name":"ProductGallery()","total_count":1,"children":[]},{"name":"ProductGalleryProps","total_count":1,"children":[]}]},{"name":"ProductLayouts.tsx","total_count":3,"children":[{"name":"ListItem","total_count":1,"children":[]},{"name":"PathFilterItem","total_count":1,"children":[]},{"name":"ProductLayouts()","total_count":1,"children":[]}]},{"name":"ShowTags.tsx","total_count":1,"children":[{"name":"ShowTags()","total_count":1,"children":[]}]},{"name":"Tabs.tsx","total_count":1,"children":[{"name":"Tabs()","total_count":1,"children":[]}]},{"name":"VariantDropDown.tsx","total_count":1,"children":[{"name":"VariantDropDown()","total_count":1,"children":[]}]},{"name":"VariantSelector.tsx","total_count":3,"children":[{"name":"Combination","total_count":1,"children":[]},{"name":"generateImageMap()","total_count":1,"children":[]},{"name":"VariantSelector()","total_count":1,"children":[]}]}]},{"name":"ProductFilters.tsx","total_count":1,"children":[{"name":"ProductFilters()","total_count":1,"children":[]}]},{"name":"ProductGrid.tsx","total_count":1,"children":[{"name":"ProductGrid()","total_count":1,"children":[]}]},{"name":"ProductLayoutViews.tsx","total_count":3,"children":[{"name":"ProductGrid","total_count":1,"children":[]},{"name":"ProductLayoutViews()","total_count":1,"children":[]},{"name":"ProductList","total_count":1,"children":[]}]},{"name":"ProductList.tsx","total_count":1,"children":[{"name":"ProductList()","total_count":1,"children":[]}]},{"name":"rangeSlider","total_count":2,"children":[{"name":"RangeSlider.tsx","total_count":2,"children":[{"name":"createUrl()","total_count":1,"children":[]},{"name":"RangeSlider()","total_count":1,"children":[]}]}]},{"name":"ResetPasswordForm.tsx","total_count":2,"children":[{"name":"Props","total_count":1,"children":[]},{"name":"ResetPasswordForm()","total_count":1,"children":[]}]},{"name":"SearchBar.tsx","total_count":1,"children":[{"name":"SearchBar()","total_count":1,"children":[]}]},{"name":"SignUpForm.tsx","total_count":2,"children":[{"name":"FormData","total_count":1,"children":[]},{"name":"SignUpForm()","total_count":1,"children":[]}]},{"name":"SocialShare.tsx","total_count":1,"children":[{"name":"SocialShare()","total_count":1,"children":[]}]},{"name":"Testimonials.tsx","total_count":1,"children":[{"name":"Testimonials()","total_count":1,"children":[]}]}]},{"name":"helpers","total_count":7,"children":[{"name":"Announcement.tsx","total_count":2,"children":[{"name":"Announcement()","total_count":1,"children":[]},{"name":"Cookies","total_count":1,"children":[]}]},{"name":"DynamicIcon.tsx","total_count":5,"children":[{"name":"DynamicIcon()","total_count":1,"children":[]},{"name":"getIconLibrary()","total_count":1,"children":[]},{"name":"iconLibraries","total_count":1,"children":[]},{"name":"IconMap","total_count":1,"children":[]},{"name":"IDynamicIcon","total_count":1,"children":[]}]}]},{"name":"partials","total_count":6,"children":[{"name":"CallToAction.astro","total_count":1,"children":[]},{"name":"Footer.astro","total_count":1,"children":[]},{"name":"Header.astro","total_count":1,"children":[]},{"name":"PageHeader.astro","total_count":1,"children":[]},{"name":"PostSidebar.astro","total_count":1,"children":[]},{"name":"Testimonials.astro","total_count":1,"children":[]}]},{"name":"shortcodes","total_count":8,"children":[{"name":"Accordion.tsx","total_count":1,"children":[{"name":"Accordion()","total_count":1,"children":[]}]},{"name":"Button.tsx","total_count":1,"children":[{"name":"Button()","total_count":1,"children":[]}]},{"name":"Notice.tsx","total_count":1,"children":[{"name":"Notice()","total_count":1,"children":[]}]},{"name":"Tab.tsx","total_count":1,"children":[{"name":"Tab()","total_count":1,"children":[]}]},{"name":"Tabs.tsx","total_count":2,"children":[{"name":"TabProps","total_count":1,"children":[]},{"name":"Tabs()","total_count":1,"children":[]}]},{"name":"Video.tsx","total_count":1,"children":[{"name":"Video()","total_count":1,"children":[]}]},{"name":"Youtube.tsx","total_count":1,"children":[{"name":"Youtube()","total_count":1,"children":[]}]}]},{"name":"Base.astro","total_count":1,"children":[]}]},{"name":"lib","total_count":236,"children":[{"name":"admin-utils.ts","total_count":5,"children":[{"name":"getAllOrders()","total_count":1,"children":[]},{"name":"getOrderById()","total_count":1,"children":[]},{"name":"getOrderStats()","total_count":1,"children":[]},{"name":"isAdmin()","total_count":1,"children":[]},{"name":"updateOrderStatus()","total_count":1,"children":[]}]},{"name":"appwrite.ts","total_count":3,"children":[{"name":"account","total_count":1,"children":[]},{"name":"APPWRITE_CONFIG","total_count":1,"children":[]},{"name":"databases","total_count":1,"children":[]}]},{"name":"audit-logger.ts","total_count":17,"children":[{"name":".consoleLog()","total_count":1,"children":[]},{"name":".filterLogs()","total_count":1,"children":[]},{"name":".getRecentLogs()","total_count":1,"children":[]},{"name":".log()","total_count":1,"children":[]},{"name":".saveToDatabase()","total_count":1,"children":[]},{"name":"AuditAction","total_count":1,"children":[]},{"name":"AuditLevel","total_count":1,"children":[]},{"name":"AuditLogEntry","total_count":1,"children":[]},{"name":"AuditLogger","total_count":1,"children":[]},{"name":"getIpAddress()","total_count":1,"children":[]},{"name":"logOrderCreated()","total_count":1,"children":[]},{"name":"logOrderStatusChange()","total_count":1,"children":[]},{"name":"logPasswordReset()","total_count":1,"children":[]},{"name":"logRateLimitExceeded()","total_count":1,"children":[]},{"name":"logSuspiciousActivity()","total_count":1,"children":[]},{"name":"logUserLogin()","total_count":1,"children":[]},{"name":"logUserRegister()","total_count":1,"children":[]}]},{"name":"constants.ts","total_count":7,"children":[{"name":"DEFAULT_OPTION","total_count":1,"children":[]},{"name":"defaultSort","total_count":1,"children":[]},{"name":"HIDDEN_PRODUCT_TAG","total_count":1,"children":[]},{"name":"SHOPIFY_GRAPHQL_API_ENDPOINT","total_count":1,"children":[]},{"name":"SortFilterItem","total_count":1,"children":[]},{"name":"sorting","total_count":1,"children":[]},{"name":"TAGS","total_count":1,"children":[]}]},{"name":"contentParser.astro","total_count":1,"children":[{"name":"getSinglePage","total_count":1,"children":[]}]},{"name":"email.ts","total_count":8,"children":[{"name":"EMAIL_CONFIG","total_count":1,"children":[]},{"name":"resend","total_count":1,"children":[]},{"name":"sendOrderConfirmationEmail()","total_count":1,"children":[]},{"name":"sendOrderDeliveredEmail()","total_count":1,"children":[]},{"name":"sendOrderProcessingEmail()","total_count":1,"children":[]},{"name":"sendOrderShippedEmail()","total_count":1,"children":[]},{"name":"sendPasswordResetEmail()","total_count":1,"children":[]},{"name":"sendWelcomeEmail()","total_count":1,"children":[]}]},{"name":"export-utils.ts","total_count":9,"children":[{"name":"downloadCSV()","total_count":1,"children":[]},{"name":"ExportOptions","total_count":1,"children":[]},{"name":"filterOrdersForExport()","total_count":1,"children":[]},{"name":"formatCurrency()","total_count":1,"children":[]},{"name":"formatDate()","total_count":1,"children":[]},{"name":"generateExportFilename()","total_count":1,"children":[]},{"name":"getExportStats()","total_count":1,"children":[]},{"name":"Order","total_count":1,"children":[]},{"name":"ordersToCSV()","total_count":1,"children":[]}]},{"name":"order-utils.ts","total_count":12,"children":[{"name":"CHILEAN_REGIONS","total_count":1,"children":[]},{"name":"ChileanRegion","total_count":1,"children":[]},{"name":"formatChileanPhone()","total_count":1,"children":[]},{"name":"formatPrice()","total_count":1,"children":[]},{"name":"generateOrderNumber()","total_count":1,"children":[]},{"name":"getPaymentStatusColor()","total_count":1,"children":[]},{"name":"getPaymentStatusLabel()","total_count":1,"children":[]},{"name":"getStatusColor()","total_count":1,"children":[]},{"name":"getStatusLabel()","total_count":1,"children":[]},{"name":"OrderStatus","total_count":1,"children":[]},{"name":"PaymentStatus","total_count":1,"children":[]},{"name":"validateChileanPhone()","total_count":1,"children":[]}]},{"name":"password-reset.ts","total_count":10,"children":[{"name":".cleanup()","total_count":1,"children":[]},{"name":".constructor()","total_count":1,"children":[]},{"name":".createToken()","total_count":1,"children":[]},{"name":".generateToken()","total_count":1,"children":[]},{"name":".getTokenInfo()","total_count":1,"children":[]},{"name":".revokeTokensForEmail()","total_count":1,"children":[]},{"name":".useToken()","total_count":1,"children":[]},{"name":".validateToken()","total_count":1,"children":[]},{"name":"PasswordResetManager","total_count":1,"children":[]},{"name":"ResetToken","total_count":1,"children":[]}]},{"name":"paypal.ts","total_count":2,"children":[{"name":"generateAccessToken()","total_count":1,"children":[]},{"name":"PAYPAL_API_URL","total_count":1,"children":[]}]},{"name":"rate-limiter.ts","total_count":10,"children":[{"name":".check()","total_count":1,"children":[]},{"name":".cleanup()","total_count":1,"children":[]},{"name":".constructor()","total_count":1,"children":[]},{"name":".getStatus()","total_count":1,"children":[]},{"name":".reset()","total_count":1,"children":[]},{"name":"checkRateLimit()","total_count":1,"children":[]},{"name":"getClientIdentifier()","total_count":1,"children":[]},{"name":"RATE_LIMITS","total_count":1,"children":[]},{"name":"RateLimitEntry","total_count":1,"children":[]},{"name":"RateLimiter","total_count":1,"children":[]}]},{"name":"rut.ts","total_count":2,"children":[{"name":"formatRut()","total_count":1,"children":[]},{"name":"validateRut()","total_count":1,"children":[]}]},{"name":"shopify","total_count":96,"children":[{"name":"fragments","total_count":4,"children":[{"name":"cart.ts","total_count":1,"children":[]},{"name":"image.ts","total_count":1,"children":[]},{"name":"product.ts","total_count":1,"children":[]},{"name":"seo.ts","total_count":1,"children":[]}]},{"name":"index.ts","total_count":31,"children":[{"name":"addToCart()","total_count":1,"children":[]},{"name":"createCart()","total_count":1,"children":[]},{"name":"createCustomer()","total_count":1,"children":[]},{"name":"createNodeClient()","total_count":1,"children":[]},{"name":"ExtractVariables","total_count":1,"children":[]},{"name":"getCart()","total_count":1,"children":[]},{"name":"getCollection()","total_count":1,"children":[]},{"name":"getCollectionProducts()","total_count":1,"children":[]},{"name":"getCollections()","total_count":1,"children":[]},{"name":"getCustomerAccessToken()","total_count":1,"children":[]},{"name":"getHighestProductPrice()","total_count":1,"children":[]},{"name":"getMenu()","total_count":1,"children":[]},{"name":"getPage()","total_count":1,"children":[]},{"name":"getPages()","total_count":1,"children":[]},{"name":"getProduct()","total_count":1,"children":[]},{"name":"getProductRecommendations()","total_count":1,"children":[]},{"name":"getProducts()","total_count":1,"children":[]},{"name":"getTags()","total_count":1,"children":[]},{"name":"getUserDetails()","total_count":1,"children":[]},{"name":"getVendors()","total_count":1,"children":[]},{"name":"HACK: Manually setting the cookie header if we can, or just trying to proceed.","total_count":1,"children":[]},{"name":"removeEdgesAndNodes()","total_count":1,"children":[]},{"name":"removeFromCart()","total_count":1,"children":[]},{"name":"reshapeCart()","total_count":1,"children":[]},{"name":"reshapeCollection()","total_count":1,"children":[]},{"name":"reshapeCollections()","total_count":1,"children":[]},{"name":"reshapeImages()","total_count":1,"children":[]},{"name":"reshapeProduct()","total_count":1,"children":[]},{"name":"reshapeProducts()","total_count":1,"children":[]},{"name":"shopifyFetch()","total_count":1,"children":[]},{"name":"updateCart()","total_count":1,"children":[]}]},{"name":"mockData.ts","total_count":2,"children":[{"name":"mockCollections","total_count":1,"children":[]},{"name":"mockProducts","total_count":1,"children":[]}]},{"name":"mutations","total_count":7,"children":[{"name":"cart.ts","total_count":4,"children":[{"name":"addToCartMutation","total_count":1,"children":[]},{"name":"createCartMutation","total_count":1,"children":[]},{"name":"editCartItemsMutation","total_count":1,"children":[]},{"name":"removeFromCartMutation","total_count":1,"children":[]}]},{"name":"customer.ts","total_count":3,"children":[{"name":"createCustomerMutation","total_count":1,"children":[]},{"name":"getCustomerAccessTokenMutation","total_count":1,"children":[]},{"name":"getUserDetailsQuery","total_count":1,"children":[]}]}]},{"name":"queries","total_count":13,"children":[{"name":"cart.ts","total_count":1,"children":[{"name":"getCartQuery","total_count":1,"children":[]}]},{"name":"collection.ts","total_count":3,"children":[{"name":"getCollectionProductsQuery","total_count":1,"children":[]},{"name":"getCollectionQuery","total_count":1,"children":[]},{"name":"getCollectionsQuery","total_count":1,"children":[]}]},{"name":"menu.ts","total_count":1,"children":[{"name":"getMenuQuery","total_count":1,"children":[]}]},{"name":"page.ts","total_count":2,"children":[{"name":"getPageQuery","total_count":1,"children":[]},{"name":"getPagesQuery","total_count":1,"children":[]}]},{"name":"product.ts","total_count":4,"children":[{"name":"getHighestProductPriceQuery","total_count":1,"children":[]},{"name":"getProductQuery","total_count":1,"children":[]},{"name":"getProductRecommendationsQuery","total_count":1,"children":[]},{"name":"getProductsQuery","total_count":1,"children":[]}]},{"name":"vendor.ts","total_count":2,"children":[{"name":"getTagsQuery","total_count":1,"children":[]},{"name":"getVendorsQuery","total_count":1,"children":[]}]}]},{"name":"types.ts","total_count":39,"children":[{"name":"Cart","total_count":1,"children":[]},{"name":"CartItem","total_count":1,"children":[]},{"name":"Collection","total_count":1,"children":[]},{"name":"Connection","total_count":1,"children":[]},{"name":"CustomerAccessTokenInput","total_count":1,"children":[]},{"name":"CustomerError","total_count":1,"children":[]},{"name":"CustomerInput","total_count":1,"children":[]},{"name":"Edge","total_count":1,"children":[]},{"name":"Image","total_count":1,"children":[]},{"name":"Maybe","total_count":1,"children":[]},{"name":"Menu","total_count":1,"children":[]},{"name":"Money","total_count":1,"children":[]},{"name":"Page","total_count":1,"children":[]},{"name":"PageInfo","total_count":1,"children":[]},{"name":"Product","total_count":1,"children":[]},{"name":"ProductOption","total_count":1,"children":[]},{"name":"ProductVariant","total_count":1,"children":[]},{"name":"registerOperation","total_count":1,"children":[]},{"name":"SEO","total_count":1,"children":[]},{"name":"ShopifyAddToCartOperation","total_count":1,"children":[]},{"name":"ShopifyCart","total_count":1,"children":[]},{"name":"ShopifyCartOperation","total_count":1,"children":[]},{"name":"ShopifyCollection","total_count":1,"children":[]},{"name":"ShopifyCollectionOperation","total_count":1,"children":[]},{"name":"ShopifyCollectionProductsOperation","total_count":1,"children":[]},{"name":"ShopifyCollectionsOperation","total_count":1,"children":[]},{"name":"ShopifyCreateCartOperation","total_count":1,"children":[]},{"name":"ShopifyCustomer","total_count":1,"children":[]},{"name":"ShopifyMenuOperation","total_count":1,"children":[]},{"name":"ShopifyPageOperation","total_count":1,"children":[]},{"name":"ShopifyPagesOperation","total_count":1,"children":[]},{"name":"ShopifyProduct","total_count":1,"children":[]},{"name":"ShopifyProductOperation","total_count":1,"children":[]},{"name":"ShopifyProductRecommendationsOperation","total_count":1,"children":[]},{"name":"ShopifyProductsOperation","total_count":1,"children":[]},{"name":"ShopifyRemoveFromCartOperation","total_count":1,"children":[]},{"name":"ShopifyUpdateCartOperation","total_count":1,"children":[]},{"name":"user","total_count":1,"children":[]},{"name":"userOperation","total_count":1,"children":[]}]}]},{"name":"taxonomyParser.astro","total_count":2,"children":[{"name":"getAllTaxonomy()","total_count":1,"children":[]},{"name":"getTaxonomy()","total_count":1,"children":[]}]},{"name":"transbank.ts","total_count":5,"children":[{"name":"generateBuyOrder()","total_count":1,"children":[]},{"name":"getTransbankStatusLabel()","total_count":1,"children":[]},{"name":"getWebpayTransaction()","total_count":1,"children":[]},{"name":"TRANSBANK_CONFIG","total_count":1,"children":[]},{"name":"TransbankStatus","total_count":1,"children":[]}]},{"name":"typeGuards.ts","total_count":4,"children":[{"name":"findError()","total_count":1,"children":[]},{"name":"isObject()","total_count":1,"children":[]},{"name":"isShopifyError()","total_count":1,"children":[]},{"name":"ShopifyErrorLike","total_count":1,"children":[]}]},{"name":"utils","total_count":16,"children":[{"name":"bgImageMod.ts","total_count":1,"children":[{"name":"bgImageMod()","total_count":1,"children":[]}]},{"name":"cartActions.ts","total_count":3,"children":[{"name":"addItem()","total_count":1,"children":[]},{"name":"removeItem()","total_count":1,"children":[]},{"name":"updateItemQuantity()","total_count":1,"children":[]}]},{"name":"dateFormat.ts","total_count":1,"children":[{"name":"dateFormat()","total_count":1,"children":[]}]},{"name":"readingTime.ts","total_count":1,"children":[{"name":"readingTime()","total_count":1,"children":[]}]},{"name":"similarItems.ts","total_count":1,"children":[{"name":"similarItems()","total_count":1,"children":[]}]},{"name":"sortFunctions.ts","total_count":2,"children":[{"name":"sortByDate()","total_count":1,"children":[]},{"name":"sortByWeight()","total_count":1,"children":[]}]},{"name":"taxonomyFilter.ts","total_count":1,"children":[{"name":"taxonomyFilter()","total_count":1,"children":[]}]},{"name":"textConverter.ts","total_count":6,"children":[{"name":"htmlEntityDecoder()","total_count":1,"children":[]},{"name":"humanize()","total_count":1,"children":[]},{"name":"markdownify()","total_count":1,"children":[]},{"name":"plainify()","total_count":1,"children":[]},{"name":"slugify()","total_count":1,"children":[]},{"name":"titleify()","total_count":1,"children":[]}]}]},{"name":"utils.ts","total_count":3,"children":[{"name":"createUrl()","total_count":1,"children":[]},{"name":"ensureStartsWith()","total_count":1,"children":[]},{"name":"validateEnvironmentVariables()","total_count":1,"children":[]}]},{"name":"validation.ts","total_count":21,"children":[{"name":"sanitizeAddress()","total_count":1,"children":[]},{"name":"sanitizeEmail()","total_count":1,"children":[]},{"name":"sanitizeHtml()","total_count":1,"children":[]},{"name":"sanitizeName()","total_count":1,"children":[]},{"name":"sanitizeObject()","total_count":1,"children":[]},{"name":"sanitizePhone()","total_count":1,"children":[]},{"name":"sanitizePostalCode()","total_count":1,"children":[]},{"name":"sanitizeString()","total_count":1,"children":[]},{"name":"sanitizeUrl()","total_count":1,"children":[]},{"name":"validateAddress()","total_count":1,"children":[]},{"name":"validateAmount()","total_count":1,"children":[]},{"name":"validateCheckoutData()","total_count":1,"children":[]},{"name":"validateEmail()","total_count":1,"children":[]},{"name":"validateJson()","total_count":1,"children":[]},{"name":"validateName()","total_count":1,"children":[]},{"name":"validateOrderNumber()","total_count":1,"children":[]},{"name":"validatePassword()","total_count":1,"children":[]},{"name":"validatePhone()","total_count":1,"children":[]},{"name":"validatePostalCode()","total_count":1,"children":[]},{"name":"validateRegistrationData()","total_count":1,"children":[]},{"name":"validateUrl()","total_count":1,"children":[]}]},{"name":"order-utils.test.ts","total_count":1,"children":[]},{"name":"rut.test.ts","total_count":1,"children":[]},{"name":"validation.test.ts","total_count":1,"children":[]}]},{"name":"modules","total_count":9,"children":[{"name":"orders","total_count":9,"children":[{"name":"orders.service.ts","total_count":5,"children":[{"name":".collectionId()","total_count":1,"children":[]},{"name":".createOrder()","total_count":1,"children":[]},{"name":".dbId()","total_count":1,"children":[]},{"name":".getOrder()","total_count":1,"children":[]},{"name":"OrderService","total_count":1,"children":[]}]},{"name":"orders.types.ts","total_count":4,"children":[{"name":"CreateOrderDTO","total_count":1,"children":[]},{"name":"OrderDocument","total_count":1,"children":[]},{"name":"OrderItem","total_count":1,"children":[]},{"name":"ShippingAddress","total_count":1,"children":[]}]}]}]},{"name":"pages","total_count":46,"children":[{"name":"[regular].astro","total_count":1,"children":[{"name":"getStaticPaths()","total_count":1,"children":[]}]},{"name":"admin","total_count":1,"children":[{"name":"inventory.astro","total_count":1,"children":[]}]},{"name":"api","total_count":22,"children":[{"name":"admin","total_count":5,"children":[{"name":"inventory.ts","total_count":1,"children":[{"name":"GET()","total_count":1,"children":[]}]},{"name":"orders.ts","total_count":1,"children":[{"name":"GET()","total_count":1,"children":[]}]},{"name":"stats.ts","total_count":1,"children":[{"name":"GET()","total_count":1,"children":[]}]},{"name":"update-order-bulk.ts","total_count":1,"children":[{"name":"POST()","total_count":1,"children":[]}]},{"name":"update-order.ts","total_count":1,"children":[{"name":"POST()","total_count":1,"children":[]}]}]},{"name":"checkout.ts","total_count":2,"children":[{"name":"NOTE: Ideally this should be an Event Subscriber, but explicit call is fine for\u2026","total_count":1,"children":[]},{"name":"POST()","total_count":1,"children":[]}]},{"name":"forgot-password.ts","total_count":1,"children":[{"name":"POST()","total_count":1,"children":[]}]},{"name":"login.ts","total_count":1,"children":[{"name":"POST()","total_count":1,"children":[]}]},{"name":"password-reset","total_count":2,"children":[{"name":"confirm-reset.ts","total_count":1,"children":[{"name":"POST()","total_count":1,"children":[]}]},{"name":"request-reset.ts","total_count":1,"children":[{"name":"POST()","total_count":1,"children":[]}]}]},{"name":"payment","total_count":2,"children":[{"name":"confirm.ts","total_count":1,"children":[{"name":"GET()","total_count":1,"children":[]}]},{"name":"create.ts","total_count":1,"children":[{"name":"POST()","total_count":1,"children":[]}]}]},{"name":"paypal","total_count":2,"children":[{"name":"confirm.ts","total_count":1,"children":[{"name":"GET()","total_count":1,"children":[]}]},{"name":"create-order.ts","total_count":1,"children":[{"name":"POST()","total_count":1,"children":[]}]}]},{"name":"products.json.ts","total_count":1,"children":[{"name":"GET()","total_count":1,"children":[]}]},{"name":"profile","total_count":1,"children":[{"name":"update.ts","total_count":1,"children":[{"name":"POST()","total_count":1,"children":[]}]}]},{"name":"profile.ts","total_count":1,"children":[{"name":"GET()","total_count":1,"children":[]}]},{"name":"reset-password.ts","total_count":1,"children":[{"name":"POST()","total_count":1,"children":[]}]},{"name":"sign-up.ts","total_count":1,"children":[{"name":"POST()","total_count":1,"children":[]}]},{"name":"user","total_count":2,"children":[{"name":"preferences.ts","total_count":2,"children":[{"name":"GET()","total_count":1,"children":[]},{"name":"POST()","total_count":1,"children":[]}]}]}]},{"name":"checkout","total_count":2,"children":[{"name":"success.astro","total_count":2,"children":[{"name":"orderId","total_count":1,"children":[]},{"name":"orderNumber","total_count":1,"children":[]}]}]},{"name":"payment","total_count":4,"children":[{"name":"transbank-return.astro","total_count":4,"children":[{"name":"commitTransaction()","total_count":1,"children":[]},{"name":"showError()","total_count":1,"children":[]},{"name":"showSuccess()","total_count":1,"children":[]},{"name":"token","total_count":1,"children":[]}]}]},{"name":"products","total_count":3,"children":[{"name":"index.astro","total_count":2,"children":[{"name":"searchParamsObject","total_count":1,"children":[]},{"name":"tags","total_count":1,"children":[]}]},{"name":"[slug].astro","total_count":1,"children":[]}]},{"name":"reset-password.astro","total_count":3,"children":[{"name":"secret","total_count":1,"children":[]},{"name":"url","total_count":1,"children":[]},{"name":"userId","total_count":1,"children":[]}]},{"name":"404.astro","total_count":1,"children":[]},{"name":"about.astro","total_count":1,"children":[]},{"name":"account.astro","total_count":1,"children":[]},{"name":"admin.astro","total_count":1,"children":[]},{"name":"checkout.astro","total_count":1,"children":[]},{"name":"contact.astro","total_count":1,"children":[]},{"name":"forgot-password.astro","total_count":1,"children":[]},{"name":"index.astro","total_count":1,"children":[]},{"name":"login.astro","total_count":1,"children":[]},{"name":"sign-up.astro","total_count":1,"children":[]}]},{"name":"personalizationStore.ts","total_count":3,"children":[{"name":"embroideryColor","total_count":1,"children":[]},{"name":"embroideryFont","total_count":1,"children":[]},{"name":"embroideryText","total_count":1,"children":[]}]},{"name":"types","total_count":1,"children":[{"name":"@/types","total_count":1,"children":[]}]},{"name":"types","total_count":6,"children":[{"name":"index.d.ts","total_count":2,"children":[{"name":"Faq","total_count":1,"children":[]},{"name":"Testimonial","total_count":1,"children":[]}]},{"name":"pages","total_count":2,"children":[{"name":"aboutCollection.ts","total_count":1,"children":[{"name":"aboutCollection","total_count":1,"children":[]}]},{"name":"contactCollection.ts","total_count":1,"children":[{"name":"contactCollection","total_count":1,"children":[]}]}]},{"name":"sections","total_count":2,"children":[{"name":"ctaSectionCollection.ts","total_count":1,"children":[{"name":"ctaSectionCollection","total_count":1,"children":[]}]},{"name":"paymentCollection.ts","total_count":1,"children":[{"name":"paymentCollection","total_count":1,"children":[]}]}]}]}]},{"name":"swiper","total_count":4,"children":[{"name":"css","total_count":2,"children":[{"name":"navigation","total_count":1,"children":[]},{"name":"pagination","total_count":1,"children":[]}]},{"name":"css","total_count":1,"children":[]},{"name":"modules","total_count":1,"children":[]}]},{"name":"tsconfig.json","total_count":32,"children":[{"name":"**/*.astro","total_count":1,"children":[]},{"name":"**/*.ts","total_count":1,"children":[]},{"name":"**/*.tsx","total_count":1,"children":[]},{"name":"./src/layouts/components/*","total_count":1,"children":[]},{"name":"./src/layouts/functional-components/*","total_count":1,"children":[]},{"name":"./src/layouts/helpers/*","total_count":1,"children":[]},{"name":"./src/layouts/partials/*","total_count":1,"children":[]},{"name":"./src/layouts/shortcodes/*","total_count":1,"children":[]},{"name":".astro/types.d.ts","total_count":1,"children":[]},{"name":"@/components/*","total_count":1,"children":[]},{"name":"@/functional-components/*","total_count":1,"children":[]},{"name":"@/helpers/*","total_count":1,"children":[]},{"name":"@/partials/*","total_count":1,"children":[]},{"name":"@/shortcodes/*","total_count":1,"children":[]},{"name":"allowJs","total_count":1,"children":[]},{"name":"allowSyntheticDefaultImports","total_count":1,"children":[]},{"name":"astro/tsconfigs/strict","total_count":1,"children":[]},{"name":"baseUrl","total_count":1,"children":[]},{"name":"compilerOptions","total_count":1,"children":[]},{"name":"dist","total_count":1,"children":[]},{"name":"exclude","total_count":1,"children":[]},{"name":"extends","total_count":1,"children":[]},{"name":"forceConsistentCasingInFileNames","total_count":1,"children":[]},{"name":"include","total_count":1,"children":[]},{"name":"incremental","total_count":1,"children":[]},{"name":"isolatedModules","total_count":1,"children":[]},{"name":"jsx","total_count":1,"children":[]},{"name":"node_modules","total_count":1,"children":[]},{"name":"noEmit","total_count":1,"children":[]},{"name":"paths","total_count":1,"children":[]},{"name":"strict","total_count":1,"children":[]},{"name":"target","total_count":1,"children":[]}]},{"name":"astro","total_count":1,"children":[]},{"name":"astro-font","total_count":1,"children":[]},{"name":"astro.config.mjs","total_count":1,"children":[]},{"name":"astro:assets","total_count":1,"children":[]},{"name":"astro:content","total_count":1,"children":[]},{"name":"astro:transitions","total_count":1,"children":[]},{"name":"swiper","total_count":1,"children":[]},{"name":"vitest.config.ts","total_count":1,"children":[]}]};
+
+    function transformData(jsonData) {
+        // Helper function to recursively build the children structure
+        function processNode(node, parentL1StageName) {
+            let displayName = node.name;
+            // Append total_count if it exists and is not already in the name
+            if (node.total_count !== undefined) {
+                if (!/\(Total Count: \d+\)$/.test(displayName)) {
+                    displayName += ` (Total Count: ${node.total_count})`;
+                }
+            }
+
+            const newNode = { name: displayName };
+
+            if (parentL1StageName === "Root") {
+                 newNode.originalStageName = node.name;
+            } else {
+                newNode.originalStageName = parentL1StageName;
+            }
+
+            if (node.children && node.children.length > 0) {
+                const stageNameToPass = (parentL1StageName === "Root") ? node.name : parentL1StageName;
+                newNode.children = node.children.map(child => processNode(child, stageNameToPass));
+            }
+
+            return newNode;
+        }
+
+        let rootDisplayName = jsonData.name;
+        if (jsonData.total_count !== undefined && !/\(Total Count: \d+\)$/.test(rootDisplayName)) {
+            rootDisplayName += ` (Total Count: ${jsonData.total_count})`;
+        }
+
+        return {
+            name: rootDisplayName,
+            originalStageName: "Root",
+            children: (jsonData.children || []).map(child => processNode(child, "Root"))
+        };
+    }
+
+    const treeData = transformData(initialJsonData);
+
+    // Auto-populated phaseColors: every depth-1 child of the root gets
+    // a stable colour from a bigger palette so all top-level dirs are
+    // distinguishable.
+    const PALETTE = [
+      ["#3498DB","#2980B9","#AED6F1"], ["#2ECC71","#27AE60","#A9DFBF"],
+      ["#E74C3C","#C0392B","#F5B7B1"], ["#9B59B6","#8E44AD","#D7BDE2"],
+      ["#F39C12","#D68910","#FAD7A0"], ["#1ABC9C","#117864","#A2D9CE"],
+      ["#34495E","#1B2631","#ABB2B9"], ["#E67E22","#BA4A00","#F5CBA7"],
+      ["#16A085","#0E6655","#A2D9CE"], ["#D35400","#A04000","#EDBB99"],
+      ["#7F8C8D","#566573","#D5DBDB"], ["#C0392B","#7B241C","#F5B7B1"],
+      ["#2E86C1","#1B4F72","#A9CCE3"], ["#28B463","#196F3D","#A9DFBF"],
+      ["#AF7AC5","#6C3483","#D2B4DE"],
+    ];
+    const phaseColors = { "Root": { fill: "#4A4A4A", stroke: "#333333", collapsedFill: "#6C757D" },
+                          "Default": { fill: "#BDC3C7", stroke: "#95A5A6", collapsedFill: "#ECF0F1" } };
+    (initialJsonData.children || []).forEach((c, i) => {
+      const pal = PALETTE[i % PALETTE.length];
+      phaseColors[c.name] = { fill: pal[0], stroke: pal[1], collapsedFill: pal[2] };
+    });
+
+    const levelSpecificPalettes = {
+      0: { fill: "#4A4A4A", stroke: "#333333", collapsedFill: "#6C757D" },
+      2: { fill: "#6ab04c", stroke: "#508a38", collapsedFill: "#a3d391" },
+      3: { fill: "#f0932b", stroke: "#d0730f", collapsedFill: "#f6c07e" },
+      4: { fill: "#be2edd", stroke: "#a01cb3", collapsedFill: "#e08bf2" },
+      5: { fill: "#00a8ff", stroke: "#007ac1", collapsedFill: "#74d2ff" },
+      6: { fill: "#e55039", stroke: "#c23620", collapsedFill: "#f09a8d" },
+      default: { fill: "#747d8c", stroke: "#57606f", collapsedFill: "#a4b0be" }
+    };
+
+    const svgElement = d3.select("#tree-svg");
+    const initialSvgWidth = +svgElement.attr("width");
+    const initialSvgHeight = +svgElement.attr("height");
+    const margin = { top: 40, right: 120, bottom: 80, left: 450 };
+    let width = initialSvgWidth - margin.left - margin.right;
+    let height = initialSvgHeight - margin.top - margin.bottom;
+    const duration = 500;
+    let nodeCounter = 0;
+    const g = svgElement.append("g").attr("transform", `translate(${margin.left},${margin.top})`);
+    const treemap = d3.tree().nodeSize([40, 0]);
+    let rootNode = d3.hierarchy(treeData, d => d.children);
+    rootNode.x0 = 0;
+    rootNode.y0 = 0;
+
+    if (rootNode.children) {
+      rootNode.children.forEach(d_child => {
+        if (d_child.children) { collapseBranch(d_child); }
+      });
+    }
+    updateTree(rootNode);
+
+    function collapseBranch(d) { if (d.children) { d._children = d.children; d._children.forEach(collapseBranch); d.children = null; } }
+    function expandBranch(d) { if (d._children) { d.children = d._children; d._children = null; } if (d.children) { d.children.forEach(expandBranch); } }
+    window.expandAll = () => { expandBranch(rootNode); updateTree(rootNode); };
+    window.collapseAll = () => { if (rootNode.children) { rootNode.children.forEach(collapseBranch); } updateTree(rootNode); };
+    window.resetView = () => { if (rootNode.children) { rootNode.children.forEach(d_child => { if (d_child.children || d_child._children) { collapseBranch(d_child); } }); } if (rootNode._children && !rootNode.children) { rootNode.children = rootNode._children; rootNode._children = null; } updateTree(rootNode); };
+
+    function updateTree(source) {
+      const treeLayoutData = treemap(rootNode);
+      let nodes = treeLayoutData.descendants();
+      let links = treeLayoutData.descendants().slice(1);
+
+      let minX = 0;
+      let maxX = 0;
+      if (nodes.length > 0) {
+        minX = d3.min(nodes, d => d.x);
+        maxX = d3.max(nodes, d => d.x);
+      }
+
+      let neededHeight = Math.max(initialSvgHeight, maxX - minX + margin.top + margin.bottom + 100);
+      svgElement.transition().duration(duration / 2).attr("height", neededHeight);
+      g.transition().duration(duration / 2).attr("transform", `translate(${margin.left},${margin.top - minX + 40})`);
+
+      nodes.forEach(d => { d.y = d.depth * 400; }); // Adjust horizontal separation if needed
+
+      const node = g.selectAll('g.node').data(nodes, d => d.id || (d.id = ++nodeCounter));
+      const nodeEnter = node.enter().append('g')
+        .attr('class', d => "node" + (d.children || d._children ? " node--internal" : " node--leaf") + (d._children ? " _children" : ""))
+        .attr('transform', d => `translate(${source.y0},${source.x0})`)
+        .on('click', (event, d) => { if (d.children) { d._children = d.children; d.children = null; } else if (d._children) { d.children = d._children; d._children = null; } updateTree(d); })
+        .style('cursor', d => (d.children || d._children) ? 'pointer' : 'default');
+
+      nodeEnter.append('circle').attr('r', 1e-6);
+
+      nodeEnter.append('text')
+        .attr('dy', '.35em')
+        .attr('x', d => d.children || d._children ? -14 : 14)
+        .attr('text-anchor', d => d.children || d._children ? 'end' : 'start')
+        .style("fill-opacity", 1e-6)
+        .call(wrapText, 380);
+
+      const nodeUpdate = nodeEnter.merge(node);
+      nodeUpdate.transition().duration(duration)
+        .attr('transform', d => `translate(${d.y},${d.x})`)
+        .attr('class', d => "node" + (d.children ? " node--internal" : " node--leaf") + (d._children ? " node--internal _children" : ""));
+
+      nodeUpdate.select('circle').attr('r', 8.5)
+        .style('fill', d => {
+            let palette;
+            if (d.depth === 0) {
+                palette = levelSpecificPalettes[0];
+            } else if (d.depth === 1) {
+                palette = phaseColors[d.data.originalStageName] || phaseColors.Default;
+            } else {
+                palette = levelSpecificPalettes[d.depth] || levelSpecificPalettes.default;
+            }
+            if (d._children) return palette.collapsedFill;
+            if (d.children) return palette.fill;
+            return "#fff";
+        })
+        .style('stroke', d => {
+            let palette;
+            if (d.depth === 0) {
+                palette = levelSpecificPalettes[0];
+            } else if (d.depth === 1) {
+                palette = phaseColors[d.data.originalStageName] || phaseColors.Default;
+            } else {
+                palette = levelSpecificPalettes[d.depth] || levelSpecificPalettes.default;
+            }
+            return palette.stroke;
+        });
+      nodeUpdate.select('text').style("fill-opacity", 1).call(wrapText, 380);
+
+      const nodeExit = node.exit().transition().duration(duration).attr('transform', d => `translate(${source.y},${source.x})`).remove();
+      nodeExit.select('circle').attr('r', 1e-6);
+      nodeExit.select('text').style('fill-opacity', 1e-6);
+
+      const link = g.selectAll('path.link').data(links, d => d.id);
+      const linkEnter = link.enter().insert('path', "g").attr('class', 'link').attr('d', d => { const o = { x: source.x0, y: source.y0 }; return diagonal(o, o); });
+
+      linkEnter.merge(link).transition().duration(duration).attr('d', d => diagonal(d, d.parent))
+        .style('stroke', d => {
+            const sourceNode = d.parent;
+            if (!sourceNode) return phaseColors.Default.stroke;
+            const l1AncestorName = sourceNode.data.originalStageName;
+            const colorPalette = phaseColors[l1AncestorName] || phaseColors.Default;
+            return colorPalette.stroke;
+        });
+      link.exit().transition().duration(duration).attr('d', d => { const o = { x: source.x, y: source.y }; return diagonal(o, o); }).remove();
+      nodes.forEach(d => { d.x0 = d.x; d.y0 = d.y; });
+    }
+
+    function diagonal(s, d) { return `M ${s.y} ${s.x} C ${(s.y + d.y) / 2} ${s.x}, ${(s.y + d.y) / 2} ${d.x}, ${d.y} ${d.x}`; }
+
+    function wrapText(textElements, maxWidth) {
+        const textPartColors = {
+            name: '#343a40',
+            count: '#0056b3'
+        };
+        const countRegex = /(\s\(Total Count: \d+\))$/;
+
+        textElements.each(function () {
+            const textD3 = d3.select(this);
+            const originalNodeText = textD3.datum().data.name;
+            const x = parseFloat(textD3.attr("x") || 0);
+            const initialDy = textD3.attr("dy");
+            const textAnchor = textD3.attr("text-anchor");
+            const lineHeight = 1.1;
+
+            textD3.text(null);
+
+            let namePart = originalNodeText;
+            let countPartText = "";
+
+            const countMatch = originalNodeText.match(countRegex);
+            if (countMatch && originalNodeText.endsWith(countMatch[0])) {
+                namePart = originalNodeText.substring(0, originalNodeText.length - countMatch[0].length).trim();
+                countPartText = countMatch[0].trim();
+            }
+
+            const tokens = [];
+            namePart.split(/\s+/).filter(Boolean).forEach(word => {
+                tokens.push({ text: word, type: 'name' });
+            });
+            if (countPartText) {
+                tokens.push({ text: countPartText, type: 'count' });
+            }
+
+            if (tokens.length === 0 && originalNodeText) {
+                tokens.push({ text: originalNodeText, type: 'name' });
+            }
+
+            let currentTspan = textD3.append("tspan").attr("x", x).attr("dy", initialDy);
+            if (textAnchor === "end") currentTspan.attr("text-anchor", "end");
+
+            let lineTokens = [];
+
+            for (let i = 0; i < tokens.length; i++) {
+                const tokenObj = tokens[i];
+
+                lineTokens.push(tokenObj);
+                currentTspan.text(lineTokens.map(t => t.text).join(" "));
+
+                if (currentTspan.node().getComputedTextLength() > maxWidth && lineTokens.length > 1) {
+                    lineTokens.pop();
+
+                    currentTspan.text(null);
+                    lineTokens.forEach((prevToken, idx) => {
+                        currentTspan.append("tspan")
+                            .text((idx > 0 ? " " : "") + prevToken.text)
+                            .style("fill", textPartColors[prevToken.type] || textPartColors.name)
+                            .style("font-weight", prevToken.type === 'count' ? "bold" : "normal");
+                    });
+
+                    lineTokens = [tokenObj];
+                    currentTspan = textD3.append("tspan").attr("x", x).attr("dy", lineHeight + "em");
+                    if (textAnchor === "end") currentTspan.attr("text-anchor", "end");
+                }
+            }
+
+            currentTspan.text(null);
+            lineTokens.forEach((token, idx) => {
+                currentTspan.append("tspan")
+                    .text((idx > 0 ? " " : "") + token.text)
+                    .style("fill", textPartColors[token.type] || textPartColors.name)
+                    .style("font-weight", token.type === 'count' ? "bold" : "normal");
+            });
+
+            if (textD3.selectAll("tspan > tspan").empty() && textD3.select("tspan").text().length === 0 && originalNodeText) {
+                let t = textD3.select("tspan");
+                let displayText = originalNodeText;
+                t.text(displayText).style("fill", textPartColors.name);
+                if (t.node() && t.node().getComputedTextLength() > maxWidth && displayText.length > 20) {
+                    let estimatedChars = Math.floor(maxWidth / (t.node().getComputedTextLength()/displayText.length) );
+                    displayText = displayText.substring(0, Math.max(0, estimatedChars - 3)) + "...";
+                    t.text(displayText);
+                }
+            }
+        });
+    }
+  </script>
+</body>
+</html>

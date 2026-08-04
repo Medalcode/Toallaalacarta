@@ -5,6 +5,25 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
 y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.5.1] - 2026-08-04
+
+### Added
+- **Integración de Graphify**: Grafo de conocimiento del repositorio (765 nodos) extraído en `graphify-out/` y reglas de arquitectura en `.agents/rules/graphify.md`.
+- **Nuevas Suites de Pruebas Automatizadas (QA)**:
+  - `src/__tests__/export-utils.test.ts`: Pruebas de exportación CSV, cálculo de ingresos y filtros.
+  - `src/__tests__/textConverter.test.ts`: Pruebas de slugification UTF-8 y saneamiento Markdown/HTML.
+  - `src/__tests__/typeGuards.test.ts`: Guardas de tipos e inspección de errores Shopify/Appwrite.
+- **Orquestación Docker Compose**: Archivo `docker-compose.yml` para despliegue y pruebas locales.
+
+### Refactored
+- **Consolidación de Dominio de Órdenes**: `OrderService` (`src/modules/orders/orders.service.ts`) asume la responsabilidad total de consultas y actualizaciones de estado, reduciendo código duplicado en `admin-utils.ts`.
+- **Abstracción de Rate Limiting**: Interfaz `RateLimitStore` y método `destroy()` en `RateLimiter` para prevención de fugas de memoria en SSR.
+
+### Fixed
+- **Seguridad**: Sanitización contra CSV Formula Injection en `src/lib/export-utils.ts`.
+
+---
+
 ## [2.5.0] - 2026-08-01
 
 ### Added
