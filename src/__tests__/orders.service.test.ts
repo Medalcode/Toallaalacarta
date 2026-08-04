@@ -70,4 +70,67 @@ describe('OrderService', () => {
       await expect(orderService.createOrder(mockOrderDTO, mockDatabases as unknown as Databases)).rejects.toThrow('Failed to create order');
     });
   });
+
+  describe('getAllOrders', () => {
+    it('should query listDocuments with correct filters', async () => {
+      mockDatabases.listDocuments = vi.fn().mockResolvedValueOnce({
+        documents: [{ $id: 'doc1', status: 'pending' }],
+        total: 1,
+      });
+
+      const res = await orderService.getAllOrders(mockDatabases as unknown as Databases, {
+        status: 'pending',
+        limit: 10,
+      });
+
+      expect(mockDatabases.listDocuments).toHaveBeenCalled();
+      expect(res.total).toBe(1);
+      expect(res.orders[0].$id).toBe('doc1');
+    });
+  });
+
+  describe('getOrderStats', () => {
+    it('should calculate revenue and status counts correctly', async () => {
+      mockDatabases.listDocuments = vi.fn().mockResolvedValueOnce({
+        documents: [
+          { status: 'pending', total_price: 1000 },
+          { status: 'shipped', total_price: 3000 },
+        ],
+        total: 2,
+      });
+
+      const stats = await orderService.getOrderStats(mockDatabases as unknown as Databases);
+
+      expect(stats.total).toBe(2);
+      expect(stats.pending).toBe(1);
+      expect(stats.shipped).toBe(1);
+      expect(stats.totalRevenue).toBe(4000);
+      expect(stats.averageOrderValue).toBe(2000);
+    });
+  });
+
+  describe('updateOrderStatus', () => {
+    it('should update document with new status and tracking number', async () => {
+      mockDatabases.updateDocument = vi.fn().mockResolvedValueOnce({
+        $id: 'doc1',
+        status: 'shipped',
+        tracking_number: 'TRACK123',
+      });
+
+      const result = await orderService.updateOrderStatus(mockDatabases as unknown as Databases, {
+        orderId: 'doc1',
+        status: 'shipped',
+        trackingNumber: 'TRACK123',
+      });
+
+      expect(mockDatabases.updateDocument).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.any(String),
+        'doc1',
+        { status: 'shipped', tracking_number: 'TRACK123' }
+      );
+      expect(result.status).toBe('shipped');
+    });
+  });
 });
+
